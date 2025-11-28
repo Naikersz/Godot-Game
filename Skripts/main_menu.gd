@@ -1,10 +1,9 @@
 extends Control
 
-## Hauptmenü-Szene
 ## Entspricht game.aw/scenes/main_menu.py
 
-@onready var title_label: Label = $VBoxContainer/TitleLabel
-@onready var button_container: VBoxContainer = $VBoxContainer/ButtonContainer
+@onready var title_label: Label = $LabelMenu/Label
+@onready var button_container: VBoxContainer = $Boxcontainer/MenuContainer/StartButton
 @onready var load_game_button: Button = $VBoxContainer/ButtonContainer/LoadGameButton
 @onready var new_game_button: Button = $VBoxContainer/ButtonContainer/NewGameButton
 @onready var options_button: Button = $VBoxContainer/ButtonContainer/OptionsButton

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="SpielGodot"
-run/main_scene="uid://caar1ohejbau6"
+run/main_scene="uid://c5gbg6mhe6oic"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 

@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://j640ftkccyin"]
+[gd_scene load_steps=4 format=3 uid="uid://j640ftkccyin"]
 
-[ext_resource type="Script" path="res://Skripts/load_menu.gd" id="1_load_menu"]
+[ext_resource type="Script" uid="uid://r81lp2el53bb" path="res://Skripts/load_menu.gd" id="1_load_menu"]
+[ext_resource type="Theme" uid="uid://ddqvm87w4sqiw" path="res://art/fonts/new_theme.tres" id="1_o70tx"]
+[ext_resource type="Texture2D" uid="uid://b4ef20ehgalkh" path="res://art/images/Loadmenu.jpg" id="2_ff44e"]
 
 [node name="LoadMenu" type="Control"]
 layout_mode = 3
@@ -9,36 +11,33 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_o70tx")
 script = ExtResource("1_load_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.098039, 0.098039, 0.098039, 1)
+texture = ExtResource("2_ff44e")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
+anchors_preset = 4
 anchor_top = 0.5
-anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -400.0
 offset_top = -300.0
-offset_right = 400.0
+offset_right = 800.0
 offset_bottom = 300.0
-grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
-text = "Spielstand laden"
+text = "Load save file"
 horizontal_alignment = 1
 
 [node name="SlotsContainer" type="VBoxContainer" parent="VBoxContainer"]
@@ -50,5 +49,4 @@ theme_override_constants/separation = 20
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 40
-text = "Zurück"
-
+text = "Back"

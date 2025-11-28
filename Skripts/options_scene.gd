@@ -29,4 +29,3 @@ func _on_dev_button_pressed():
 func _on_back_button_pressed():
 	print("Zurück-Button gedrückt (Options)")
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/main_menu.tscn")
-
