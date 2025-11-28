@@ -1,0 +1,187 @@
+[
+  {
+    "id": "silk_robe",
+    "name": "Silk Robe",
+    "item_type": "chest",
+    "item_level": 1,
+    "min_player_level": 1,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 0,
+      "dexterity_min": 0,
+      "dexterity_max": 4,
+      "intelligence_min": 5,
+      "intelligence_max": 8
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 5,
+      "evasion_max": 10,
+      "energy_shield_min": 6,
+      "energy_shield_max": 12,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "cloth",
+      "disassembly_yield": 2
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "leather_jerkin",
+    "name": "Leather Jerkin",
+    "item_type": "chest",
+    "item_level": 6,
+    "min_player_level": 4,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 5,
+      "dexterity_min": 10,
+      "dexterity_max": 14,
+      "intelligence_min": 0,
+      "intelligence_max": 4
+    },
+    "base_stats": {
+      "armour_min": 18,
+      "armour_max": 28,
+      "evasion_min": 14,
+      "evasion_max": 22,
+      "energy_shield_min": 0,
+      "energy_shield_max": 4,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "leather",
+      "disassembly_yield": 4
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "chainmail_tunic",
+    "name": "Chainmail Tunic",
+    "item_type": "chest",
+    "item_level": 12,
+    "min_player_level": 8,
+    "requirements": {
+      "strength_min": 10,
+      "strength_max": 18,
+      "dexterity_min": 6,
+      "dexterity_max": 12,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 48,
+      "armour_max": 72,
+      "evasion_min": 6,
+      "evasion_max": 12,
+      "energy_shield_min": 0,
+      "energy_shield_max": 2,
+      "block_chance_min": 0,
+      "block_chance_max": 2,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "chain",
+      "disassembly_yield": 6
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "iron_plate_armor",
+    "name": "Iron Plate Armor",
+    "item_type": "chest",
+    "item_level": 24,
+    "min_player_level": 16,
+    "requirements": {
+      "strength_min": 30,
+      "strength_max": 44,
+      "dexterity_min": 0,
+      "dexterity_max": 6,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 150,
+      "armour_max": 220,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 0,
+      "energy_shield_max": 6,
+      "block_chance_min": 0,
+      "block_chance_max": 4,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "iron",
+      "disassembly_yield": 8
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "steel_breastplate",
+    "name": "Steel Breastplate",
+    "item_type": "chest",
+    "item_level": 36,
+    "min_player_level": 26,
+    "requirements": {
+      "strength_min": 50,
+      "strength_max": 70,
+      "dexterity_min": 0,
+      "dexterity_max": 10,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 320,
+      "armour_max": 420,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 0,
+      "energy_shield_max": 10,
+      "block_chance_min": 2,
+      "block_chance_max": 6,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "steel",
+      "disassembly_yield": 12
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  }
+]

@@ -1,0 +1,187 @@
+[
+  {
+    "id": "dagger",
+    "name": "Dagger",
+    "item_type": "weapon",
+    "item_level": 1,
+    "min_player_level": 1,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 4,
+      "dexterity_min": 8,
+      "dexterity_max": 12,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 0,
+      "energy_shield_max": 0,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 1.4,
+      "attack_speed_max": 1.7,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 8,
+      "damage_max": 14
+    },
+    "material": {
+      "type": "iron",
+      "disassembly_yield": 10
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "iron_sword",
+    "name": "Iron Sword",
+    "item_type": "weapon",
+    "item_level": 8,
+    "min_player_level": 5,
+    "requirements": {
+      "strength_min": 18,
+      "strength_max": 28,
+      "dexterity_min": 0,
+      "dexterity_max": 6,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 0,
+      "energy_shield_max": 0,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 1.05,
+      "attack_speed_max": 1.25,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 18,
+      "damage_max": 26
+    },
+    "material": {
+      "type": "iron",
+      "disassembly_yield": 10
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "steel_sword",
+    "name": "Steel Sword",
+    "item_type": "weapon",
+    "item_level": 20,
+    "min_player_level": 14,
+    "requirements": {
+      "strength_min": 36,
+      "strength_max": 56,
+      "dexterity_min": 0,
+      "dexterity_max": 10,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 0,
+      "evasion_max": 6,
+      "energy_shield_min": 0,
+      "energy_shield_max": 6,
+      "block_chance_min": 0,
+      "block_chance_max": 2,
+      "attack_speed_min": 0.95,
+      "attack_speed_max": 1.15,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 52,
+      "damage_max": 78
+    },
+    "material": {
+      "type": "steel",
+      "disassembly_yield": 14
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "magic_staff",
+    "name": "Magic Staff",
+    "item_type": "weapon",
+    "item_level": 12,
+    "min_player_level": 9,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 6,
+      "dexterity_min": 0,
+      "dexterity_max": 8,
+      "intelligence_min": 30,
+      "intelligence_max": 44
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 18,
+      "energy_shield_max": 30,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 0.8,
+      "attack_speed_max": 1.0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 12,
+      "damage_max": 20
+    },
+    "material": {
+      "type": "arcane_crystal",
+      "disassembly_yield": 12
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "spirit_staff",
+    "name": "Spirit Staff",
+    "item_type": "weapon",
+    "item_level": 30,
+    "min_player_level": 20,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 12,
+      "dexterity_min": 0,
+      "dexterity_max": 16,
+      "intelligence_min": 60,
+      "intelligence_max": 90
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 44,
+      "energy_shield_max": 68,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 0.85,
+      "attack_speed_max": 1.05,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 22,
+      "damage_max": 36
+    },
+    "material": {
+      "type": "rune",
+      "disassembly_yield": 15
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  }
+]

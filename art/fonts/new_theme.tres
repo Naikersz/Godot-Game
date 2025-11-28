@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ddqvm87w4sqiw"]
+
+[ext_resource type="FontFile" path="res://images/TheWildBreathOfZelda-15Lv.ttf" id="1_amlv4"]
+
+[resource]
+default_font = ExtResource("1_amlv4")
+default_font_size = 48

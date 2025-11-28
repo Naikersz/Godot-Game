@@ -1,0 +1,139 @@
+[
+  {
+    "id": "strength",
+    "name": "Stärke +",
+    "type": "strength",
+    "value_min": 1,
+    "value_max": 3,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "dexterity",
+    "name": "Geschicklichkeit +",
+    "type": "dexterity",
+    "value_min": 1,
+    "value_max": 3,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "intelligence",
+    "name": "Intelligenz +",
+    "type": "intelligence",
+    
+    "value_min": 1,
+    "value_max": 3,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "defence",
+    "name": "Verteidigung +",
+    "type": "defence",
+    "value_min": 1,
+    "value_max": 3,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "hp",
+    "name": "Leben +",
+    "type": "hp",
+    "value_min": 5,
+    "value_max": 15,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "attack_speed",
+    "name": "Angriffsgeschwindigkeit +",
+    "type": "attack_speed",
+    "value_min": 1,
+    "value_max": 2,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "item_drop_chance",
+    "name": "Itemfundchance +",
+    "type": "item_drop_chance",
+    "value_min": 1,
+    "value_max": 2,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "enchantment_roll_chance",
+    "name": "Verzauberungsfundchance +",
+    "type": "enchantment_roll_chance",
+    "value_min": 1,
+    "value_max": 2,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "magic_defence",
+    "name": "Magische Verteidigung +",
+    "type": "magic_defence",
+    
+    "value_min": 1,
+    "value_max": 3,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "movement_speed",
+    "name": "Bewegungsgeschwindigkeit %",
+    "type": "movement_speed",
+    "value_min": 1,
+    "value_max": 3,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "block_chance",
+    "name": "Blockchance %",
+    "type": "block_chance",
+    "value_min": 1,
+    "value_max": 2,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "attack_power",
+    "name": "Angriffskraft +",
+    "type": "attack_power",
+    "value_min": 2,
+    "value_max": 5,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "magic_power",
+    "name": "Magiekraft +",
+    "type": "magic_power",
+    "value_min": 2,
+    "value_max": 5,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "crit_chance",
+    "name": "Kritische Trefferchance %",
+    "type": "crit_chance",
+    "value_min": 1,
+    "value_max": 2,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
+    "id": "crit_multi",
+    "name": "Kritischer Trefferschaden %",
+    "type": "crit_multi",
+    "value_min": 3,
+    "value_max": 6,
+    "item_level_min": 1,
+    "item_level_max": 100
+  }
+]

@@ -1,0 +1,187 @@
+[
+  {
+    "id": "wooden_shield",
+    "name": "Wooden Shield",
+    "item_type": "shield",
+    "item_level": 2,
+    "min_player_level": 1,
+    "requirements": {
+      "strength_min": 4,
+      "strength_max": 8,
+      "dexterity_min": 0,
+      "dexterity_max": 4,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 18,
+      "armour_max": 28,
+      "evasion_min": 0,
+      "evasion_max": 4,
+      "energy_shield_min": 0,
+      "energy_shield_max": 0,
+      "block_chance_min": 10,
+      "block_chance_max": 14,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "wood",
+      "disassembly_yield": 3
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "iron_shield",
+    "name": "Iron Shield",
+    "item_type": "shield",
+    "item_level": 10,
+    "min_player_level": 6,
+    "requirements": {
+      "strength_min": 24,
+      "strength_max": 36,
+      "dexterity_min": 0,
+      "dexterity_max": 6,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 72,
+      "armour_max": 100,
+      "evasion_min": 0,
+      "evasion_max": 6,
+      "energy_shield_min": 0,
+      "energy_shield_max": 4,
+      "block_chance_min": 16,
+      "block_chance_max": 20,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "iron",
+      "disassembly_yield": 8
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "steel_shield",
+    "name": "Steel Shield",
+    "item_type": "shield",
+    "item_level": 22,
+    "min_player_level": 16,
+    "requirements": {
+      "strength_min": 44,
+      "strength_max": 64,
+      "dexterity_min": 0,
+      "dexterity_max": 8,
+      "intelligence_min": 0,
+      "intelligence_max": 6
+    },
+    "base_stats": {
+      "armour_min": 220,
+      "armour_max": 300,
+      "evasion_min": 0,
+      "evasion_max": 12,
+      "energy_shield_min": 8,
+      "energy_shield_max": 18,
+      "block_chance_min": 18,
+      "block_chance_max": 24,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "steel",
+      "disassembly_yield": 12
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "rune_shield",
+    "name": "Rune Shield",
+    "item_type": "shield",
+    "item_level": 30,
+    "min_player_level": 22,
+    "requirements": {
+      "strength_min": 30,
+      "strength_max": 48,
+      "dexterity_min": 0,
+      "dexterity_max": 12,
+      "intelligence_min": 36,
+      "intelligence_max": 52
+    },
+    "base_stats": {
+      "armour_min": 260,
+      "armour_max": 360,
+      "evasion_min": 0,
+      "evasion_max": 20,
+      "energy_shield_min": 40,
+      "energy_shield_max": 64,
+      "block_chance_min": 20,
+      "block_chance_max": 28,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "rune",
+      "disassembly_yield": 15
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "dragon_shield",
+    "name": "Dragon Shield",
+    "item_type": "shield",
+    "item_level": 46,
+    "min_player_level": 34,
+    "requirements": {
+      "strength_min": 78,
+      "strength_max": 110,
+      "dexterity_min": 20,
+      "dexterity_max": 34,
+      "intelligence_min": 20,
+      "intelligence_max": 34
+    },
+    "base_stats": {
+      "armour_min": 680,
+      "armour_max": 920,
+      "evasion_min": 60,
+      "evasion_max": 92,
+      "energy_shield_min": 24,
+      "energy_shield_max": 40,
+      "block_chance_min": 22,
+      "block_chance_max": 32,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "dragonbone",
+      "disassembly_yield": 20
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  }
+]

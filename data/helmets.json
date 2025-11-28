@@ -1,0 +1,187 @@
+[
+  {
+    "id": "leather_cap",
+    "name": "Leather Cap",
+    "item_type": "helmet",
+    "item_level": 2,
+    "min_player_level": 1,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 4,
+      "dexterity_min": 6,
+      "dexterity_max": 10,
+      "intelligence_min": 0,
+      "intelligence_max": 2
+    },
+    "base_stats": {
+      "armour_min": 6,
+      "armour_max": 12,
+      "evasion_min": 8,
+      "evasion_max": 14,
+      "energy_shield_min": 0,
+      "energy_shield_max": 2,
+      "block_chance_min": 0,
+      "block_chance_max": 1,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "leather",
+      "disassembly_yield": 3
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "iron_helmet",
+    "name": "Iron Helmet",
+    "item_type": "helmet",
+    "item_level": 6,
+    "min_player_level": 4,
+    "requirements": {
+      "strength_min": 12,
+      "strength_max": 20,
+      "dexterity_min": 0,
+      "dexterity_max": 6,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 32,
+      "armour_max": 48,
+      "evasion_min": 0,
+      "evasion_max": 6,
+      "energy_shield_min": 0,
+      "energy_shield_max": 2,
+      "block_chance_min": 0,
+      "block_chance_max": 2,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "iron",
+      "disassembly_yield": 6
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "chain_hood",
+    "name": "Chain Hood",
+    "item_type": "helmet",
+    "item_level": 12,
+    "min_player_level": 9,
+    "requirements": {
+      "strength_min": 18,
+      "strength_max": 28,
+      "dexterity_min": 8,
+      "dexterity_max": 14,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 60,
+      "armour_max": 86,
+      "evasion_min": 10,
+      "evasion_max": 18,
+      "energy_shield_min": 0,
+      "energy_shield_max": 4,
+      "block_chance_min": 0,
+      "block_chance_max": 3,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "chain",
+      "disassembly_yield": 6
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "rune_helmet",
+    "name": "Rune Helmet",
+    "item_type": "helmet",
+    "item_level": 22,
+    "min_player_level": 16,
+    "requirements": {
+      "strength_min": 10,
+      "strength_max": 18,
+      "dexterity_min": 0,
+      "dexterity_max": 8,
+      "intelligence_min": 28,
+      "intelligence_max": 40
+    },
+    "base_stats": {
+      "armour_min": 90,
+      "armour_max": 130,
+      "evasion_min": 0,
+      "evasion_max": 6,
+      "energy_shield_min": 32,
+      "energy_shield_max": 48,
+      "block_chance_min": 0,
+      "block_chance_max": 4,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "rune",
+      "disassembly_yield": 11
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "dragon_helmet",
+    "name": "Dragon Helmet",
+    "item_type": "helmet",
+    "item_level": 38,
+    "min_player_level": 28,
+    "requirements": {
+      "strength_min": 60,
+      "strength_max": 85,
+      "dexterity_min": 10,
+      "dexterity_max": 20,
+      "intelligence_min": 10,
+      "intelligence_max": 18
+    },
+    "base_stats": {
+      "armour_min": 420,
+      "armour_max": 560,
+      "evasion_min": 0,
+      "evasion_max": 12,
+      "energy_shield_min": 0,
+      "energy_shield_max": 18,
+      "block_chance_min": 4,
+      "block_chance_max": 9,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "dragonbone",
+      "disassembly_yield": 21
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  }
+]

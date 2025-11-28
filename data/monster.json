@@ -1,0 +1,111 @@
+[
+  {
+    "id": "forest_goblin",
+    "name": "Forest Goblin",
+    "monster_type": "humanoid",
+    "level": 1,
+    "stats": {
+      "hp_min": 12,
+      "hp_max": 18,
+      "damage_min": 1,
+      "damage_max": 3,
+      "defense_min": 0,
+      "defense_max": 2,
+      "attack_speed_min": 1,
+      "attack_speed_max": 1,
+      "evasion_min": 2,
+      "evasion_max": 4
+    },
+    "loot_quality": "common",
+    "enchant_slots": 6,
+    "enchantments": []
+  },
+
+  {
+    "id": "dire_wolf",
+    "name": "Dire Wolf",
+    "monster_type": "beast",
+    "level": 5,
+    "stats": {
+      "hp_min": 40,
+      "hp_max": 55,
+      "damage_min": 6,
+      "damage_max": 10,
+      "defense_min": 2,
+      "defense_max": 5,
+      "attack_speed_min": 1,
+      "attack_speed_max": 2,
+      "evasion_min": 6,
+      "evasion_max": 10
+    },
+    "loot_quality": "common",
+    "enchant_slots": 6,
+    "enchantments": []
+  },
+
+  {
+    "id": "bandit_raider",
+    "name": "Bandit Raider",
+    "monster_type": "humanoid",
+    "level": 12,
+    "stats": {
+      "hp_min": 110,
+      "hp_max": 150,
+      "damage_min": 12,
+      "damage_max": 20,
+      "defense_min": 6,
+      "defense_max": 12,
+      "attack_speed_min": 1,
+      "attack_speed_max": 2,
+      "evasion_min": 5,
+      "evasion_max": 10
+    },
+    "loot_quality": "uncommon",
+    "enchant_slots": 6,
+    "enchantments": []
+  },
+
+  {
+    "id": "ember_elemental",
+    "name": "Ember Elemental",
+    "monster_type": "elemental",
+    "level": 20,
+    "stats": {
+      "hp_min": 220,
+      "hp_max": 280,
+      "damage_min": 20,
+      "damage_max": 35,
+      "defense_min": 10,
+      "defense_max": 15,
+      "attack_speed_min": 1,
+      "attack_speed_max": 2,
+      "evasion_min": 0,
+      "evasion_max": 4
+    },
+    "loot_quality": "rare",
+    "enchant_slots": 6,
+    "enchantments": []
+  },
+
+  {
+    "id": "dragon_guardian",
+    "name": "Dragon Guardian",
+    "monster_type": "dragonkin",
+    "level": 40,
+    "stats": {
+      "hp_min": 850,
+      "hp_max": 1100,
+      "damage_min": 60,
+      "damage_max": 90,
+      "defense_min": 35,
+      "defense_max": 50,
+      "attack_speed_min": 1,
+      "attack_speed_max": 2,
+      "evasion_min": 10,
+      "evasion_max": 20
+    },
+    "loot_quality": "legendary",
+    "enchant_slots": 6,
+    "enchantments": []
+  }
+]

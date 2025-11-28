@@ -1,0 +1,27 @@
+[
+    {
+        "id": "forest_goblin_elder",
+        "name": "Forest Goblin Elder",
+        "description": "Ein uralter Goblin-Schamane, der den Wald beschützt."
+    },
+    {
+        "id": "dire_wolf_alpha",
+        "name": "Alpha Dire Wolf",
+        "description": "Der Anführer des Wolf-Rudels, schneller und gefährlicher als alle anderen."
+    },
+    {
+        "id": "bandit_warlord",
+        "name": "Bandit Warlord",
+        "description": "Ein brutaler Kriegsherr, der Banditen in den umliegenden Gebieten anführt."
+    },
+    {
+        "id": "ember_titan",
+        "name": "Ember Titan",
+        "description": "Ein massiver Lava-Koloss, erschaffen aus geschmolzener Erde."
+    },
+    {
+        "id": "dragon_overseer",
+        "name": "Dragon Overseer",
+        "description": "Ein uralter Wächterdrache, der als Bote göttlicher Kräfte gilt."
+    }
+]
