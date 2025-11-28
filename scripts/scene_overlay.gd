@@ -28,21 +28,17 @@ func _process(_delta: float) -> void:
 	if current:
 		var scene_name: String = String(current.name)
 
-		# Wenn wir im Main-Sammelscene sind, zusätzlich Dungeon/Level anzeigen
-		if scene_name == "Main":
-			# Versuche ein Kind wie "LevelTown" zu finden
-			var level = current.get_node_or_null("LevelTown")
-			if level:
-				scene_name = "Dungeon: %s" % level.name
-
-		# Ergänze Level-Infos aus Constants, wenn vorhanden
-		var has_level_type := "current_level_type" in Constants
-		var has_level_number := "current_level_number" in Constants
-		if has_level_type and has_level_number:
+		# Nur in der Dungeon-Szene (DungeonScene) Level-Infos anzeigen
+		if scene_name == "DungeonScene":
 			var lt := String(Constants.current_level_type)
 			var ln := int(Constants.current_level_number)
-			label.text = "Scene: %s  |  %s %d" % [scene_name, lt, ln]
+			# Nur wenn sinnvolle Werte gesetzt sind, das Level anhängen
+			if lt != "" and ln > 0:
+				label.text = "Scene: %s  |  %s %d" % [scene_name, lt, ln]
+			else:
+				label.text = "Scene: %s" % scene_name
 		else:
+			# In allen anderen Szenen nur den Szenen-Namen anzeigen
 			label.text = "Scene: %s" % scene_name
 	else:
 		label.text = ""

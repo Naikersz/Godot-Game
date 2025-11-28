@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cnb52vwthl1q3"]
 
-[ext_resource type="Script" path="res://Skripts/town_scene.gd" id="1_town_scene"]
+[ext_resource type="Script" path="res://scripts/town_scene.gd" id="1_town_scene"]
 
 [node name="TownScene" type="Control"]
 layout_mode = 3

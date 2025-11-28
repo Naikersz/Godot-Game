@@ -1,6 +1,6 @@
 extends Node2D
 
-## Stub-Script für die LevelTown-Szene.
+## Script für die Dungeon-Szene.
 ## Hier kann später Logik für UI, Pausenmenü usw. ergänzt werden.
 
 func _ready() -> void:

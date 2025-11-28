@@ -19,7 +19,7 @@ config/icon="res://icon.svg"
 
 Constants="*res://core/constants.gd"
 DevSettings="*res://core/dev_settings.gd"
-SceneOverlay="*res://Skripts/scene_overlay.gd"
+SceneOverlay="*res://scripts/scene_overlay.gd"
 
 [display]
 

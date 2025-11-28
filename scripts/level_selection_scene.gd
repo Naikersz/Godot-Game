@@ -51,8 +51,8 @@ func start_battle(level_type: String, level_number: int):
 	Constants.current_level_type = level_type
 	Constants.current_level_number = level_number
 	
-	# Lade die LevelTown-Szene, die Dungeon + Player enthält.
-	get_tree().call_deferred("change_scene_to_file", "res://scenes/level_town.tscn")
+	# Lade die Dungeon-Szene, die Dungeon + Player enthält.
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/dungeon_scene.tscn")
 
 func _on_back_pressed():
 	print("Zurück-Button gedrückt (Level Selection)")

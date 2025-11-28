@@ -12,8 +12,9 @@ const SAVE_SLOTS = ["save1", "save2", "save3"]
 var current_slot_index: int = 0
 
 ## Aktueller Level-Typ und Nummer (für Battle Scene)
-var current_level_type: String = "Feld"
-var current_level_number: int = 1
+## Startwerte neutral, damit nicht überall automatisch "Feld 1" erscheint.
+var current_level_type: String = ""
+var current_level_number: int = 0
 
 ## Gibt den Pfad zum Save-Ordner zurück
 func get_save_root() -> String:
