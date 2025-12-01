@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://b1slloqamugq4"]
+[gd_scene load_steps=8 format=3 uid="uid://b1slloqamugq4"]
 
 [ext_resource type="Script" uid="uid://c7s6egcw75pah" path="res://scripts/hud_scene.gd" id="1_hud"]
 [ext_resource type="Texture2D" uid="uid://dplplts6cutpl" path="res://art/images/Backpack.png" id="2_backpack"]
 [ext_resource type="PackedScene" uid="uid://c4jp0o5vwcc3t" path="res://scenes/hp_bar.tscn" id="3_msjax"]
+[ext_resource type="Texture2D" uid="uid://d1qesgyojyvyt" path="res://art/images/UI.png" id="4_tida0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qr8y6"]
+atlas = ExtResource("4_tida0")
+region = Rect2(40, 41.81, 432.337, 440)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_sgg88"]
+texture = SubResource("AtlasTexture_qr8y6")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tida0"]
+atlas = ExtResource("4_tida0")
+region = Rect2(516.7124, 645.8206, 55.415283, 52.337463)
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -106,34 +118,419 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="Modals" type="Control" parent="Control"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="InventoryModal" type="Control" parent="Control/Modals"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="TextureRect" type="TextureRect" parent="Control/Modals/InventoryModal"]
+[node name="DimBackground" type="ColorRect" parent="Control/Modals/InventoryModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 2.0
+offset_right = 3.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.4)
+
+[node name="WindowPanel" type="Panel" parent="Control/Modals/InventoryModal"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 200.0
+offset_top = 120.0
+offset_right = 630.0
+offset_bottom = 560.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_sgg88")
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/Modals/InventoryModal"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="WindowVBox" type="VBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
 
-[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/MarginContainer"]
+[node name="TitleBar" type="HBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox"]
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="ContentContainer" type="HBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EquippedPanel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="EquippedGrid" type="BoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 488.0
+offset_bottom = 272.0
+grow_horizontal = 0
+theme_override_constants/separation = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 
+[node name="TextureRect2" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel2" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect3" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel3" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect4" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer/Panel3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel4" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect5" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer/Panel4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect9" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer2/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer3"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect10" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer3/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="VBoxContainer4" type="VBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect2" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel2" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect3" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4/Panel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel3" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect4" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4/Panel3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel4" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect5" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer4/Panel4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="VBoxContainer5" type="VBoxContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer5"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect12" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer5/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="Panel2" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer5"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+
+[node name="TextureRect11" type="TextureRect" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/EquippedPanel/EquippedGrid/HBoxContainer/VBoxContainer5/Panel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tida0")
+
+[node name="InventoryPanel" type="Panel" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+
+[node name="InventoryGrid" type="GridContainer" parent="Control/Modals/InventoryModal/WindowPanel/WindowVBox/ContentContainer/InventoryPanel"]
+layout_mode = 1
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+
 [node name="MapModal" type="Control" parent="Control/Modals"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="CharacterModal" type="Control" parent="Control/Modals"]
-anchors_preset = 0
-offset_right = 40.0
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DimBackground" type="ColorRect" parent="Control/Modals/CharacterModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.4)
+
+[node name="WindowPanel" type="Panel" parent="Control/Modals/CharacterModal"]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 100.0
+offset_right = 900.0
+offset_bottom = 620.0
+
+[node name="WindowVBox" type="VBoxContainer" parent="Control/Modals/CharacterModal/WindowPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="TitleBar" type="HBoxContainer" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/TitleBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Персонаж"
+
+[node name="ContentContainer" type="HBoxContainer" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="CharacterPanel" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CharacterVBox" type="VBoxContainer" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/CharacterPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="CharacterViewPanel" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/CharacterPanel/CharacterVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatsPanel" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/CharacterPanel/CharacterVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatsLabel" type="Label" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/CharacterPanel/CharacterVBox/StatsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Характеристики персонажа"
+
+[node name="EquipmentPanel" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EquipmentLabel" type="Label" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 10.0
+offset_right = 80.0
 offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Экипировка"
+horizontal_alignment = 1
+
+[node name="EquipmentGrid" type="GridContainer" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 3
+
+[node name="Slot_Helmet" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Armor" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Gloves" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Pants" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Boots" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_WeaponMain" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_WeaponOff" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Ring1" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Ring2" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Amulet" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Bag" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2
+
+[node name="Slot_Extra" type="Panel" parent="Control/Modals/CharacterModal/WindowPanel/WindowVBox/ContentContainer/EquipmentPanel/EquipmentGrid"]
+layout_mode = 2

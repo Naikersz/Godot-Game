@@ -18,9 +18,9 @@
 ```gdscript
 # В _ready() функции сцены
 func _ready():
-    var hud_scene = preload("res://scenes/hud_scene.tscn")
-    var hud = hud_scene.instantiate()
-    add_child(hud)
+	var hud_scene = preload("res://scenes/hud_scene.tscn")
+	var hud = hud_scene.instantiate()
+	add_child(hud)
 ```
 
 ### Вариант 2: Использовать как autoload (для глобального доступа)
@@ -54,10 +54,10 @@ extends Node2D
 var hud_instance: CanvasLayer
 
 func _ready():
-    # Добавляем HUD
-    var hud_scene = preload("res://scenes/hud_scene.tscn")
-    hud_instance = hud_scene.instantiate()
-    add_child(hud_instance)
+	# Добавляем HUD
+	var hud_scene = preload("res://scenes/hud_scene.tscn")
+	hud_instance = hud_scene.instantiate()
+	add_child(hud_instance)
 ```
 
 ## Пример интеграции в town_scene
@@ -68,14 +68,14 @@ extends Control
 var hud_instance: CanvasLayer
 
 func _ready():
-    # Добавляем HUD (опционально, так как там уже есть кнопка инвентаря)
-    var hud_scene = preload("res://scenes/hud_scene.tscn")
-    hud_instance = hud_scene.instantiate()
-    add_child(hud_instance)
-    
-    # Можно скрыть кнопку сумки в HUD, если есть своя кнопка
-    if hud_instance:
-        hud_instance.set_inventory_button_visible(false)
+	# Добавляем HUD (опционально, так как там уже есть кнопка инвентаря)
+	var hud_scene = preload("res://scenes/hud_scene.tscn")
+	hud_instance = hud_scene.instantiate()
+	add_child(hud_instance)
+	
+	# Можно скрыть кнопку сумки в HUD, если есть своя кнопка
+	if hud_instance:
+		hud_instance.set_inventory_button_visible(false)
 ```
 
 ## Настройка горячей клавиши
@@ -85,4 +85,3 @@ func _ready():
 - Клавиша: `I`
 
 Чтобы изменить клавишу, откройте Project → Project Settings → Input Map и измените `ui_inventory`.
-

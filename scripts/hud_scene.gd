@@ -3,7 +3,9 @@ extends CanvasLayer
 ## HUD Scene - Универсальный UI для игровых сцен
 ## Содержит сумку и другие UI элементы, которые должны быть доступны во время игры
 
-@onready var inventory_button: Button = $UIContainer/TopLeftContainer/InventoryButton
+@onready var inventory_button: Button = $Control/GameHUD/LeftContainer/HBoxContainer/InventoryButton
+@onready var inventory_modal: Control = $Control/Modals/InventoryModal
+@onready var character_modal: Control = $Control/Modals/CharacterModal
 
 func _ready():
 	# Подключаем сигнал нажатия на кнопку сумки
@@ -25,12 +27,13 @@ func _on_inventory_button_pressed():
 	_open_inventory()
 
 func _open_inventory():
-	"""Открывает сцену инвентаря"""
-	var inventory_scene = preload("res://scenes/inventory_scene.tscn")
-	if inventory_scene:
-		get_tree().change_scene_to_packed(inventory_scene)
-	else:
-		print("⚠️ Inventory-Szene nicht gefunden!")
+	"""Открывает/закрывает модальное окно инвентаря в HUD"""
+	if inventory_modal:
+		# Закрываем окно персонажа, если оно вдруг открыто
+		if character_modal:
+			character_modal.visible = false
+		
+		inventory_modal.visible = not inventory_modal.visible
 
 func set_inventory_button_visible(visible: bool):
 	"""Показывает/скрывает кнопку сумки"""
