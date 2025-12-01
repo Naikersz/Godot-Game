@@ -1,0 +1,57 @@
+[gd_scene load_steps=8 format=3 uid="uid://c4jp0o5vwcc3t"]
+
+[ext_resource type="FontFile" uid="uid://crim4ump40gsk" path="res://art/fonts/ThaleahFat.ttf" id="1_hb236"]
+[ext_resource type="Texture2D" uid="uid://c37i1oid12jyk" path="res://art/images/HP.png" id="2_hb236"]
+[ext_resource type="Script" uid="uid://dchx6c08fs8h7" path="res://scripts/hp_bar.gd" id="2_mg587"]
+[ext_resource type="Shader" uid="uid://2dibvjxs2ajd" path="res://art/shaders/hp_schader.gdshader" id="4_hb236"]
+[ext_resource type="Texture2D" uid="uid://bndhkyhs02x7i" path="res://art/images/HPfill.png" id="5_bconf"]
+
+[sub_resource type="Theme" id="Theme_an45k"]
+default_font = ExtResource("1_hb236")
+default_font_size = 64
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mg587"]
+shader = ExtResource("4_hb236")
+shader_parameter/fill_percent = 1.0
+shader_parameter/fill_color = Color(1, 0.2, 0.2, 1)
+shader_parameter/flash_color = Color(1.5, 1.8, 2.5, 1)
+shader_parameter/flash_progress = -1.0
+shader_parameter/flash_width = 0.05000000074506
+shader_parameter/glow_over_edge = 0.30000001192093
+
+[node name="HpBar" type="NinePatchRect"]
+clip_contents = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 128.0
+offset_top = 68.0
+offset_right = -1317.0
+offset_bottom = -808.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_an45k")
+texture = ExtResource("2_hb236")
+region_rect = Rect2(31.726822, 59.500595, 224.45793, 50.70941)
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+script = ExtResource("2_mg587")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_mg587")
+clip_contents = true
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 12.0
+offset_top = -23.0
+offset_right = 212.0
+offset_bottom = 17.0
+grow_vertical = 2
+rotation = 0.0001955186
+size_flags_horizontal = 15
+size_flags_stretch_ratio = 2.0
+texture = ExtResource("5_bconf")

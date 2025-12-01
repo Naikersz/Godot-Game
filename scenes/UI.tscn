@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://5opxmq7vo63h"]
+
+[ext_resource type="Script" uid="uid://bnc1aeqvxtmgi" path="res://scripts/UI.gd" id="1_ro3t7"]
+[ext_resource type="PackedScene" uid="uid://c4jp0o5vwcc3t" path="res://scenes/hp_bar.tscn" id="2_5en4g"]
+
+[node name="UI" type="MarginContainer"]
+offset_right = 223.0
+offset_bottom = 64.0
+size_flags_horizontal = 8
+script = ExtResource("1_ro3t7")
+
+[node name="HpBar" parent="." instance=ExtResource("2_5en4g")]
+layout_mode = 2
+value = 50.0

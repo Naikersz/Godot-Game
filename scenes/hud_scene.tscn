@@ -1,0 +1,139 @@
+[gd_scene load_steps=4 format=3 uid="uid://b1slloqamugq4"]
+
+[ext_resource type="Script" uid="uid://c7s6egcw75pah" path="res://scripts/hud_scene.gd" id="1_hud"]
+[ext_resource type="Texture2D" uid="uid://dplplts6cutpl" path="res://art/images/Backpack.png" id="2_backpack"]
+[ext_resource type="PackedScene" uid="uid://c4jp0o5vwcc3t" path="res://scenes/hp_bar.tscn" id="3_msjax"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameHUD" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftContainer" type="Control" parent="Control/GameHUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -168.0
+offset_top = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/GameHUD/LeftContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -76.0
+offset_top = -64.0
+offset_right = 52.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="InventoryButton" type="Button" parent="Control/GameHUD/LeftContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "Инвентарь (I)"
+icon = ExtResource("2_backpack")
+flat = true
+expand_icon = true
+
+[node name="MapButton" type="Button" parent="Control/GameHUD/LeftContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="TopLeftContainer" type="Control" parent="Control/GameHUD"]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 16.0
+offset_bottom = 16.0
+
+[node name="MenuButton" type="Button" parent="Control/GameHUD/TopLeftContainer"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="BottomLeftContainer" type="Control" parent="Control/GameHUD"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/GameHUD/BottomLeftContainer"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -64.0
+offset_right = 223.0
+grow_vertical = 0
+
+[node name="HpBar" parent="Control/GameHUD/BottomLeftContainer/VBoxContainer" instance=ExtResource("3_msjax")]
+clip_contents = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="Control" parent="Control/GameHUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Modals" type="Control" parent="Control"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="InventoryModal" type="Control" parent="Control/Modals"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="Control/Modals/InventoryModal"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/Modals/InventoryModal"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/MarginContainer"]
+layout_mode = 2
+
+[node name="MapModal" type="Control" parent="Control/Modals"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CharacterModal" type="Control" parent="Control/Modals"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0

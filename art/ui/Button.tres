@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://d1qesgyojyvyt" path="res://art/images/UI.png" id="1_bhheo"]
 
 [resource]
+content_margin_top = 8.0
+content_margin_bottom = 8.0
 texture = ExtResource("1_bhheo")
 texture_margin_left = 4.0
 texture_margin_top = 4.0
