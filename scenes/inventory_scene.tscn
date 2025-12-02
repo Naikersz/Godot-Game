@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://yl78ppbsj84t"]
 
-[ext_resource type="Script" path="res://scripts/inventory_scene.gd" id="1_inventory_scene"]
+[ext_resource type="Script" uid="uid://ho7v7n326y8i" path="res://scripts/inventory_scene.gd" id="1_inventory_scene"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tooltip"]
 bg_color = Color(0.1, 0.1, 0.15, 0.95)
@@ -55,7 +55,6 @@ text = "Spieler | Level 1"
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.313725, 0.313725, 1)
 theme_override_font_sizes/font_size = 30
-text = ""
 
 [node name="ContentContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -63,17 +62,15 @@ size_flags_vertical = 3
 theme_override_constants/separation = 20
 
 [node name="EquippedPanel" type="Panel" parent="VBoxContainer/ContentContainer"]
+custom_minimum_size = Vector2(300, 300)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(300, 300)
 
 [node name="EquippedLabel" type="Label" parent="VBoxContainer/ContentContainer/EquippedPanel"]
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.0
 offset_left = -50.0
 offset_top = 10.0
 offset_right = 50.0
@@ -106,11 +103,9 @@ size_flags_horizontal = 3
 
 [node name="InventoryLabel" type="Label" parent="VBoxContainer/ContentContainer/InventoryPanel"]
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.0
 offset_left = -50.0
 offset_top = 10.0
 offset_right = 50.0
@@ -139,7 +134,6 @@ theme_override_constants/v_separation = 5
 layout_mode = 2
 theme_override_colors/font_color = Color(0.627451, 0.862745, 0.627451, 1)
 theme_override_font_sizes/font_size = 26
-text = ""
 
 [node name="ButtonContainer" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -171,9 +165,9 @@ theme_override_font_sizes/font_size = 40
 text = "Zurück"
 
 [node name="TooltipPanel" type="Panel" parent="."]
-layout_mode = 0
 visible = false
 custom_minimum_size = Vector2(280, 300)
+layout_mode = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_tooltip")
 
 [node name="TooltipLabel" type="RichTextLabel" parent="TooltipPanel"]
