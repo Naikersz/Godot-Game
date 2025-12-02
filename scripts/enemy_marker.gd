@@ -267,5 +267,45 @@ func _apply_damage(amount: int) -> void:
 
 	# Bei Tod Marker entfernen
 	if hp <= 0:
-		_update_hud_info("")  # Info ausblenden
-		queue_free()
+		_on_death()
+
+
+func _on_death() -> void:
+	_update_hud_info("")  # Info ausblenden
+
+	# Gold-Drop mit Zufallschance und Bereich aus gold_min/gold_max
+	var gold_min: int = int(enemy_data.get("gold_min", 0))
+	var gold_max: int = int(enemy_data.get("gold_max", gold_min))
+	var gold: int = 0
+	if gold_max > 0 and gold_max >= gold_min and _rng_randf() < 0.5: # 50% Chance auf Gold-Drop
+		gold = int(round(_rng_randf_range(float(gold_min), float(gold_max))))
+
+		# Gold-%-Bonus vom Spieler anwenden (z.B. aus Verzauberungen)
+		var scene := get_tree().current_scene
+		if scene and scene.has_node("Player"):
+			var player := scene.get_node("Player")
+			if player and "total_stats" in player:
+				var ts = player.total_stats
+				if ts is Dictionary:
+					# Erwartet z.B. einen Eintrag "gold_find" als Prozentwert (5 = +5%)
+					var gold_bonus_percent: float = float(ts.get("gold_find", 0.0))
+					if gold_bonus_percent != 0.0:
+						var factor: float = 1.0 + (gold_bonus_percent / 100.0)
+						gold = int(round(float(gold) * factor))
+
+	# Optional: Item-Loot über LootGenerator
+	var loot := {}
+	var scene := get_tree().current_scene
+	if scene and scene.has_node("Player"):
+		var level: int = int(enemy_data.get("level", 1))
+		var LootGeneratorScript := preload("res://core/loot_generator.gd")
+		var loot_gen = LootGeneratorScript.new()
+		loot = loot_gen.generate_loot(level)
+
+	if gold > 0 or (loot is Dictionary and not loot.is_empty()):
+		print("💰 Loot von ", enemy_data.get("name", "Monster"),
+			": Gold=", gold, " | Item=", loot.get("name", "kein Item"))
+
+	# TODO: Gold und Item ins Inventar/Player-Daten schreiben
+
+	queue_free()

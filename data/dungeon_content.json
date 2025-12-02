@@ -1,5 +1,5 @@
 {
-  "Feld_1": {
+  "Forest_1": {
     "Monsters": {
       "normal": 5,
       "magic": 3,
@@ -20,7 +20,7 @@
     }
   },
 
-  "Feld_2": {
+  "Forest_2": {
     "Monsters": {
       "normal": 7,
       "magic": 4,
@@ -41,7 +41,7 @@
     }
   },
 
-  "Feld_3": {
+  "Forest_3": {
     "Monsters": {
       "normal": 9,
       "magic": 5,
@@ -62,7 +62,7 @@
     }
   },
 
-  "Feld_4": {
+  "Forest_4": {
     "Monsters": {
       "normal": 11,
       "magic": 6,
@@ -83,7 +83,7 @@
     }
   },
 
-  "Feld_5": {
+  "Forest_5": {
     "Monsters": {
       "normal": 13,
       "magic": 7,

@@ -1,9 +1,9 @@
 extends Node
 
 ## Enemy generator based on:
-## - data/monster.json                (monster base stats)
-## - data/dungeon_content.json        (per-dungeon counts and level ranges)
-## - data/monster_enchantments.json   (possible enchantments)
+## - data/monster.json              (monster base stats)
+## - data/dungeon_content.json      (per-dungeon enemy counts and level ranges)
+## - data/monster_enchantments.json (possible monster affixes)
 ##
 ## Expects the dungeon node to provide:
 ## - Properties: map_width_tiles, map_height_tiles
@@ -94,7 +94,7 @@ func generate_enemies_for_dungeon(dungeon: Node, _player_stats: Dictionary) -> A
 	if dungeon == null:
 		return enemies
 
-	# Key like "Feld_1" / "Cave_2" from Constants
+	# Key like "Forest_1" / "Cave_2" from Constants
 	var key: String = "%s_%d" % [Constants.current_level_type, Constants.current_level_number]
 	if not _dungeon_content.has(key):
 		printerr("EnemyGenerator: no dungeon_content entry for ", key)
@@ -206,8 +206,10 @@ func _build_enemy(
 	var dmg_max: int = int(stats.get("damage_max", dmg_min))
 	var def_min: int = int(stats.get("defense_min", 0))
 	var def_max: int = int(stats.get("defense_max", def_min))
+	var gold_min: int = int(monster_def.get("gold_min", 0))
+	var gold_max: int = int(monster_def.get("gold_max", gold_min))
 
-	# Roll all stats as ints
+	# Roll all Kampf-Stats als ints (Gold wird erst beim Tod mit Drop-Chance gewürfelt)
 	var hp: int = _rng.randi_range(hp_min, hp_max)
 	var damage: int = _rng.randi_range(dmg_min, dmg_max)
 	var defense: int = _rng.randi_range(def_min, def_max)
@@ -221,6 +223,8 @@ func _build_enemy(
 		"max_hp": hp,
 		"damage": damage,
 		"defense": defense,
+		"gold_min": gold_min,
+		"gold_max": gold_max,
 		"cell": cell,
 		"world_pos": world_pos,
 		"enchantments": _roll_enchantments(level, rarity, max_enchant_slots, allowed_enchant_ids)

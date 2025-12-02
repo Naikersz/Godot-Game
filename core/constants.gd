@@ -1,30 +1,30 @@
 extends Node
 
-## Konstanten für das Spiel
-## Entspricht game.aw/core/constants.py
+## Global game constants
+## Mirrors game.aw/core/constants.py
 
 const WIDTH = 1600
 const HEIGHT = 900
 
 const SAVE_SLOTS = ["save1", "save2", "save3"]
 
-## Aktueller Slot-Index (wird beim Laden/Erstellen gesetzt)
+## Currently selected save slot index (set when loading/creating a save)
 var current_slot_index: int = 0
 
-## Aktueller Level-Typ und Nummer (für Battle Scene)
-## Startwerte neutral, damit nicht überall automatisch "Feld 1" erscheint.
+## Current level type and number (used e.g. by the battle / dungeon scenes)
+## Start with neutral values so we don't always default to "Forest 1".
 var current_level_type: String = ""
 var current_level_number: int = 0
 
-## Gibt den Pfad zum Save-Ordner zurück
+## Returns the path to the save root folder
 func get_save_root() -> String:
 	return "user://save"
 
-## Gibt den Pfad zu einem spezifischen Save-Slot zurück
+## Returns the path to a specific save slot
 func get_save_path(slot: String) -> String:
 	return get_save_root().path_join(slot)
 
-## Gibt den Pfad zur player.json eines Slots zurück
+## Returns the path to the player.json of a slot
 func get_player_path(slot: String) -> String:
 	return get_save_path(slot).path_join("player.json")
 

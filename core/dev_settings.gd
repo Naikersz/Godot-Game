@@ -1,7 +1,7 @@
 extends Node
 
-## Dev-Settings Manager
-## Entspricht game.aw/core/dev_settings.py
+## Developer / debug settings manager
+## Mirrors game.aw/core/dev_settings.py
 
 var dev_mode: bool = false
 var enemy_count: int = 5
@@ -14,7 +14,7 @@ var enemy_epic_count: int = 0
 var enemy_legendary_count: int = 0
 var enemy_unique_boss_count: int = 0
 
-## Per-Level-Einstellungen für Gegner (z.B. "Feld 1")
+## Per-level settings for enemies (e.g. "Forest 1")
 var level_settings: Dictionary = {}
 
 func get_settings() -> Dictionary:
@@ -55,7 +55,7 @@ func _get_level_key(level_type: String, level_number: int) -> String:
 func get_level_settings(level_type: String, level_number: int) -> Dictionary:
 	var key := _get_level_key(level_type, level_number)
 	if not level_settings.has(key):
-		# Standardwerte aus globalen Dev-Settings ableiten
+		# Derive default values from the global dev settings
 		level_settings[key] = {
 			"normal": enemy_count,
 			"magic": enemy_magic_count,

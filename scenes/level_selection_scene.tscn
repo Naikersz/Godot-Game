@@ -40,12 +40,12 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 400
 
-[node name="FeldLabel" type="Label" parent="VBoxContainer/CategoriesContainer"]
+[node name="ForestLabel" type="Label" parent="VBoxContainer/CategoriesContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.784314, 1, 0.784314, 1)
 theme_override_font_sizes/font_size = 40
-text = "Feld"
+text = "Forest"
 horizontal_alignment = 1
 
 [node name="CaveLabel" type="Label" parent="VBoxContainer/CategoriesContainer"]
@@ -61,7 +61,7 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 400
 
-[node name="FeldButtonsContainer" type="VBoxContainer" parent="VBoxContainer/ButtonsContainer"]
+[node name="ForestButtonsContainer" type="VBoxContainer" parent="VBoxContainer/ButtonsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
