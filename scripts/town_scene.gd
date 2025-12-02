@@ -13,7 +13,7 @@ extends Control
 
 func _ready():
 	# Slot-Index aus Constants lesen
-	var slot_index = Constants.current_slot_index
+	var _slot_index = Constants.current_slot_index
 	# Button-Callbacks verbinden
 	inventory_button.pressed.connect(_on_inventory_pressed)
 	smith_button.pressed.connect(_on_smith_pressed)

@@ -1,8 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://b1slloqamugq4"]
+[gd_scene load_steps=5 format=3 uid="uid://b1slloqamugq4"]
 
 [ext_resource type="Script" uid="uid://c7s6egcw75pah" path="res://scripts/hud_scene.gd" id="1_hud"]
 [ext_resource type="Texture2D" uid="uid://dplplts6cutpl" path="res://art/images/Backpack.png" id="2_backpack"]
 [ext_resource type="PackedScene" uid="uid://c4jp0o5vwcc3t" path="res://scenes/hp_bar.tscn" id="3_msjax"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemyinfo"]
+bg_color = Color(0, 0, 0, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -70,6 +77,35 @@ offset_bottom = 16.0
 layout_mode = 0
 offset_right = 8.0
 offset_bottom = 8.0
+
+[node name="EnemyInfoPanel" type="Panel" parent="Control/GameHUD/TopLeftContainer"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 0.0
+offset_right = 520.0
+offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_enemyinfo")
+
+[node name="EnemyInfoLabel" type="RichTextLabel" parent="Control/GameHUD/TopLeftContainer/EnemyInfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+text = ""
+horizontal_alignment = 0
+vertical_alignment = 0
+autowrap_mode = 2
+bbcode_enabled = true
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/selection_color = Color(0.3, 0.5, 0.9, 0.8)
+scroll_active = false
+scroll_v = 0.0
+scroll_v_enabled = false
+
 
 [node name="BottomLeftContainer" type="Control" parent="Control/GameHUD"]
 layout_mode = 1

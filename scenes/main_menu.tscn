@@ -11,7 +11,7 @@
 [sub_resource type="GDScript" id="GDScript_rhts7"]
 resource_name = "menuUI"
 script/source = "extends Control
-@onready var title_label: Label = $BoxContainer/LabelMenu/Label
+@onready var title_label: Label = $LabelMenu/Label
 @onready var new_game_button   : Button = $BoxContainer/MenuContainer/StartButton
 @onready var load_game_button: Button = $BoxContainer/MenuContainer/LoadGameButton
 @onready var options_button : Button = $BoxContainer/MenuContainer/OptionsButton
