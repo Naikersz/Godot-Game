@@ -45,23 +45,45 @@ func _on_load_game_pressed():
 ## Callback: Neues Spiel starten
 func _on_new_game_pressed():
 	# Erstelle neuen Spielstand in Slot 1
-	var slot_path = Constants.get_save_path(Constants.SAVE_SLOTS[0])
-	DirAccess.make_dir_recursive_absolute(slot_path)
+	var slot = Constants.SAVE_SLOTS[0]
+	var slot_path = Constants.get_save_path(slot)
+	
+	# Создаем папку для сохранения
+	var dir = DirAccess.open("user://")
+	if dir:
+		dir.make_dir_recursive("save/" + slot)
+	else:
+		print("❌ Ошибка: не удалось открыть user:// директорию")
+		return
 	
 	var player_data = {
 		"name": "Neuer Held",
 		"class_id": "warrior",
 		"class_name": "Krieger",
 		"level": 1,
-		"experience": 0
+		"experience": 0,
+		"equipped": {}
 	}
 	
-	var player_path = Constants.get_player_path(Constants.SAVE_SLOTS[0])
+	var player_path = Constants.get_player_path(slot)
 	var file = FileAccess.open(player_path, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(player_data, "\t"))
 		file.close()
 		print("🆕 Neues Spiel gestartet in Slot 1!")
+		print("📁 Сохранено в: ", OS.get_user_data_dir().path_join("save").path_join(slot))
+	else:
+		print("❌ Ошибка: не удалось создать файл player.json")
+		print("   Путь: ", player_path)
+		return
+	
+	# Создаем пустой inventory файл
+	var inventory_path = slot_path.path_join("global_inventory.json")
+	var inv_file = FileAccess.open(inventory_path, FileAccess.WRITE)
+	if inv_file:
+		inv_file.store_string(JSON.stringify([], "\t"))
+		inv_file.close()
+		print("📦 Создан пустой инвентарь")
 	
 	# Slot-Index setzen
 	Constants.current_slot_index = 0

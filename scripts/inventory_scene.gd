@@ -145,7 +145,18 @@ func load_data():
 		else:
 			inventory_items = []
 	else:
+		# Файл инвентаря не существует - создаём его
 		inventory_items = []
+		var dir = DirAccess.open("user://")
+		if dir:
+			dir.make_dir_recursive("save/" + slot)
+		var inv_file = FileAccess.open(inventory_path, FileAccess.WRITE)
+		if inv_file:
+			inv_file.store_string(JSON.stringify([], "\t"))
+			inv_file.close()
+			print("📦 Создан файл инвентаря: ", inventory_path)
+		else:
+			print("⚠️ Не удалось создать файл инвентаря: ", inventory_path)
 
 func create_equipment_grid():
 	# Grid auf 3x3 setzen
@@ -482,6 +493,14 @@ func persist_changes():
 	var player_path = Constants.get_player_path(slot)
 	var inventory_path = save_path.path_join("global_inventory.json")
 	
+	# Убеждаемся, что папка существует
+	var dir = DirAccess.open("user://")
+	if dir:
+		dir.make_dir_recursive("save/" + slot)
+	else:
+		print("❌ Ошибка: не удалось открыть user:// директорию для сохранения")
+		return
+	
 	# Player speichern
 	if not player_data.is_empty():
 		player_data["equipped"] = equipped_items
@@ -489,12 +508,20 @@ func persist_changes():
 		if player_file:
 			player_file.store_string(JSON.stringify(player_data, "\t"))
 			player_file.close()
+			print("💾 Игрок сохранен: ", player_path)
+		else:
+			print("❌ Ошибка: не удалось сохранить player.json")
+	else:
+		print("⚠️ Предупреждение: player_data пуст, сохранение пропущено")
 	
 	# Inventar speichern
 	var inv_file = FileAccess.open(inventory_path, FileAccess.WRITE)
 	if inv_file:
 		inv_file.store_string(JSON.stringify(inventory_items, "\t"))
 		inv_file.close()
+		print("💾 Инвентарь сохранен: ", inventory_path)
+	else:
+		print("❌ Ошибка: не удалось сохранить global_inventory.json")
 
 func resolve_slot(item_type: String) -> String:
 	if item_type.is_empty():
