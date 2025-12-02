@@ -1,7 +1,6 @@
 extends RefCounted
 
-## Loot Generator
-## Entspricht game.aw/core/loot_generator.py
+## Loot generator
 
 const DROP_CHANCE = 0.5
 const ENCHANT_ROLL_CHANCE = 0.05
@@ -37,12 +36,12 @@ func _load_json_file(filename: String) -> Array:
 	var path = data_path.path_join(filename)
 	
 	if not FileAccess.file_exists(path):
-		print("[LootGenerator] Datei fehlt: %s" % path)
+		print("[LootGenerator] Missing file: %s" % path)
 		return []
 	
 	var file = FileAccess.open(path, FileAccess.READ)
 	if not file:
-		print("[LootGenerator] Konnte Datei nicht öffnen: %s" % path)
+		print("[LootGenerator] Could not open file: %s" % path)
 		return []
 	
 	var json_string = file.get_as_text()
@@ -52,13 +51,14 @@ func _load_json_file(filename: String) -> Array:
 	var parse_result = json_obj.parse(json_string)
 	
 	if parse_result != OK:
-		print("[LootGenerator] Ungültiges JSON: %s" % path)
+		print("[LootGenerator] Invalid JSON: %s" % path)
 		return []
 	
 	return json_obj.data
 
 func generate_loot(monster_level: int) -> Dictionary:
-	## Generiert ein Item, das zu einem Gegnerlevel passt. Kann leer zurückgeben, wenn kein Drop gerollt wurde.
+	## Generates an item appropriate for a monster level.
+	## May return an empty dictionary when no drop was rolled.
 	if randf() > DROP_CHANCE:
 		return {}
 	
@@ -109,14 +109,14 @@ func _build_item(template: Dictionary) -> Dictionary:
 	return item
 
 func _roll_range_block(block: Dictionary) -> Dictionary:
-	## Erwartet Keys im Format xyz_min/xyz_max und erzeugt fertige Werte.
+	## Expects keys in the format xyz_min/xyz_max and rolls final values for them.
 	var rolled: Dictionary = {}
 	
 	for key in block.keys():
 		if not key.ends_with("_min"):
 			continue
 		
-		var base_key = key.substr(0, key.length() - 4)  # Entfernt "_min"
+		var base_key = key.substr(0, key.length() - 4)  # strip "_min"
 		var min_val = block[key]
 		var max_key = base_key + "_max"
 		var max_val = block.get(max_key, min_val)

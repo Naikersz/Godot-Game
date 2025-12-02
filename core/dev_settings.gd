@@ -1,7 +1,7 @@
 extends Node
 
-## Dev-Settings Manager
-## Entspricht game.aw/core/dev_settings.py
+## Developer / debug settings manager
+## Mirrors game.aw/core/dev_settings.py
 
 var dev_mode: bool = false
 var enemy_count: int = 5
@@ -11,6 +11,11 @@ var monster_level_min: int = 1
 var monster_level_max: int = 10
 var enemy_magic_count: int = 0
 var enemy_epic_count: int = 0
+var enemy_legendary_count: int = 0
+var enemy_unique_boss_count: int = 0
+
+## Per-level settings for enemies (e.g. "Forest 1")
+var level_settings: Dictionary = {}
 
 func get_settings() -> Dictionary:
 	return {
@@ -42,6 +47,30 @@ func set_settings(settings: Dictionary):
 	if settings.has("monster_level_max"):
 		monster_level_max = settings["monster_level_max"]
 
+
+func _get_level_key(level_type: String, level_number: int) -> String:
+	return "%s_%d" % [level_type, level_number]
+
+
+func get_level_settings(level_type: String, level_number: int) -> Dictionary:
+	var key := _get_level_key(level_type, level_number)
+	if not level_settings.has(key):
+		# Derive default values from the global dev settings
+		level_settings[key] = {
+			"normal": enemy_count,
+			"magic": enemy_magic_count,
+			"epic": enemy_epic_count,
+			"legendary": enemy_legendary_count,
+			"unique": enemy_unique_boss_count,
+			"monster_level_min": monster_level_min,
+			"monster_level_max": monster_level_max,
+		}
+	return level_settings[key]
+
+
+func set_level_settings(level_type: String, level_number: int, settings: Dictionary) -> void:
+	var key := _get_level_key(level_type, level_number)
+	level_settings[key] = settings
+
 func set_dev_mode(enabled: bool):
 	dev_mode = enabled
-

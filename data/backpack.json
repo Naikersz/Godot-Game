@@ -1,0 +1,28 @@
+[
+  {
+    "id": "magic_backpack",
+    "name": "Magic Backpack",
+    "rarity": "magic",
+    "slot_count": 6
+  },
+  {
+    "id": "epic_backpack",
+    "name": "Epic Backpack",
+    "rarity": "epic",
+    "slot_count": 12
+  },
+  {
+    "id": "legendary_backpack",
+    "name": "Legendary Backpack",
+    "rarity": "legendary",
+    "slot_count": 18
+  },
+  {
+    "id": "unique_backpack",
+    "name": "Unique Backpack",
+    "rarity": "unique",
+    "slot_count": 24
+  }
+]
+
+

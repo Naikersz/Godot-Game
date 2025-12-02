@@ -5,10 +5,10 @@ extends Control
 
 @onready var title_label: Label = $VBoxContainer/TitleLabel
 @onready var categories_container: HBoxContainer = $VBoxContainer/CategoriesContainer
-@onready var feld_label: Label = $VBoxContainer/CategoriesContainer/FeldLabel
+@onready var forest_label: Label = $VBoxContainer/CategoriesContainer/ForestLabel
 @onready var cave_label: Label = $VBoxContainer/CategoriesContainer/CaveLabel
 @onready var buttons_container: HBoxContainer = $VBoxContainer/ButtonsContainer
-@onready var feld_buttons_container: VBoxContainer = $VBoxContainer/ButtonsContainer/FeldButtonsContainer
+@onready var forest_buttons_container: VBoxContainer = $VBoxContainer/ButtonsContainer/ForestButtonsContainer
 @onready var cave_buttons_container: VBoxContainer = $VBoxContainer/ButtonsContainer/CaveButtonsContainer
 @onready var back_button: Button = $VBoxContainer/BackButton
 
@@ -23,15 +23,15 @@ func _ready():
 		print("⚠️ BackButton nicht gefunden in Level Selection!")
 
 func create_buttons():
-	# Feld-Buttons (links)
+	# Forest buttons (left side)
 	for i in range(1, 6):
 		var btn = Button.new()
-		btn.text = "Feld %d" % i
+		btn.text = "Forest %d" % i
 		btn.custom_minimum_size = Vector2(200, 50)
-		btn.pressed.connect(_on_feld_button_pressed.bind(i))
-		feld_buttons_container.add_child(btn)
+		btn.pressed.connect(_on_forest_button_pressed.bind(i))
+		forest_buttons_container.add_child(btn)
 	
-	# Cave-Buttons (rechts)
+	# Cave buttons (right side)
 	for i in range(1, 6):
 		var btn = Button.new()
 		btn.text = "Cave %d" % i
@@ -39,8 +39,8 @@ func create_buttons():
 		btn.pressed.connect(_on_cave_button_pressed.bind(i))
 		cave_buttons_container.add_child(btn)
 
-func _on_feld_button_pressed(level_number: int):
-	start_battle("Feld", level_number)
+func _on_forest_button_pressed(level_number: int):
+	start_battle("Forest", level_number)
 
 func _on_cave_button_pressed(level_number: int):
 	start_battle("Cave", level_number)

@@ -72,6 +72,15 @@
     "item_level_max": 100
   },
   {
+    "id": "gold_find",
+    "name": "Goldfundmenge %",
+    "type": "gold_find",
+    "value_min": 5,
+    "value_max": 20,
+    "item_level_min": 1,
+    "item_level_max": 100
+  },
+  {
     "id": "magic_defence",
     "name": "Magic Defense +",
     "type": "magic_defence",

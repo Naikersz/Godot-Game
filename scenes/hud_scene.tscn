@@ -1,26 +1,15 @@
-[gd_scene load_steps=11 format=3 uid="uid://b1slloqamugq4"]
+[gd_scene load_steps=5 format=3 uid="uid://b1slloqamugq4"]
 
 [ext_resource type="Script" uid="uid://c7s6egcw75pah" path="res://scripts/hud_scene.gd" id="1_hud"]
 [ext_resource type="Texture2D" uid="uid://dplplts6cutpl" path="res://art/images/Backpack.png" id="2_backpack"]
 [ext_resource type="PackedScene" uid="uid://c4jp0o5vwcc3t" path="res://scenes/hp_bar.tscn" id="3_msjax"]
-[ext_resource type="Script" uid="uid://b01yeedtp1jsp" path="res://scripts/equipment_slots.gd" id="4_sgg88"]
-[ext_resource type="Texture2D" uid="uid://d1qesgyojyvyt" path="res://art/images/UI.png" id="4_tida0"]
-[ext_resource type="LabelSettings" uid="uid://bd8jgn62ikmod" path="res://art/ui/label_settings.tres" id="5_qr8y6"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_qr8y6"]
-atlas = ExtResource("4_tida0")
-region = Rect2(40, 41.81, 432.337, 440)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_sgg88"]
-texture = SubResource("AtlasTexture_qr8y6")
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tida0"]
-atlas = ExtResource("4_tida0")
-region = Rect2(516.79675, 645.7563, 55.44409, 52.5589)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_sgg88"]
-atlas = ExtResource("4_tida0")
-region = Rect2(64.95269, 497.9105, 62.179733, 60.304718)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemyinfo"]
+bg_color = Color(0, 0, 0, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -89,6 +78,35 @@ layout_mode = 0
 offset_right = 8.0
 offset_bottom = 8.0
 
+[node name="EnemyInfoPanel" type="Panel" parent="Control/GameHUD/TopLeftContainer"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 0.0
+offset_right = 520.0
+offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_enemyinfo")
+
+[node name="EnemyInfoLabel" type="RichTextLabel" parent="Control/GameHUD/TopLeftContainer/EnemyInfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+text = ""
+horizontal_alignment = 0
+vertical_alignment = 0
+autowrap_mode = 2
+bbcode_enabled = true
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/selection_color = Color(0.3, 0.5, 0.9, 0.8)
+scroll_active = false
+scroll_v = 0.0
+scroll_v_enabled = false
+
+
 [node name="BottomLeftContainer" type="Control" parent="Control/GameHUD"]
 layout_mode = 1
 anchors_preset = 2
@@ -124,475 +142,34 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="Modals" type="Control" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="EquipmentSlots" type="Control" parent="Control/Modals"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("4_sgg88")
+[node name="InventoryModal" type="Control" parent="Control/Modals"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="DimBackground" type="ColorRect" parent="Control/Modals/EquipmentSlots"]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.4)
-
-[node name="WindowPanel" type="Panel" parent="Control/Modals/EquipmentSlots"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -637.0
-offset_top = -595.0
-offset_right = -207.0
-offset_bottom = -155.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxTexture_sgg88")
-
-[node name="WindowVBox" type="VBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel"]
-layout_mode = 1
-anchors_preset = -1
-offset_right = 430.0
-offset_bottom = 440.0
-theme_override_constants/separation = 8
-
-[node name="EquipmentGrid" type="BoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel"]
+[node name="TextureRect" type="TextureRect" parent="Control/Modals/InventoryModal"]
 layout_mode = 0
-offset_left = 96.0
-offset_top = 28.0
-offset_right = 336.0
-offset_bottom = 268.0
-size_flags_horizontal = 0
-size_flags_vertical = 0
-theme_override_constants/separation = 5
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid"]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-theme_override_constants/separation = 16
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="Helmet" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer/Helmet"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Armor" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect3" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer/Armor"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Pants" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect4" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer/Pants"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Boots" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect5" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer/Boots"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 144
-
-[node name="Gloves" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer2"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect9" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer2/Gloves"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Weapon" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer2"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect9" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer2/Weapon"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="VBoxContainer3" type="VBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 144
-
-[node name="Backpack" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer3"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect10" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer3/Backpack"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Off-Hand" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer3"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect9" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer3/Off-Hand"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="VBoxContainer4" type="VBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="Mantal" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4/Mantal"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Amulet" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect3" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4/Amulet"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Ring1" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect4" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4/Ring1"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="Ring2" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect5" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/EquipmentGrid/HBoxContainer/VBoxContainer4/Ring2"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_tida0")
-
-[node name="InventoryGrid" type="GridContainer" parent="Control/Modals/EquipmentSlots/WindowPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="Control/Modals/InventoryModal"]
 layout_mode = 0
-offset_left = 35.0
-offset_top = 293.0
-offset_right = 403.0
-offset_bottom = 405.0
-size_flags_horizontal = 8
-size_flags_vertical = 0
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
-columns = 6
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="Panel" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
+[node name="Panel" type="Panel" parent="Control/Modals/InventoryModal/MarginContainer"]
 layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel2" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel2"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel3" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel3"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel4" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel4"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel5" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel5"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel6" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel6"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel7" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel7"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel8" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel8"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel9" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel9"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel10" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel10"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel11" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel11"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="Panel12" type="Panel" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Modals/EquipmentSlots/WindowPanel/InventoryGrid/Panel12"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("AtlasTexture_sgg88")
-
-[node name="TitleBar" type="HBoxContainer" parent="Control/Modals/EquipmentSlots/WindowPanel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -155.5
-offset_top = -50.0
-offset_right = 155.5
-offset_bottom = 15.0
-grow_horizontal = 2
-
-[node name="TitleLabel" type="Label" parent="Control/Modals/EquipmentSlots/WindowPanel/TitleBar"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 0
-theme_override_font_sizes/font_size = 32
-text = "Character"
-label_settings = ExtResource("5_qr8y6")
-
-[node name="TooltipPanel" type="Panel" parent="Control/Modals/EquipmentSlots"]
-visible = false
-custom_minimum_size = Vector2(260, 0)
-layout_mode = 0
-
-[node name="TooltipLabel" type="RichTextLabel" parent="Control/Modals/EquipmentSlots/TooltipPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = -6.0
-offset_bottom = -6.0
-grow_horizontal = 2
-grow_vertical = 2
-bbcode_enabled = true
-text = "Tooltip"
-autowrap_mode = 2
-
-[node name="CompareTooltipPanel" type="Panel" parent="Control/Modals/EquipmentSlots"]
-visible = false
-custom_minimum_size = Vector2(260, 0)
-layout_mode = 0
-
-[node name="CompareTooltipLabel" type="RichTextLabel" parent="Control/Modals/EquipmentSlots/CompareTooltipPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = -6.0
-offset_bottom = -6.0
-grow_horizontal = 2
-grow_vertical = 2
-bbcode_enabled = true
-text = "Compare"
-autowrap_mode = 2
 
 [node name="MapModal" type="Control" parent="Control/Modals"]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CharacterModal" type="Control" parent="Control/Modals"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0

@@ -17,6 +17,8 @@
       "evasion_max": 4
     },
     "loot_quality": "common",
+    "gold_min": 3,
+    "gold_max": 8,
     "enchant_slots": 6,
     "enchantments": []
   },
@@ -39,6 +41,8 @@
       "evasion_max": 10
     },
     "loot_quality": "common",
+    "gold_min": 5,
+    "gold_max": 15,
     "enchant_slots": 6,
     "enchantments": []
   },
@@ -61,6 +65,8 @@
       "evasion_max": 10
     },
     "loot_quality": "uncommon",
+    "gold_min": 15,
+    "gold_max": 35,
     "enchant_slots": 6,
     "enchantments": []
   },
@@ -83,6 +89,8 @@
       "evasion_max": 4
     },
     "loot_quality": "rare",
+    "gold_min": 30,
+    "gold_max": 70,
     "enchant_slots": 6,
     "enchantments": []
   },
@@ -105,6 +113,8 @@
       "evasion_max": 20
     },
     "loot_quality": "legendary",
+    "gold_min": 100,
+    "gold_max": 250,
     "enchant_slots": 6,
     "enchantments": []
   }
