@@ -6,11 +6,12 @@ extends CanvasLayer
 @onready var inventory_button: Button = $Control/GameHUD/LeftContainer/HBoxContainer/InventoryButton
 @onready var enemy_info_panel: Panel = $Control/GameHUD/TopLeftContainer/EnemyInfoPanel
 @onready var enemy_info_label: RichTextLabel = $Control/GameHUD/TopLeftContainer/EnemyInfoPanel/EnemyInfoLabel
+@onready var equipment_slots: Control = $Control/Modals/EquipmentSlots
 
 var _last_enemy_info_time: float = -1.0
 
 func _ready() -> void:
-	# Inventar-Button
+	# Подключаем сигнал нажатия на кнопку сумки
 	if inventory_button:
 		inventory_button.pressed.connect(_on_inventory_button_pressed)
 	
@@ -25,8 +26,9 @@ func _ready() -> void:
 	set_process(true)
 
 func _input(event: InputEvent) -> void:
-	# Hotkey I für Inventar
-	if event.is_action_pressed("ui_inventory"):
+	# Горячая клавиша I для открытия/закрытия инвентаря
+	# Используем глобальный Input, чтобы не вызывать метод у каждого события.
+	if Input.is_action_just_pressed("ui_inventory"):
 		_open_inventory()
 		var viewport := get_viewport()
 		if viewport:
@@ -36,13 +38,15 @@ func _on_inventory_button_pressed() -> void:
 	_open_inventory()
 
 func _open_inventory() -> void:
-	var inventory_scene := preload("res://scenes/inventory_scene.tscn")
-	if inventory_scene:
-		get_tree().change_scene_to_packed(inventory_scene)
-	else:
-		print("⚠️ Inventory-Szene nicht gefunden!")
+	"""Открывает/закрывает окно EquipmentSlots в HUD"""
+	if equipment_slots:
+		if equipment_slots.has_method("toggle_visible"):
+			equipment_slots.toggle_visible()
+		else:
+			equipment_slots.visible = not equipment_slots.visible
 
 func set_inventory_button_visible(visible_flag: bool) -> void:
+	"""Показывает/скрывает кнопку сумки"""
 	if inventory_button:
 		inventory_button.visible = visible_flag
 
@@ -67,7 +71,6 @@ func _process(_delta: float) -> void:
 	if now - _last_enemy_info_time > 0.5:
 		enemy_info_panel.visible = false
 		enemy_info_label.text = ""
-
 
 func _resize_enemy_info_panel() -> void:
 	if not enemy_info_panel or not enemy_info_label:
