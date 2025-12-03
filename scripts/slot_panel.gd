@@ -76,6 +76,17 @@ func _drop_data(_position: Vector2, data: Variant) -> void:
 	manager.slot_drop_data(self, data)
 
 
+func _gui_input(event: InputEvent) -> void:
+	if manager == null:
+		return
+	if not manager.has_method("slot_click_from_world"):
+		return
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT and not mb.pressed:
+			manager.slot_click_from_world(self)
+
+
 func _notification(what: int) -> void:
 	# Снятие подсветки, если перетаскивание было отменено (бросили не на слот)
 	if what == Control.NOTIFICATION_DRAG_END and manager and manager.has_method("_clear_highlight"):

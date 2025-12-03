@@ -84,10 +84,10 @@ func _open_options() -> void:
 		else:
 			options_modal.visible = not options_modal.visible
 
-func set_inventory_button_visible(visible: bool) -> void:
+func set_inventory_button_visible(visible_flag: bool) -> void:
 	"""Показывает/скрывает кнопку сумки"""
 	if inventory_button:
-		inventory_button.visible = visible
+		inventory_button.visible = visible_flag
 
 func set_enemy_info(text: String) -> void:
 	"""Устанавливает текст информации о враге"""

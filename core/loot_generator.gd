@@ -72,7 +72,24 @@ func generate_loot(monster_level: int) -> Dictionary:
 		rolled_item.get("enchant_slots", 0),
 		candidate.get("possible_enchantments", [])
 	)
-	
+
+	# Rarity anhand der Anzahl der gewürfelten Enchantments bestimmen
+	var rarity: String = "normal"
+	var enchant_count: int = 0
+	if rolled_item.has("enchantments") and rolled_item["enchantments"] is Array:
+		enchant_count = (rolled_item["enchantments"] as Array).size()
+
+	if enchant_count == 0:
+		rarity = "normal"
+	elif enchant_count <= 2:
+		rarity = "magic"
+	elif enchant_count <= 4:
+		rarity = "epic"
+	else:
+		rarity = "legendary"
+
+	rolled_item["rarity"] = rarity
+
 	return rolled_item
 
 func _pick_item_for_level(monster_level: int) -> Dictionary:
@@ -121,12 +138,12 @@ func _roll_range_block(block: Dictionary) -> Dictionary:
 		var max_key = base_key + "_max"
 		var max_val = block.get(max_key, min_val)
 		
-		var rolled_value
-		if typeof(min_val) == TYPE_FLOAT or typeof(max_val) == TYPE_FLOAT:
-			rolled_value = randf_range(float(min_val), float(max_val))
-		else:
-			rolled_value = randi_range(int(min_val), int(max_val))
-		
+		# Immer Integer würfeln – auch wenn die JSON floats enthält
+		var min_i := int(round(float(min_val)))
+		var max_i := int(round(float(max_val)))
+		if max_i < min_i:
+			max_i = min_i
+		var rolled_value := randi_range(min_i, max_i)
 		rolled[base_key] = rolled_value
 	
 	return rolled
@@ -189,5 +206,5 @@ func _roll_enchantments(item_level: int, max_slots: int, allowed_ids: Array) -> 
 static func _max_tier_for_level(level: int) -> int:
 	if level <= 0:
 		return 1
-	return 1 + ((level - 1) / 20) as int
-
+	# Vermeide Integer-Divisions-Warnung, arbeite explizit mit float
+	return 1 + int((float(level) - 1.0) / 20.0)

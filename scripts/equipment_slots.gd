@@ -4,7 +4,7 @@ extends Control
 ## Логика основана на `inventory_scene.gd`, но адаптирована
 ## под структуру сцены HUD и drag & drop.
 
-const SLOT_MAP := {
+const SLOT_MAP: Dictionary = {
 	"weapon": "weapon",
 	"helmet": "helmet",
 	"chest": "armor",
@@ -270,9 +270,9 @@ func _highlight_for_item(item: Dictionary) -> void:
 	# При перетаскивании:
 	# - один подходящий слот делаем светлым,
 	# - остальные 11 сильно темним.
-	for name in equipment_slots.keys():
-		var panel: Panel = equipment_slots[name]
-		if name == slot_name:
+	for slot_name_iter in equipment_slots.keys():
+		var panel: Panel = equipment_slots[slot_name_iter]
+		if slot_name_iter == slot_name:
 			# Жёлтоватый оттенок, чтобы было видно, куда подходит предмет
 			panel.modulate = Color(1.0, 0.95, 0.7, 1.0)
 		else:
@@ -410,7 +410,7 @@ func _format_item_tooltip(item: Dictionary) -> String:
 	if item.is_empty():
 		return ""
 
-	var name: String = item.get("name", item.get("id", "Unknown"))
+	var item_name: String = item.get("name", item.get("id", "Unknown"))
 	var item_level: int = int(item.get("item_level", 0))
 	var min_level: int = int(item.get("min_player_level", 0))
 
@@ -420,7 +420,7 @@ func _format_item_tooltip(item: Dictionary) -> String:
 	var rarity: String = String(item.get("rarity", "normal"))
 	var rarity_color: Color = _get_color_for_rarity(rarity)
 
-	var sb := "[b][color=%s]%s[/color][/b]\n" % [rarity_color.to_html(false), name]
+	var sb := "[b][color=%s]%s[/color][/b]\n" % [rarity_color.to_html(false), item_name]
 	sb += "Item Level: %d\n" % item_level
 	if min_level > 0:
 		sb += "Requires Level: %d\n" % min_level
@@ -485,7 +485,7 @@ func _format_compare_tooltip(new_item: Dictionary, old_item: Dictionary, slot_na
 	var new_stats: Dictionary = new_item.get("stats", {})
 	var old_stats: Dictionary = old_item.get("stats", {})
 
-	var name_new: String = new_item.get("name", new_item.get("id", "New"))
+	var _name_new: String = new_item.get("name", new_item.get("id", "New"))
 	var name_old: String = old_item.get("name", old_item.get("id", "Current"))
 
 	var sb := "[b]Equipped %s:[/b]\n%s\n\n" % [slot_name.capitalize(), name_old]
@@ -609,6 +609,47 @@ func slot_drop_data(slot_node: Node, data: Variant) -> void:
 		_drop_to_inventory(int(target_id), source_kind, source_id, item)
 
 	_clear_highlight()
+	_save_data()
+	_update_all_slots()
+
+
+func slot_click_from_world(slot_node: Node) -> void:
+	# Wird von slot_panel.gd bei Mausklick auf Inventar-/Equipment-Slot aufgerufen.
+	# Hier behandeln wir "Drag" von Welt-Loot (DroppedLoot.DRAG_ITEM).
+	if not DroppedLoot.DRAG_ITEM or DroppedLoot.DRAG_ITEM.is_empty():
+		return
+
+	if not (slot_node is Panel):
+		return
+
+	var kind: String = slot_node.slot_kind
+	var id: String = slot_node.slot_id
+
+	# Vorerst nur ins Inventar legen
+	if kind != "inventory":
+		return
+
+	var index := int(id)
+	if index < 0 or index >= inventory_items.size():
+		return
+
+	# Wenn Slot schon belegt ist, abbrechen (kein Überschreiben von Items)
+	if index < inventory_items.size():
+		var existing = inventory_items[index]
+		if existing is Dictionary and not (existing as Dictionary).is_empty():
+			return
+
+	# Item aus Welt übernehmen
+	inventory_items[index] = DroppedLoot.DRAG_ITEM
+
+	# Quelle in Welt entfernen
+	if DroppedLoot.DRAG_SOURCE:
+		DroppedLoot.DRAG_SOURCE.queue_free()
+
+	# Drag-Status zurücksetzen
+	DroppedLoot.DRAG_ITEM = {}
+	DroppedLoot.DRAG_SOURCE = null
+
 	_save_data()
 	_update_all_slots()
 

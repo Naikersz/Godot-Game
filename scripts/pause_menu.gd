@@ -99,4 +99,3 @@ func _unhandled_input(event: InputEvent) -> void:
 		toggle_visible()
 		if get_viewport():
 			get_viewport().set_input_as_handled()
-

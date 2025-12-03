@@ -2,7 +2,7 @@ extends Control
 
 ## Inventory Scene - Neu aufgebaut mit Slots und Tooltips
 
-const SLOT_MAP = {
+var SLOT_MAP: Dictionary = {
 	"weapon": "weapon",
 	"helmet": "helmet",
 	"chest": "chest",
@@ -15,7 +15,7 @@ const SLOT_MAP = {
 }
 
 # Slot-Positionen im Grid (x, y)
-const EQUIPMENT_SLOTS = {
+var EQUIPMENT_SLOTS: Dictionary = {
 	"helmet": Vector2(1, 0),      # Oben Mitte
 	"chest": Vector2(1, 1),       # Mitte
 	"pants": Vector2(1, 2),       # Unten Mitte
@@ -25,11 +25,11 @@ const EQUIPMENT_SLOTS = {
 	"shield": Vector2(2, 0),      # Oben Rechts (oder zweite Hand)
 }
 
-const SLOT_SIZE = 80
-const INVENTORY_GRID_COLS = 8
-const INVENTORY_GRID_ROWS = 6
+var SLOT_SIZE: int = 80
+var INVENTORY_GRID_COLS: int = 8
+var INVENTORY_GRID_ROWS: int = 6
 
-const SLOT_NAMES_DE = {
+var SLOT_NAMES_DE: Dictionary = {
 	"helmet": "Helm",
 	"chest": "Brust",
 	"pants": "Hose",
@@ -38,6 +38,8 @@ const SLOT_NAMES_DE = {
 	"weapon": "Waffe",
 	"shield": "Schild"
 }
+
+var ItemTooltip: GDScript
 
 @onready var title_label: Label = $VBoxContainer/TitleLabel
 @onready var subtitle_label: Label = $VBoxContainer/SubtitleLabel
@@ -73,6 +75,7 @@ var hovered_slot: String = ""      # Aktuell gehoverter Slot
 var total_stats: Dictionary = {}   # Vollständig berechnete Basis-Stats
 
 func _ready():
+	ItemTooltip = preload("res://scripts/item_tooltip.gd")
 	slot_index = Constants.current_slot_index
 	load_data()
 	create_equipment_grid()
@@ -257,11 +260,16 @@ func update_equipped_display():
 			# Item ist angelegt
 			var item_name = item.get("name", item.get("id", "Item"))
 			slot_button.text = item_name.substr(0, 1).to_upper()  # Erster Buchstabe als Symbol
-			slot_button.modulate = Color.WHITE if slot_name != selected_equipped_slot else Color(0.5, 0.7, 1.0)
+			var rarity_equipped: String = String(item.get("rarity", "normal"))
+			var rarity_color_equipped: Color = _get_color_for_rarity(rarity_equipped)
+			slot_button.add_theme_color_override("font_color", rarity_color_equipped)
+			# Auswahl weiterhin über Modulate hervorheben
+			slot_button.modulate = Color(1, 1, 1) if slot_name != selected_equipped_slot else Color(0.5, 0.7, 1.0)
 		else:
 			# Slot ist leer - zeige Slot-Namen
 			var slot_display_name = SLOT_NAMES_DE.get(slot_name, slot_name.capitalize())
 			slot_button.text = slot_display_name.substr(0, 1)  # Erster Buchstabe des Slot-Namens
+			slot_button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 			slot_button.modulate = Color(0.5, 0.5, 0.5, 0.7) if slot_name != selected_equipped_slot else Color(0.5, 0.7, 1.0)
 
 func update_inventory_display():
@@ -284,7 +292,10 @@ func update_inventory_display():
 			slot_button.text = item_name.substr(0, 1).to_upper()  # Erster Buchstabe als Symbol
 			slot_button.disabled = false
 			slot_button.flat = false
-			slot_button.modulate = Color.WHITE if i != selected_inventory_index else Color(0.5, 1.0, 0.7)
+			var rarity_inventory: String = String(item.get("rarity", "normal"))
+			var rarity_color_inventory: Color = _get_color_for_rarity(rarity_inventory)
+			slot_button.add_theme_color_override("font_color", rarity_color_inventory)
+			slot_button.modulate = Color(1, 1, 1) if i != selected_inventory_index else Color(0.5, 1.0, 0.7)
 			
 			slot_button.pressed.connect(_on_inventory_item_selected.bind(i))
 			slot_button.mouse_entered.connect(_on_item_hover_entered.bind(item))
@@ -292,6 +303,7 @@ func update_inventory_display():
 		else:
 			# Leerer Slot
 			slot_button.disabled = true
+			slot_button.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4))
 			slot_button.modulate = Color(0.2, 0.2, 0.2, 0.5)
 		
 		inventory_grid.add_child(slot_button)
@@ -351,67 +363,7 @@ func _hide_tooltip():
 	tooltip_panel.visible = false
 
 func _format_item_tooltip(item: Dictionary) -> String:
-	if item.is_empty():
-		return ""
-	
-	var base_text = "[b]%s[/b]\n" % item.get("name", item.get("id", "Unbekannt"))
-	base_text += "Level: %s\n" % str(item.get("item_level", "?"))
-	base_text += "Typ: %s\n" % item.get("item_type", "?")
-
-	# Stats des Hover-Items
-	var stats: Dictionary = item.get("stats", {})
-	if not stats.is_empty():
-		base_text += "\n[b]Stats:[/b]\n"
-		for stat_name in stats.keys():
-			var value = stats[stat_name]
-			if value != 0:
-				base_text += "%s: %s\n" % [stat_name.capitalize(), str(value)]
-
-	# Vergleich mit ausgerüstetem Item (falls vorhanden und Slot eindeutig bestimmbar)
-	var slot_name := ""
-	if item.has("item_type"):
-		var item_type: String = String(item.get("item_type", ""))
-		slot_name = SLOT_MAP.get(item_type, "")
-
-	if slot_name != "" and equipped_items.has(slot_name):
-		var equipped_item = equipped_items.get(slot_name)
-		if equipped_item is Dictionary and not (equipped_item as Dictionary).is_empty():
-			var eq_stats: Dictionary = (equipped_item as Dictionary).get("stats", {})
-			if not eq_stats.is_empty():
-				base_text += "\n[b]Vergleich mit ausgerüstetem %s:[/b]\n" % SLOT_NAMES_DE.get(slot_name, slot_name.capitalize())
-				for stat_name in stats.keys():
-					var new_val = int(stats.get(stat_name, 0))
-					var old_val = int(eq_stats.get(stat_name, 0))
-					if new_val == 0 and old_val == 0:
-						continue
-					var diff = new_val - old_val
-					var line = "%s: %d (aktuell: %d" % [stat_name.capitalize(), new_val, old_val]
-					if diff > 0:
-						line += ", [color=green]+%d[/color]" % diff
-					elif diff < 0:
-						line += ", [color=red]%d[/color]" % diff
-					line += ")\n"
-					base_text += line
-
-	# Requirements
-	var requirements = item.get("requirements", {})
-	if not requirements.is_empty():
-		base_text += "\n[b]Anforderungen:[/b]\n"
-		for req_name in requirements.keys():
-			var value = requirements[req_name]
-			if value != 0:
-				base_text += "%s: %s\n" % [req_name.capitalize(), str(value)]
-
-	# Enchantments
-	var enchantments = item.get("enchantments", [])
-	if not enchantments.is_empty():
-		base_text += "\n[b]Verzauberungen:[/b]\n"
-		for enchant in enchantments:
-			var enchant_name = enchant.get("name", "?")
-			var enchant_value = enchant.get("value", 0)
-			base_text += "%s: +%s\n" % [enchant_name, str(enchant_value)]
-
-	return base_text
+	return ItemTooltip.build_item_tooltip(item, equipped_items, SLOT_MAP, SLOT_NAMES_DE)
 
 func _process(_delta):
 	if tooltip_panel.visible:
@@ -527,3 +479,18 @@ func resolve_slot(item_type: String) -> String:
 	if item_type.is_empty():
 		return ""
 	return SLOT_MAP.get(item_type.to_lower(), "")
+
+func _get_color_for_rarity(rarity: String) -> Color:
+	match rarity:
+		"normal":
+			return Color(1, 1, 1)       # Weiß
+		"magic":
+			return Color(0.2, 0.4, 1)   # Blau
+		"epic":
+			return Color(0.7, 0.2, 1)   # Lila
+		"legendary":
+			return Color(1, 0.9, 0.2)   # Gelb
+		"unique":
+			return Color(1, 0.84, 0.0)  # Gold
+		_:
+			return Color(1, 1, 1)
