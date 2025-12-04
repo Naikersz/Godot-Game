@@ -1,11 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cy36abgatguea"]
+[gd_scene load_steps=5 format=3 uid="uid://svrq8wwntca5"]
 
-[ext_resource type="Script" uid="uid://xcgyfwyci06n" path="res://scripts/tavern_interior.gd" id="1_tavern"]
+[ext_resource type="Script" path="res://scripts/tavern_interior.gd" id="1_tavern"]
 [ext_resource type="TileSet" uid="uid://ck4pg483b1kns" path="res://art/tilesets/Tilesett.tres" id="2_tileset"]
 [ext_resource type="PackedScene" uid="uid://nvylco5rdj73" path="res://scenes/player.tscn" id="3_player_scene"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_frch3"]
-size = Vector2(30.5, 50)
+size = Vector2(65, 34)
 
 [node name="TavernInterior" type="Node2D"]
 script = ExtResource("1_tavern")
@@ -17,13 +17,14 @@ y_sort_enabled = true
 y_sort_enabled = true
 tile_set = ExtResource("2_tileset")
 format = 2
-layer_0/tile_data = PackedInt32Array(65536, 65536, 5)
+layer_0/tile_data = PackedInt32Array(65536, 655363, 8, -196614, 262147, 3, -131078, 262147, 4, -65542, 262147, 5, -6, 262147, 6, 65530, 262147, 7, 131066, 262147, 8, -196613, 327683, 3, -131077, 327683, 4, -65541, 327683, 5, -5, 327683, 6, 65531, 327683, 7, 131067, 327683, 8, -196612, 393219, 3, -131076, 393219, 4, -65540, 393219, 5, -4, 393219, 6, 65532, 393219, 7, 131068, 393219, 8, -196611, 458755, 3, -131075, 458755, 4, -65539, 458755, 5, -3, 458755, 6, 65533, 458755, 7, 131069, 458755, 8, -196610, 524291, 3, -131074, 524291, 4, -65538, 524291, 5, -2, 524291, 6, 65534, 524291, 7, 131070, 524291, 8, -196609, 458755, 3, -131073, 589827, 4, -65537, 589827, 5, -1, 589827, 6, 65535, 589827, 7, 131071, 589827, 8, -262144, 655363, 3, -196608, 655363, 4, -131072, 655363, 5, -65536, 655363, 6, 0, 655363, 7, -262143, 720899, 3, -196607, 720899, 4, -131071, 720899, 5, -65535, 720899, 6, 1, 720899, 7, 65537, 720899, 8, -262142, 786435, 3, -196606, 786435, 4, -131070, 786435, 5, -65534, 786435, 6, 2, 786435, 7, 65538, 786435, 8, -262141, 851971, 3, -196605, 851971, 4, -131069, 851971, 5, -65533, 851971, 6, 3, 851971, 7, 65539, 851971, 8)
 
 [node name="Area2D" type="Area2D" parent="InteriorTileMap/TileMapGround"]
-position = Vector2(32, 120)
+position = Vector2(32, 110)
+priority = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteriorTileMap/TileMapGround/Area2D"]
-position = Vector2(1, -15)
+position = Vector2(0, -10)
 shape = SubResource("RectangleShape2D_frch3")
 
 [node name="Player" parent="." instance=ExtResource("3_player_scene")]
