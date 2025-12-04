@@ -439,6 +439,11 @@ func _get_inventory_capacity(player_data: Dictionary) -> int:
 	if player_data.is_empty():
 		return default_capacity
 
+	# Falls bereits ein Wert im Save steht, diesen bevorzugen
+	var saved_slots := int(player_data.get("backpack_slots", -1))
+	if saved_slots > 0:
+		return saved_slots
+
 	var equipped = player_data.get("equipped", {})
 	if not (equipped is Dictionary):
 		return default_capacity

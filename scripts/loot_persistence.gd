@@ -2,7 +2,9 @@ extends RefCounted
 
 ## Zentrale Loot-Speicherlogik, die von DroppedLoot / EnemyMarker verwendet werden kann.
 
-static func add_loot_to_player_and_inventory(gold: int, loot: Dictionary) -> void:
+const SAVE_KEY_LOOT_VISIBLE := "loot_always_visible"
+
+static func add_loot_to_player_and_inventory(gold: int, loot: Dictionary) -> bool:
 	# Aktuellen Slot bestimmen – Constants ist als Autoload verfügbar
 	var slot_index: int = int(Constants.current_slot_index)
 	var save_slots: Array = Constants.SAVE_SLOTS
@@ -76,6 +78,8 @@ static func add_loot_to_player_and_inventory(gold: int, loot: Dictionary) -> voi
 	# - zuerst nach leerem Slot innerhalb der Kapazität suchen
 	# - wenn keiner frei ist und noch Platz im Array ist, am Ende einfügen
 	# - wenn vollständig voll: Loot verwerfen (mit Log)
+	var item_added: bool = false
+
 	if loot is Dictionary and not loot.is_empty():
 		var placed := false
 
@@ -106,12 +110,90 @@ static func add_loot_to_player_and_inventory(gold: int, loot: Dictionary) -> voi
 		if not placed:
 			print("⚠️ Inventory full, loot not added: ", loot.get("name", loot.get("id", "Item")))
 
+		item_added = placed
+
 	# Inventar zurückschreiben
 	var inv_out = FileAccess.open(inventory_path, FileAccess.WRITE)
 	if inv_out:
 		inv_out.store_string(JSON.stringify(inventory_items, "\t"))
 		inv_out.close()
 		print("💾 Loot im globalen Inventar gespeichert: ", inventory_path)
+
+	# Wenn es kein Item gab, behandeln wir das als "erfolgreich" (z.B. nur Gold)
+	if loot is Dictionary and loot.is_empty():
+		item_added = true
+
+	return item_added
+
+
+## Liest den aktuellen Slot, Pfade und player.json-Pfad wie in add_loot_to_player_and_inventory.
+static func _get_player_paths() -> Dictionary:
+	var slot_index: int = int(Constants.current_slot_index)
+	var save_slots: Array = Constants.SAVE_SLOTS
+	if slot_index < 0 or slot_index >= save_slots.size():
+		slot_index = 0
+
+	var slot: String = String(save_slots[slot_index])
+	var save_root: String = Constants.get_save_root()
+	var save_path: String = save_root.path_join(slot)
+	var player_path: String = Constants.get_player_path(slot)
+
+	return {
+		"slot": slot,
+		"save_path": save_path,
+		"player_path": player_path,
+	}
+
+
+static func set_loot_always_visible(value: bool) -> void:
+	var paths := _get_player_paths()
+	var slot: String = paths["slot"]
+	var player_path: String = paths["player_path"]
+
+	# Sicherstellen, dass der Save-Ordner existiert
+	var dir = DirAccess.open("user://")
+	if dir:
+		dir.make_dir_recursive("save/" + slot)
+
+	var player_data: Dictionary = {}
+	if FileAccess.file_exists(player_path):
+		var f = FileAccess.open(player_path, FileAccess.READ)
+		if f:
+			var txt := f.get_as_text()
+			f.close()
+			var json := JSON.new()
+			if json.parse(txt) == OK and json.data is Dictionary:
+				player_data = json.data
+
+	player_data[SAVE_KEY_LOOT_VISIBLE] = value
+
+	var out = FileAccess.open(player_path, FileAccess.WRITE)
+	if out:
+		out.store_string(JSON.stringify(player_data, "\t"))
+		out.close()
+
+
+static func get_loot_always_visible() -> bool:
+	var paths := _get_player_paths()
+	var player_path: String = paths["player_path"]
+
+	if not FileAccess.file_exists(player_path):
+		return false
+
+	var f = FileAccess.open(player_path, FileAccess.READ)
+	if not f:
+		return false
+	var txt := f.get_as_text()
+	f.close()
+
+	var json := JSON.new()
+	if json.parse(txt) != OK:
+		return false
+	if not (json.data is Dictionary):
+		return false
+
+	var player_data: Dictionary = json.data
+	return bool(player_data.get(SAVE_KEY_LOOT_VISIBLE, false))
 
 
 static func _get_inventory_capacity(player_data: Dictionary) -> int:
@@ -120,6 +202,11 @@ static func _get_inventory_capacity(player_data: Dictionary) -> int:
 
 	if player_data.is_empty():
 		return default_capacity
+
+	# Falls bereits ein Wert im Save steht, diesen bevorzugen
+	var saved_slots := int(player_data.get("backpack_slots", -1))
+	if saved_slots > 0:
+		return saved_slots
 
 	var equipped = player_data.get("equipped", {})
 	if not (equipped is Dictionary):

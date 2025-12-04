@@ -6,7 +6,7 @@ extends Node2D
 @onready var tilemap: TileMap = $TownTileMap/TileMapGround
 @onready var door_area: Area2D = $TownTileMap/DoorArea
 @onready var player: Node2D = $Player
-@onready var level_selection_modal: Control = $LevelSelectionModal
+var level_selection_modal: Control = null
 
 var _player_near_door: bool = false
 
@@ -16,6 +16,9 @@ func _ready() -> void:
 	var hud_scene := preload("res://scenes/hud_scene.tscn")
 	var hud = hud_scene.instantiate()
 	add_child(hud)
+
+	# LevelSelectionModal ist optional – nur holen, wenn vorhanden.
+	level_selection_modal = get_node_or_null("LevelSelectionModal")
 
 	set_process(true)
 

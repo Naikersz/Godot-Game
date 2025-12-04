@@ -5,13 +5,12 @@ extends Area2D
 ## Beim Berühren durch den Player wird der Loot ins globale Inventar übernommen.
 
 const LootPersistence := preload("res://scripts/loot_persistence.gd")
+const DragState := preload("res://scripts/drag_state.gd")
 const DROP_FONT := preload("res://art/fonts/ThaleahFat.ttf")
 const LABEL_FONT_SIZE: int = 14
 
 static var ALL_DROPS: Array = []
 static var LOOT_ALWAYS_VISIBLE: bool = false
-static var DRAG_ITEM: Dictionary = {}
-static var DRAG_SOURCE: DroppedLoot = null
 
 var gold: int = 0
 var item: Dictionary = {}
@@ -25,6 +24,8 @@ var _label_offset_y: float = 0.0
 var _picked_up: bool = false
 var _last_click_time: float = 0.0
 const DOUBLE_CLICK_MAX_DELAY: float = 0.3
+const HOLD_TO_DRAG_DELAY: float = 0.2
+var _hold_timer: SceneTreeTimer = null
 
 
 func _ready() -> void:
@@ -45,8 +46,9 @@ func _ready() -> void:
 	# Label für Item-/Gold-Anzeige (als Kind dieses 2D-Nodes, nicht als UI-Layout)
 	_ensure_label()
 
-	connect("body_entered", _on_body_entered)
-	connect("input_event", _on_input_event)
+	# Signale in Godot 4 richtig verbinden
+	body_entered.connect(_on_body_entered)
+	input_event.connect(_on_input_event)
 
 	ALL_DROPS.append(self)
 	_reflow_all_labels()
@@ -111,8 +113,8 @@ func _draw() -> void:
 	# - show_loot (z.B. G) / G gehalten -> temporär anzeigen
 	# - toggle_loot (z.B. Alt+G, InputMap) toggelt LOOT_ALWAYS_VISIBLE
 	var show_temp := Input.is_action_pressed("show_loot") or Input.is_key_pressed(KEY_G)
-	var show := LOOT_ALWAYS_VISIBLE or show_temp
-	if not show:
+	var show_visible := LOOT_ALWAYS_VISIBLE or show_temp
+	if not show_visible:
 		return
 
 	var font := DROP_FONT
@@ -324,7 +326,24 @@ func _pickup() -> void:
 	if _picked_up:
 		return
 	_picked_up = true
-	LootPersistence.add_loot_to_player_and_inventory(gold, item)
+	var added := LootPersistence.add_loot_to_player_and_inventory(gold, item)
+
+	# Wenn kein Platz im Rucksack ist, Item auf dem Boden lassen.
+	if not added and item is Dictionary and not item.is_empty():
+		print("📦 DroppedLoot: Inventar voll, Item bleibt am Boden liegen")
+		_picked_up = false
+		return
+
+	# Gold kann immer eingesammelt werden, Item nur wenn genug backpack_slots frei sind.
+	# Wenn das Inventar-UI offen ist, Anzeige sofort aktualisieren.
+	var scene := get_tree().current_scene
+	if scene:
+		var hud := scene.get_node_or_null("HUD")
+		if hud and hud.has_node("Control/Modals/EquipmentSlots"):
+			var eq := hud.get_node("Control/Modals/EquipmentSlots")
+			if eq and eq.has_method("refresh_from_save"):
+				eq.refresh_from_save()
+
 	queue_free()
 
 
@@ -335,15 +354,65 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 	if mb.button_index != MOUSE_BUTTON_LEFT or not mb.pressed:
 		return
 
-	var now: float = float(Time.get_ticks_msec()) / 1000.0
-	if now - _last_click_time <= DOUBLE_CLICK_MAX_DELAY:
-		# Doppelklick: Item/Geld einsammeln wie beim drüberlaufen
-		_pickup()
-	else:
-		# Einfachklick: Item als "aus Welt aufgenommen" merken,
-		# damit es im Inventar-Slot per Klick platziert werden kann.
-		if item is Dictionary and not item.is_empty():
-			DRAG_ITEM = item.duplicate(true)
-			DRAG_SOURCE = self
+	print("📦 DroppedLoot: Mouse click on loot at ", global_position)
 
+	handle_world_click()
+
+
+## Wird vom HUD oder vom eigenen input_event aufgerufen, wenn auf diesen Drop geklickt wurde.
+func handle_world_click() -> void:
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	# Doppelklick: sofort aufheben
+	if now - _last_click_time <= DOUBLE_CLICK_MAX_DELAY:
+		print("📦 DroppedLoot: handle_world_click double click -> pickup")
+		_cancel_hold_timer()
+		_pickup()
+		_last_click_time = 0.0
+		return
+
+	# Einfachklick: zunächst nur "Merkung" und Timer für Long-Press-Drag starten.
 	_last_click_time = now
+	_start_hold_drag_timer()
+
+
+func _start_hold_drag_timer() -> void:
+	_cancel_hold_timer()
+
+	# Kein Item -> kein Drag
+	if not (item is Dictionary) or (item as Dictionary).is_empty():
+		return
+
+	_hold_timer = get_tree().create_timer(HOLD_TO_DRAG_DELAY)
+	if _hold_timer:
+		_hold_timer.timeout.connect(_on_hold_drag_timeout)
+
+
+func _cancel_hold_timer() -> void:
+	if _hold_timer:
+		_hold_timer = null  # Timer wird vom Tree automatisch freigegeben
+
+
+func _on_hold_drag_timeout() -> void:
+	_hold_timer = null
+
+	# Wenn inzwischen schon aufgehoben oder Maustaste nicht mehr gedrückt, abbrechen
+	if _picked_up:
+		return
+	if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		return
+
+	print("📦 DroppedLoot: long press -> prepare drag")
+	# Welt-Loot für Drag & Drop "aufheben": in globalen DRAG_* merken
+	# und die sichtbare Instanz am Boden ausblenden.
+	DragState.start("world", "", item, self)
+	visible = false
+
+	# EquipmentSlots-UI über den neuen Welt-Drag informieren, damit die
+	# passenden Equipment-Slots visuell hervorgehoben werden.
+	var scene := get_tree().current_scene
+	if scene:
+		var hud := scene.get_node_or_null("HUD")
+		if hud and hud.has_node("Control/Modals/EquipmentSlots"):
+			var eq := hud.get_node("Control/Modals/EquipmentSlots")
+			if eq and eq.has_method("highlight_for_world_item"):
+				eq.highlight_for_world_item(DragState.item)

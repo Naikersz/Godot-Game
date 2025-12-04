@@ -17,6 +17,8 @@ const LABEL_SETTINGS := preload("res://art/ui/label_settings.tres")
 func _ready() -> void:
 	# Разрешаем обработку мыши этим контролом
 	mouse_filter = Control.MOUSE_FILTER_PASS
+	# Markieren, damit wir im HUD später leicht erkennen, ob es ein SlotPanel ist
+	set_meta("is_slot_panel", true)
 
 	# Создаём / находим Label для "иконки"
 	icon_label = get_node_or_null("IconLabel")
@@ -89,5 +91,10 @@ func _gui_input(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	# Снятие подсветки, если перетаскивание было отменено (бросили не на слот)
-	if what == Control.NOTIFICATION_DRAG_END and manager and manager.has_method("_clear_highlight"):
-		manager._clear_highlight()
+	if what == Control.NOTIFICATION_DRAG_END and manager:
+		if manager.has_method("_clear_highlight"):
+			manager._clear_highlight()
+		# Falls der Drag von einem Inventar-Slot kam und nicht auf einem anderen
+		# Slot abgelegt wurde, Item als Welt-Loot droppen.
+		if manager.has_method("world_drop_from_inventory"):
+			manager.world_drop_from_inventory()

@@ -46,9 +46,11 @@ var equipment_slots: Dictionary = {}
 var inventory_slots: Array = []
 
 var slot_panel_script := preload("res://scripts/slot_panel.gd")
+const DragState := preload("res://scripts/drag_state.gd")
 
 var _highlight_slot_name: String = ""
 var _hovered_item: Dictionary = {}
+var _drag_from_inventory: Dictionary = {}   # bleibt vorerst als Fallback für Inventar->Welt-Drop
 
 
 func _ready() -> void:
@@ -185,6 +187,13 @@ func _load_data() -> void:
 			print("⚠️ Не удалось создать файл инвентаря: ", inventory_path)
 
 
+func refresh_from_save() -> void:
+	# Öffentliche Methode, um Inventar/Equipped aus den Save-Dateien neu zu laden
+	# (z.B. wenn Loot außerhalb dieses UIs hinzugefügt wurde).
+	_load_data()
+	_update_all_slots()
+
+
 func _save_data() -> void:
 	var slot = Constants.SAVE_SLOTS[slot_index]
 	var save_path = Constants.get_save_path(slot)
@@ -201,7 +210,10 @@ func _save_data() -> void:
 
 	# Player
 	if not player_data.is_empty():
+		# Ausgerüstete Items (inkl. Backpack) übernehmen
 		player_data["equipped"] = equipped_items
+		# Aktuelle Backpack-Slotanzahl in player.json speichern (Basis 12)
+		player_data["backpack_slots"] = _get_backpack_slots_from_equipped(equipped_items)
 		var file = FileAccess.open(player_path, FileAccess.WRITE)
 		if file:
 			file.store_string(JSON.stringify(player_data, "\t"))
@@ -277,6 +289,16 @@ func _highlight_for_item(item: Dictionary) -> void:
 			panel.modulate = Color(1.0, 0.95, 0.7, 1.0)
 		else:
 			panel.modulate = Color(0.25, 0.25, 0.25, 1.0)
+
+
+func highlight_for_world_item(item: Dictionary) -> void:
+	# Öffentliche Wrapper-Methode, damit HUD/DroppedLoot dieselbe Highlight-Logik
+	# wie das normale Inventar-Drag verwenden kann.
+	_highlight_for_item(item)
+
+
+func clear_world_highlight() -> void:
+	_clear_highlight()
 
 
 func _clear_highlight() -> void:
@@ -558,6 +580,13 @@ func slot_get_drag_data(slot_node: Node) -> Variant:
 		"source_id": id,
 	}
 
+	# Neuen Drag auch im zentralen DragState registrieren
+	DragState.start(kind, id, item, slot_node)
+
+	# Zusätzlich (vorerst) im alten Zwischenspeicher halten, damit
+	# world_drop_from_inventory weiter funktioniert, bis komplett umgestellt.
+	_drag_from_inventory = drag_data.duplicate(true)
+
 	# Простой превью (полупрозрачный прямоугольник)
 	var preview := ColorRect.new()
 	preview.color = Color(1, 1, 1, 0.4)
@@ -608,6 +637,12 @@ func slot_drop_data(slot_node: Node, data: Variant) -> void:
 	elif target_kind == "inventory":
 		_drop_to_inventory(int(target_id), source_kind, source_id, item)
 
+	# Drop wurde erfolgreich auf einen Slot durchgeführt – Welt-Drop ist damit erledigt.
+	_drag_from_inventory = {}
+	# und der zentrale DragState kann ebenfalls zurückgesetzt werden
+	if DragState.active:
+		DragState.clear()
+
 	_clear_highlight()
 	_save_data()
 	_update_all_slots()
@@ -616,43 +651,206 @@ func slot_drop_data(slot_node: Node, data: Variant) -> void:
 func slot_click_from_world(slot_node: Node) -> void:
 	# Wird von slot_panel.gd bei Mausklick auf Inventar-/Equipment-Slot aufgerufen.
 	# Hier behandeln wir "Drag" von Welt-Loot (DroppedLoot.DRAG_ITEM).
-	if not DroppedLoot.DRAG_ITEM or DroppedLoot.DRAG_ITEM.is_empty():
+	if not DragState.active or DragState.item.is_empty():
+		print("📦 slot_click_from_world: kein DRAG_ITEM gesetzt")
 		return
 
 	if not (slot_node is Panel):
+		print("📦 slot_click_from_world: slot_node ist kein Panel")
 		return
 
 	var kind: String = slot_node.slot_kind
 	var id: String = slot_node.slot_id
 
-	# Vorerst nur ins Inventar legen
-	if kind != "inventory":
-		return
-
-	var index := int(id)
-	if index < 0 or index >= inventory_items.size():
-		return
-
-	# Wenn Slot schon belegt ist, abbrechen (kein Überschreiben von Items)
-	if index < inventory_items.size():
-		var existing = inventory_items[index]
-		if existing is Dictionary and not (existing as Dictionary).is_empty():
+	if kind == "inventory":
+		var index := int(id)
+		if index < 0 or index >= inventory_items.size():
+			print("📦 slot_click_from_world: Index außerhalb des Inventars: ", index, " / size=", inventory_items.size())
 			return
 
-	# Item aus Welt übernehmen
-	inventory_items[index] = DroppedLoot.DRAG_ITEM
+		var existing: Dictionary = {}
+		if index < inventory_items.size():
+			var raw_existing = inventory_items[index]
+			if raw_existing is Dictionary:
+				existing = raw_existing
 
-	# Quelle in Welt entfernen
-	if DroppedLoot.DRAG_SOURCE:
-		DroppedLoot.DRAG_SOURCE.queue_free()
+		# Fall 1: Slot ist leer -> wie bisher einfach übernehmen und Welt-Loot löschen
+		if existing.is_empty():
+			# Item aus Welt übernehmen
+			inventory_items[index] = DragState.item
 
-	# Drag-Status zurücksetzen
-	DroppedLoot.DRAG_ITEM = {}
-	DroppedLoot.DRAG_SOURCE = null
+			# Quelle in Welt entfernen (dieser Loot ist vollständig ins Inventar gewandert)
+			if DragState.source_kind == "world" and DragState.source_node:
+				var dl: DroppedLoot = DragState.source_node
+				if dl:
+					dl.queue_free()
+
+			# Drag ist hier beendet, es gibt kein Item mehr "an der Maus"
+			DragState.clear()
+
+		# Fall 2: Slot ist belegt -> Items tauschen
+		else:
+			print("📦 slot_click_from_world: Slot ", index, " ist belegt – tausche Items")
+
+			# Welt-Item in den Slot legen
+			inventory_items[index] = DragState.item
+
+			# Bisheriges Inventar-Item soll nun weiter "an der Maus hängen"
+			var old_item := existing.duplicate(true)
+			DragState.start("inventory", id, old_item, slot_node)
+
+			# Ursprünglicher Welt-Loot ist vollständig im Inventar aufgegangen
+			# und wird nicht mehr gebraucht.
+			if DragState.source_kind == "world" and DragState.source_node:
+				var dl2: DroppedLoot = DragState.source_node
+				if dl2:
+					dl2.queue_free()
+
+	elif kind == "equipment":
+		# Prüfen, ob dieses Item überhaupt in diesen Equipment-Slot darf (wie bei normalem Drag)
+		var slot_name: String = id
+		var item: Dictionary = DragState.item
+		var item_type: String = String(item.get("item_type", "")).to_lower()
+		var target_slot: String = SLOT_MAP.get(item_type, "")
+		if target_slot != "" and target_slot != slot_name:
+			print("📦 slot_click_from_world: Item-Typ passt nicht in Equipment-Slot ", slot_name)
+			return
+
+		# Bisher ausgerüstetes Item (falls vorhanden)
+		var prev_raw = equipped_items.get(slot_name, null)
+		var prev_item: Dictionary = {}
+		if prev_raw is Dictionary:
+			prev_item = prev_raw
+
+		# Welt-Item in den Equipment-Slot legen
+		equipped_items[slot_name] = item
+
+		# Ursprünglicher Welt-Loot wird nicht mehr benötigt
+		if DragState.source_kind == "world" and DragState.source_node:
+			var dl3: DroppedLoot = DragState.source_node
+			if dl3:
+				dl3.queue_free()
+
+		# Wenn vorher ein Item ausgerüstet war, dieses jetzt "an der Maus hängen" lassen
+		if not prev_item.is_empty():
+			DragState.start("equipment", slot_name, prev_item, slot_node)
+		else:
+			DragState.clear()
+
+	else:
+		print("📦 slot_click_from_world: Unbekannter Slot-Typ: ", kind)
 
 	_save_data()
 	_update_all_slots()
 
+
+## Wird vom slot_panel.gd bei NOTIFICATION_DRAG_END aufgerufen,
+## wenn ein Drag von einem Inventar-Slot nirgends gültig abgelegt wurde.
+## In diesem Fall droppen wir das Item als Welt-Loot in der Nähe des Spielers.
+func world_drop_from_inventory() -> void:
+	var source_kind: String
+	var source_id: String
+	var item: Dictionary
+
+	# Bevorzugt den zentralen DragState verwenden
+	if DragState.active and DragState.source_kind == "inventory" and not DragState.item.is_empty():
+		source_kind = DragState.source_kind
+		source_id = DragState.source_id
+		item = DragState.item
+	else:
+		if _drag_from_inventory.is_empty():
+			return
+
+		source_kind = String(_drag_from_inventory.get("source_kind", ""))
+		source_id = String(_drag_from_inventory.get("source_id", ""))
+		item = _drag_from_inventory.get("item", {})
+
+	# Nur Items aus dem Inventar dürfen auf den Boden fallen gelassen werden
+	if source_kind != "inventory" or item.is_empty():
+		_drag_from_inventory = {}
+		if DragState.active:
+			DragState.clear()
+		return
+
+	print("📦 world_drop_from_inventory: drop item aus Inventar-Slot ", source_id, " auf den Boden")
+
+	# Slot im Inventar leeren
+	_clear_slot(source_kind, source_id)
+	_save_data()
+	_update_all_slots()
+
+	# Spieler in der aktuellen Szene suchen
+	var scene := get_tree().current_scene
+	if scene == null:
+		_drag_from_inventory = {}
+		if DragState.active:
+			DragState.clear()
+		return
+
+	var player: Node2D = scene.get_node_or_null("Player")
+	if player == null:
+		player = scene.find_child("Player", true, false)
+	if player == null:
+		print("📦 world_drop_from_inventory: kein Player gefunden, Item nicht gedroppt")
+		_drag_from_inventory = {}
+		if DragState.active:
+			DragState.clear()
+		return
+
+	# DroppedLoot in der Welt erzeugen (gelber Punkt) – etwas weiter unterhalb der Spielerposition,
+	# damit es optisch auf "Fußhöhe" liegt.
+	var drop := DroppedLoot.new()
+	var drop_pos := player.global_position + Vector2(0, 24)
+	drop.setup_drop(drop_pos, 0, item)
+	scene.add_child(drop)
+
+	# Drag-Status bereinigen
+	_drag_from_inventory = {}
+	if DragState.active:
+		DragState.clear()
+
+
+## Ermittelt die maximale Inventar-Slot-Anzahl (backpack_slots) basierend
+## auf den aktuell ausgerüsteten Items. Basiswert ist 12.
+func _get_backpack_slots_from_equipped(equipped: Dictionary) -> int:
+	var default_capacity := 12
+
+	if equipped.is_empty():
+		return default_capacity
+
+	var backpack_item = equipped.get("backpack", {})
+	if not (backpack_item is Dictionary) or (backpack_item as Dictionary).is_empty():
+		return default_capacity
+
+	var backpack_id: String = String(backpack_item.get("id", ""))
+	if backpack_id == "":
+		return default_capacity
+
+	# Daten aus res://data/backpack.json lesen
+	if not FileAccess.file_exists("res://data/backpack.json"):
+		return default_capacity
+
+	var file = FileAccess.open("res://data/backpack.json", FileAccess.READ)
+	if not file:
+		return default_capacity
+
+	var json_text := file.get_as_text()
+	file.close()
+
+	var json := JSON.new()
+	if json.parse(json_text) != OK:
+		return default_capacity
+
+	if not (json.data is Array):
+		return default_capacity
+
+	for entry in json.data:
+		if not (entry is Dictionary):
+			continue
+		if String(entry.get("id", "")) == backpack_id:
+			return int(entry.get("slot_count", default_capacity))
+
+	return default_capacity
 
 ## === Вспомогательные методы ===
 
