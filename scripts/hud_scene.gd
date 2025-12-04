@@ -10,6 +10,8 @@ extends CanvasLayer
 @onready var equipment_slots: Control = $Control/Modals/EquipmentSlots
 @onready var pause_menu: Control = $Control/Modals/PauseMenu
 @onready var options_modal: Control = $Control/Modals/OptionsModal
+@onready var dungeon_button: Button = $Control/GameHUD/DungeonButton
+@onready var level_selection_modal: Control = $Control/Modals/LevelSelectionModal
 
 var _last_enemy_info_time: float = -1.0
 
@@ -21,6 +23,10 @@ func _ready() -> void:
 	# Подключаем сигнал нажатия на кнопку меню
 	if menu_button:
 		menu_button.pressed.connect(_on_menu_button_pressed)
+
+	# Кнопка выбора подземелья
+	if dungeon_button:
+		dungeon_button.pressed.connect(_on_dungeon_button_pressed)
 	
 	# Подключаем горячую клавишу для открытия инвентаря
 	set_process_input(true)
@@ -48,6 +54,14 @@ func _input(event: InputEvent) -> void:
 		var viewport := get_viewport()
 		if viewport:
 			viewport.set_input_as_handled()
+
+	# Alt+G (toggle_loot) — включить/выключить постоянный показ лута
+	if event.is_action_pressed("toggle_loot"):
+		DroppedLoot.LOOT_ALWAYS_VISIBLE = not DroppedLoot.LOOT_ALWAYS_VISIBLE
+		# Перерисовать все активные дропы
+		for drop in DroppedLoot.ALL_DROPS:
+			if drop:
+				drop.queue_redraw()
 
 func _on_inventory_button_pressed() -> void:
 	_open_inventory()
@@ -83,6 +97,11 @@ func _open_options() -> void:
 				options_modal.open_modal()
 		else:
 			options_modal.visible = not options_modal.visible
+
+
+func _on_dungeon_button_pressed() -> void:
+	if level_selection_modal:
+		level_selection_modal.visible = true
 
 func set_inventory_button_visible(visible_flag: bool) -> void:
 	"""Показывает/скрывает кнопку сумки"""

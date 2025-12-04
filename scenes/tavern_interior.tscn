@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://cy36abgatguea"]
+
+[ext_resource type="Script" uid="uid://xcgyfwyci06n" path="res://scripts/tavern_interior.gd" id="1_tavern"]
+[ext_resource type="TileSet" uid="uid://ck4pg483b1kns" path="res://art/tilesets/Tilesett.tres" id="2_tileset"]
+[ext_resource type="PackedScene" uid="uid://nvylco5rdj73" path="res://scenes/player.tscn" id="3_player_scene"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_frch3"]
+size = Vector2(30.5, 50)
+
+[node name="TavernInterior" type="Node2D"]
+script = ExtResource("1_tavern")
+
+[node name="InteriorTileMap" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="TileMapGround" type="TileMap" parent="InteriorTileMap"]
+y_sort_enabled = true
+tile_set = ExtResource("2_tileset")
+format = 2
+layer_0/tile_data = PackedInt32Array(65536, 65536, 5)
+
+[node name="Area2D" type="Area2D" parent="InteriorTileMap/TileMapGround"]
+position = Vector2(32, 120)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteriorTileMap/TileMapGround/Area2D"]
+position = Vector2(1, -15)
+shape = SubResource("RectangleShape2D_frch3")
+
+[node name="Player" parent="." instance=ExtResource("3_player_scene")]
+
+[connection signal="body_entered" from="InteriorTileMap/TileMapGround/Area2D" to="." method="_on_area_2d_body_entered"]

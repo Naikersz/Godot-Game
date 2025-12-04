@@ -56,4 +56,10 @@ func start_battle(level_type: String, level_number: int):
 
 func _on_back_pressed():
 	print("Zurück-Button gedrückt (Level Selection)")
-	get_tree().call_deferred("change_scene_to_file", "res://scenes/town_scene.tscn")
+	# Если эта сцена является корневой (загружена напрямую) — возвращаемся в TownScene.
+	# Если она инстанцирована как модальное окно внутри другой сцены (HUD),
+	# то просто скрываем её.
+	if self == get_tree().current_scene:
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/town_scene.tscn")
+	else:
+		visible = false

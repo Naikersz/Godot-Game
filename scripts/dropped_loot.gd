@@ -9,6 +9,7 @@ const DROP_FONT := preload("res://art/fonts/ThaleahFat.ttf")
 const LABEL_FONT_SIZE: int = 14
 
 static var ALL_DROPS: Array = []
+static var LOOT_ALWAYS_VISIBLE: bool = false
 static var DRAG_ITEM: Dictionary = {}
 static var DRAG_SOURCE: DroppedLoot = null
 
@@ -21,7 +22,6 @@ var _gold_text: String = ""
 var _rarity: String = "normal"
 var _label_offset_x: float = 0.0
 var _label_offset_y: float = 0.0
-var _loot_always_visible: bool = false
 var _picked_up: bool = false
 var _last_click_time: float = 0.0
 const DOUBLE_CLICK_MAX_DELAY: float = 0.3
@@ -108,10 +108,10 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, 4.0, Color(1.0, 1.0, 0.0, 0.9))
 
 	# Sichtbarkeitslogik:
-	# - G (physische Taste) gehalten  -> temporär anzeigen
-	# - toggle_loot (z.B. Alt+G, InputMap) toggelt _loot_always_visible
-	var show_temp := Input.is_key_pressed(KEY_G)
-	var show := _loot_always_visible or show_temp
+	# - show_loot (z.B. G) / G gehalten -> temporär anzeigen
+	# - toggle_loot (z.B. Alt+G, InputMap) toggelt LOOT_ALWAYS_VISIBLE
+	var show_temp := Input.is_action_pressed("show_loot") or Input.is_key_pressed(KEY_G)
+	var show := LOOT_ALWAYS_VISIBLE or show_temp
 	if not show:
 		return
 

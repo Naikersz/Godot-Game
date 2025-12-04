@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dfpum4nfjfnv1"]
+[gd_scene load_steps=17 format=3 uid="uid://dfpum4nfjfnv1"]
 
 [ext_resource type="Script" uid="uid://c7s6egcw75pah" path="res://scripts/hud_scene.gd" id="1_hud"]
 [ext_resource type="Texture2D" uid="uid://dplplts6cutpl" path="res://art/images/Backpack.png" id="2_backpack"]
@@ -10,6 +10,7 @@
 [ext_resource type="StyleBox" uid="uid://bdy376gr3b1gi" path="res://art/ui/Button.tres" id="7_button"]
 [ext_resource type="FontFile" uid="uid://crim4ump40gsk" path="res://art/fonts/ThaleahFat.ttf" id="8_font"]
 [ext_resource type="PackedScene" uid="uid://cf2vxnl5jg1yt" path="res://scenes/options_scene.tscn" id="9_options"]
+[ext_resource type="PackedScene" uid="uid://cr2344rqgbu6o" path="res://scenes/level_selection_scene.tscn" id="10_level_select"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemyinfo"]
 bg_color = Color(0, 0, 0, 0.7)
@@ -88,6 +89,19 @@ expand_icon = true
 
 [node name="MapButton" type="Button" parent="Control/GameHUD/LeftContainer/HBoxContainer"]
 layout_mode = 2
+
+[node name="DungeonButton" type="Button" parent="Control/GameHUD"]
+layout_mode = 0
+anchors_preset = 7
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -140.0
+offset_right = -40.0
+offset_bottom = -100.0
+text = "Dungeon"
 
 [node name="TopLeftContainer" type="Control" parent="Control/GameHUD"]
 layout_mode = 1
@@ -178,6 +192,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="LevelSelectionModal" parent="Control/Modals" instance=ExtResource("10_level_select")]
+visible = false
 
 [node name="EquipmentSlots" type="Control" parent="Control/Modals"]
 layout_mode = 1

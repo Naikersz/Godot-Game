@@ -1,47 +1,68 @@
-extends Control
+extends Node2D
 
 ## Town Scene
-## Entspricht game.aw/scenes/town_scene.py
+## Временный "город": TileMap + HUD‑инвентарь + модальное меню боя.
 
-@onready var title_label: Label = $VBoxContainer/TitleLabel
-@onready var button_container: VBoxContainer = $VBoxContainer/ButtonContainer
-@onready var inventory_button: Button = $VBoxContainer/ButtonContainer/InventoryButton
-@onready var smith_button: Button = $VBoxContainer/ButtonContainer/SmithButton
-@onready var shop_button: Button = $VBoxContainer/ButtonContainer/ShopButton
-@onready var fight_button: Button = $VBoxContainer/ButtonContainer/FightButton
-@onready var exit_button: Button = $VBoxContainer/ButtonContainer/ExitButton
+@onready var tilemap: TileMap = $TownTileMap/TileMapGround
+@onready var door_area: Area2D = $TownTileMap/DoorArea
+@onready var player: Node2D = $Player
+@onready var level_selection_modal: Control = $LevelSelectionModal
 
-func _ready():
-	# Slot-Index aus Constants lesen
-	var _slot_index = Constants.current_slot_index
-	# Button-Callbacks verbinden
-	inventory_button.pressed.connect(_on_inventory_pressed)
-	smith_button.pressed.connect(_on_smith_pressed)
-	shop_button.pressed.connect(_on_shop_pressed)
-	fight_button.pressed.connect(_on_fight_pressed)
-	exit_button.pressed.connect(_on_exit_pressed)
+var _player_near_door: bool = false
 
-func _on_inventory_pressed():
-	var inventory_scene = preload("res://scenes/inventory_scene.tscn")
-	if inventory_scene:
-		get_tree().change_scene_to_packed(inventory_scene)
-	else:
-		print("⚠️ Inventory-Szene nicht gefunden!")
 
-func _on_smith_pressed():
-	print("🛠 Schmied geöffnet!")
+func _ready() -> void:
+	# Загружаем HUD с инвентарём (как в DungeonScene)
+	var hud_scene := preload("res://scenes/hud_scene.tscn")
+	var hud = hud_scene.instantiate()
+	add_child(hud)
 
-func _on_shop_pressed():
-	print("🛒 Shop geöffnet!")
+	set_process(true)
 
-func _on_fight_pressed():
-	print("⚔️ Kampf gestartet!")
-	var level_selection = preload("res://scenes/level_selection_scene.tscn")
-	if level_selection:
-		get_tree().change_scene_to_packed(level_selection)
-	else:
-		print("⚠️ Level Selection-Szene nicht gefunden!")
 
-func _on_exit_pressed():
-	print("⬅ Zurück zum Hauptmenü aus Town-Szene")
-	get_tree().call_deferred("change_scene_to_file", "res://scenes/main_menu.tscn")
+func _process(_delta: float) -> void:
+	# Если открыт модальный выбор уровня – блокируем взаимодействия города
+	if level_selection_modal and level_selection_modal.visible:
+		return
+
+	# Проверяем, стоит ли игрок достаточно близко к двери в таверну
+	_player_near_door = false
+	if player and door_area:
+		var dist := player.global_position.distance_to(door_area.global_position)
+		if dist <= 24.0:
+			_player_near_door = true
+
+	if _player_near_door and Input.is_action_just_pressed("ui_interact"):
+		enter_house("tavern")
+
+
+func get_tilemap() -> TileMap:
+	# Вспомогательный метод, если понадобится доступ к карте из других скриптов
+	return tilemap
+
+
+func enter_house(_house_id: String) -> void:
+	# Переход во внутренность таверны (временная реализация)
+	get_tree().change_scene_to_file("res://scenes/tavern_interior.tscn")
+
+
+func open_level_selection() -> void:
+	# Открыть модальное окно выбора уровня подземелья
+	if level_selection_modal:
+		level_selection_modal.visible = true
+
+
+func _on_door_body_entered(_body: Node) -> void:
+	pass # Удалённый старый код двери, оставлен пустым на случай старых связей.
+
+
+func _on_door_body_exited(_body: Node) -> void:
+	pass
+
+
+func _on_door_area_body_entered(_body: Node2D) -> void:
+	pass
+
+
+func _on_door_area_body_exited(_body: Node2D) -> void:
+	pass
