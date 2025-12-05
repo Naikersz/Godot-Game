@@ -3,10 +3,10 @@
 [ext_resource type="Script" uid="uid://c7s6egcw75pah" path="res://scripts/hud_scene.gd" id="1_hud"]
 [ext_resource type="Texture2D" uid="uid://dplplts6cutpl" path="res://art/images/Backpack.png" id="2_backpack"]
 [ext_resource type="PackedScene" uid="uid://c4jp0o5vwcc3t" path="res://scenes/hp_bar.tscn" id="3_msjax"]
-[ext_resource type="Script" path="res://scripts/equipment_slots.gd" id="4_sgg88"]
+[ext_resource type="Script" uid="uid://b01yeedtp1jsp" path="res://scripts/equipment_slots.gd" id="4_sgg88"]
 [ext_resource type="Texture2D" uid="uid://d1qesgyojyvyt" path="res://art/images/UI.png" id="4_tida0"]
 [ext_resource type="LabelSettings" uid="uid://bd8jgn62ikmod" path="res://art/ui/label_settings.tres" id="5_qr8y6"]
-[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="6_pause"]
+[ext_resource type="Script" uid="uid://coyaoo1uc7cqt" path="res://scripts/pause_menu.gd" id="6_pause"]
 [ext_resource type="StyleBox" uid="uid://bdy376gr3b1gi" path="res://art/ui/Button.tres" id="7_button"]
 [ext_resource type="FontFile" uid="uid://crim4ump40gsk" path="res://art/fonts/ThaleahFat.ttf" id="8_font"]
 [ext_resource type="PackedScene" uid="uid://cf2vxnl5jg1yt" path="res://scenes/options_scene.tscn" id="9_options"]
@@ -92,7 +92,6 @@ layout_mode = 2
 
 [node name="DungeonButton" type="Button" parent="Control/GameHUD"]
 layout_mode = 0
-anchors_preset = 7
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -195,6 +194,7 @@ mouse_filter = 2
 
 [node name="LevelSelectionModal" parent="Control/Modals" instance=ExtResource("10_level_select")]
 visible = false
+layout_mode = 1
 
 [node name="EquipmentSlots" type="Control" parent="Control/Modals"]
 layout_mode = 1
@@ -214,7 +214,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.0)
+color = Color(0, 0, 0, 0)
 
 [node name="WindowPanel" type="Panel" parent="Control/Modals/EquipmentSlots"]
 layout_mode = 1

@@ -19,7 +19,9 @@ const SLOT_MAP: Dictionary = {
 	"cloak": "mantal",
 	"mantal": "mantal",
 	"amulet": "amulet",
-	"ring": "ring1",
+	# Ringe dürfen in ring1 und ring2, deshalb Spezialbehandlung in _item_fits_slot
+	"ring": "ring",
+	# Optional: Waffen, die off_hand_allowed=true haben, dürfen in off_hand
 }
 
 @onready var dim_background: ColorRect = $DimBackground
@@ -271,24 +273,51 @@ func _highlight_for_item(item: Dictionary) -> void:
 	_clear_highlight()
 	if item.is_empty():
 		return
-	var item_type: String = String(item.get("item_type", "")).to_lower()
-	if item_type == "":
+	var slot_names: Array = _get_slot_names_for_item(item)
+	if slot_names.is_empty():
 		return
-	var slot_name = SLOT_MAP.get(item_type, "")
-	if slot_name == "" or not equipment_slots.has(slot_name):
-		return
-	_highlight_slot_name = slot_name
+	# 7a: Alle passenden Slots hervorheben (z.B. ring1 + ring2, weapon + off_hand)
+	_highlight_slot_name = slot_names[0] if slot_names.size() > 0 else ""
 
 	# При перетаскивании:
-	# - один подходящий слот делаем светлым,
-	# - остальные 11 сильно темним.
+	# - все подходящие слоты делаем светлыми (z.B. ring1 + ring2, weapon + off_hand),
+	# - остальные сильно темним.
 	for slot_name_iter in equipment_slots.keys():
 		var panel: Panel = equipment_slots[slot_name_iter]
-		if slot_name_iter == slot_name:
+		if slot_names.has(slot_name_iter):
 			# Жёлтоватый оттенок, чтобы было видно, куда подходит предмет
 			panel.modulate = Color(1.0, 0.95, 0.7, 1.0)
 		else:
 			panel.modulate = Color(0.25, 0.25, 0.25, 1.0)
+
+	# 6b: Wenn ein Equipment-Item gezogen wird, Inventar-Slots ausgrauen,
+	# wenn das Item nicht zurück ins Inventar darf (z.B. Equipment-only Items)
+	# Aktuell erlauben wir alle Items im Inventar, daher keine Ausgrauung nötig.
+	# Falls später Equipment-only Items eingeführt werden, hier Logik ergänzen.
+
+
+func _get_slot_names_for_item(item: Dictionary) -> Array:
+	var t := String(item.get("item_type", "")).to_lower()
+	# Ringe: beide Slots erlaubt
+	if t == "ring":
+		return ["ring1", "ring2"]
+	# 7a: Off-Hand-Waffen erlauben, wenn off_hand_allowed == true
+	if t == "weapon" and bool(item.get("off_hand_allowed", false)):
+		return ["weapon", "off_hand"]
+	# sonst Mapping laut SLOT_MAP
+	var mapped = SLOT_MAP.get(t, "")
+	if mapped == "":
+		return []
+	if mapped == "ring":
+		return ["ring1", "ring2"]
+	return [mapped]
+
+
+func _item_fits_slot(item: Dictionary, slot_name: String) -> bool:
+	var slot_names := _get_slot_names_for_item(item)
+	if slot_names.is_empty():
+		return false
+	return slot_names.has(slot_name)
 
 
 func highlight_for_world_item(item: Dictionary) -> void:
@@ -339,16 +368,44 @@ func _update_equipment_slots() -> void:
 			# второго (тёмного) тултипа Godot — всё делаем через
 			# наше кастомное hover‑окно.
 			panel.tooltip_text = ""
+			# Hintergrund in Rarity-Farbe, aber dunkler und leicht transparent
+			var rarity: String = String(item.get("rarity", "normal"))
+			var rarity_color: Color = _get_color_for_rarity(rarity)
+			# Farbe dunkler machen (0.15 = sehr dunkel) und leicht transparent (Alpha 0.4)
+			var bg_color := Color(rarity_color.r * 0.15, rarity_color.g * 0.15, rarity_color.b * 0.15, 0.4)
+			# StyleBox erstellen oder vorhandenen verwenden
+			var style_box: StyleBoxFlat = null
+			if panel.has_theme_stylebox_override("panel"):
+				style_box = panel.get_theme_stylebox("panel") as StyleBoxFlat
+			if style_box == null:
+				style_box = StyleBoxFlat.new()
+			style_box.bg_color = bg_color
+			panel.add_theme_stylebox_override("panel", style_box)
 			panel.modulate = Color(1, 1, 1, 1)
 			if label:
 				label.text = item_name.substr(0, 1).to_upper()
+				# Rarity-Farbe für den Buchstaben
+				label.add_theme_color_override("font_color", rarity_color)
 		else:
-			panel.modulate = Color(0.8, 0.8, 0.8, 1)
+			# Leerer Slot: Standard-Hintergrund
+			var style_box: StyleBoxFlat = null
+			if panel.has_theme_stylebox_override("panel"):
+				style_box = panel.get_theme_stylebox("panel") as StyleBoxFlat
+			if style_box == null:
+				style_box = StyleBoxFlat.new()
+			style_box.bg_color = Color(0.2, 0.2, 0.2, 0.5)
+			panel.add_theme_stylebox_override("panel", style_box)
+			panel.modulate = Color(1, 1, 1, 1)
 			if label:
 				label.text = ""
+				label.add_theme_color_override("font_color", Color.WHITE)
 
 
 func _update_inventory_slots() -> void:
+	var dragged_item: Dictionary = {}
+	if DragState.active and not DragState.item.is_empty():
+		dragged_item = DragState.item
+
 	for i in range(inventory_slots.size()):
 		var panel: Panel = inventory_slots[i]
 		var label: Label = _get_or_create_label(panel)
@@ -356,15 +413,60 @@ func _update_inventory_slots() -> void:
 			var item: Dictionary = inventory_items[i]
 			if item is Dictionary and not (item as Dictionary).is_empty():
 				var item_name: String = item.get("name", item.get("id", "Item"))
-				# Занятый слот делаем заметно светлее
-				panel.modulate = Color(1, 1, 1, 1)
+				# 6b: Wenn ein Equipment-Item gezogen wird, prüfen ob Swap kompatibel ist
+				if not dragged_item.is_empty() and DragState.source_kind == "equipment":
+					var dragged_type := String(dragged_item.get("item_type", "")).to_lower()
+					var slot_item_type := String(item.get("item_type", "")).to_lower()
+					# Wenn gezogenes Item nicht in den Slot des vorhandenen Items passt,
+					# oder vorhandenes Item nicht in den Slot des gezogenen Items passt -> ausgrauen
+					var dragged_slots := _get_slot_names_for_item(dragged_item)
+					var slot_item_slots := _get_slot_names_for_item(item)
+					var compatible := false
+					# Swap ist kompatibel, wenn beide Items in den jeweils anderen Slot passen
+					for ds in dragged_slots:
+						if slot_item_slots.has(ds):
+							compatible = true
+							break
+					if not compatible:
+						# Inkompatibel: ausgrauen (Hintergrund bleibt, aber Panel wird dunkler)
+						panel.modulate = Color(0.3, 0.3, 0.3, 1)
+					else:
+						# Kompatibel: Hintergrund bleibt in Rarity-Farbe
+						panel.modulate = Color(1, 1, 1, 1)
+				else:
+					# Hintergrund in Rarity-Farbe, aber dunkler und leicht transparent
+					var rarity: String = String(item.get("rarity", "normal"))
+					var rarity_color: Color = _get_color_for_rarity(rarity)
+					# Farbe dunkler machen (0.2 = sehr dunkel) und leicht transparent (Alpha 0.4)
+					var bg_color := Color(rarity_color.r * 0.2, rarity_color.g * 0.2, rarity_color.b * 0.2, 0.4)
+					# StyleBox erstellen oder vorhandenen verwenden
+					var style_box: StyleBoxFlat = null
+					if panel.has_theme_stylebox_override("panel"):
+						style_box = panel.get_theme_stylebox("panel") as StyleBoxFlat
+					if style_box == null:
+						style_box = StyleBoxFlat.new()
+					style_box.bg_color = bg_color
+					panel.add_theme_stylebox_override("panel", style_box)
+					panel.modulate = Color(1, 1, 1, 1)
 				if label:
 					label.text = item_name.substr(0, 1).to_upper()
+					# Rarity-Farbe für den Buchstaben
+					var rarity: String = String(item.get("rarity", "normal"))
+					var rarity_color: Color = _get_color_for_rarity(rarity)
+					label.add_theme_color_override("font_color", rarity_color)
 			else:
 				# Пустой, но "активный" слот
-				panel.modulate = Color(0.55, 0.55, 0.55, 1)
+				var style_box: StyleBoxFlat = null
+				if panel.has_theme_stylebox_override("panel"):
+					style_box = panel.get_theme_stylebox("panel") as StyleBoxFlat
+				if style_box == null:
+					style_box = StyleBoxFlat.new()
+				style_box.bg_color = Color(0.2, 0.2, 0.2, 0.5)
+				panel.add_theme_stylebox_override("panel", style_box)
+				panel.modulate = Color(1, 1, 1, 1)
 				if label:
 					label.text = ""
+					label.add_theme_color_override("font_color", Color.WHITE)
 		else:
 			# Слот вне диапазона инвентаря — самый тёмный
 			panel.modulate = Color(0.3, 0.3, 0.3, 1)
@@ -609,9 +711,22 @@ func slot_can_drop_data(slot_node: Node, data: Variant) -> bool:
 		# Для слотов экипировки проверяем тип предмета
 		var slot_name: String = slot_node.slot_id
 		var item: Dictionary = data["item"]
-		var item_type: String = String(item.get("item_type", "")).to_lower()
-		var target_slot: String = SLOT_MAP.get(item_type, "")
-		return target_slot == slot_name or target_slot == ""
+		var source_kind: String = data.get("source_kind", "")
+		var source_id: String = data.get("source_id", "")
+		
+		# Source-Item muss in Ziel-Slot passen
+		if not _item_fits_slot(item, slot_name):
+			return false
+		
+		# 7b: Wenn Equipment-zu-Equipment Swap: auch bidirektional prüfen
+		if source_kind == "equipment" and source_id != slot_name:
+			var existing_item: Dictionary = _get_item_from_slot("equipment", slot_name)
+			if not existing_item.is_empty():
+				# Vorhandenes Item muss auch in Source-Slot passen
+				if not _item_fits_slot(existing_item, source_id):
+					return false
+		
+		return true
 	elif kind == "inventory":
 		# Любой предмет может лежать в инвентаре
 		return true
@@ -666,7 +781,9 @@ func slot_click_from_world(slot_node: Node) -> void:
 		var index := int(id)
 		if index < 0 or index >= inventory_items.size():
 			print("📦 slot_click_from_world: Index außerhalb des Inventars: ", index, " / size=", inventory_items.size())
-			return
+			# Inventar-Array bis zu diesem Index auffüllen
+			while index >= inventory_items.size():
+				inventory_items.append({})
 
 		var existing: Dictionary = {}
 		if index < inventory_items.size():
@@ -692,6 +809,13 @@ func slot_click_from_world(slot_node: Node) -> void:
 		else:
 			print("📦 slot_click_from_world: Slot ", index, " ist belegt – tausche Items")
 
+			# WICHTIG: Welt-Loot SOFORT löschen, bevor Swap durchgeführt wird,
+			# damit es nicht verdoppelt wird.
+			if DragState.source_kind == "world" and DragState.source_node:
+				var dl2: DroppedLoot = DragState.source_node
+				if dl2:
+					dl2.queue_free()
+
 			# Welt-Item in den Slot legen
 			inventory_items[index] = DragState.item
 
@@ -699,22 +823,20 @@ func slot_click_from_world(slot_node: Node) -> void:
 			var old_item := existing.duplicate(true)
 			DragState.start("inventory", id, old_item, slot_node)
 
-			# Ursprünglicher Welt-Loot ist vollständig im Inventar aufgegangen
-			# und wird nicht mehr gebraucht.
-			if DragState.source_kind == "world" and DragState.source_node:
-				var dl2: DroppedLoot = DragState.source_node
-				if dl2:
-					dl2.queue_free()
-
 	elif kind == "equipment":
 		# Prüfen, ob dieses Item überhaupt in diesen Equipment-Slot darf (wie bei normalem Drag)
 		var slot_name: String = id
 		var item: Dictionary = DragState.item
-		var item_type: String = String(item.get("item_type", "")).to_lower()
-		var target_slot: String = SLOT_MAP.get(item_type, "")
-		if target_slot != "" and target_slot != slot_name:
+		if not _item_fits_slot(item, slot_name):
 			print("📦 slot_click_from_world: Item-Typ passt nicht in Equipment-Slot ", slot_name)
+			# Nichts tun, Drag bleibt aktiv (nicht auf Map droppen)
 			return
+
+		# WICHTIG: Welt-Loot SOFORT löschen, bevor Swap durchgeführt wird
+		if DragState.source_kind == "world" and DragState.source_node:
+			var dl3: DroppedLoot = DragState.source_node
+			if dl3:
+				dl3.queue_free()
 
 		# Bisher ausgerüstetes Item (falls vorhanden)
 		var prev_raw = equipped_items.get(slot_name, null)
@@ -724,12 +846,6 @@ func slot_click_from_world(slot_node: Node) -> void:
 
 		# Welt-Item in den Equipment-Slot legen
 		equipped_items[slot_name] = item
-
-		# Ursprünglicher Welt-Loot wird nicht mehr benötigt
-		if DragState.source_kind == "world" and DragState.source_node:
-			var dl3: DroppedLoot = DragState.source_node
-			if dl3:
-				dl3.queue_free()
 
 		# Wenn vorher ein Item ausgerüstet war, dieses jetzt "an der Maus hängen" lassen
 		if not prev_item.is_empty():
@@ -757,6 +873,10 @@ func world_drop_from_inventory() -> void:
 		source_kind = DragState.source_kind
 		source_id = DragState.source_id
 		item = DragState.item
+	elif DragState.active and DragState.source_kind == "equipment" and not DragState.item.is_empty():
+		source_kind = DragState.source_kind
+		source_id = DragState.source_id
+		item = DragState.item
 	else:
 		if _drag_from_inventory.is_empty():
 			return
@@ -765,16 +885,60 @@ func world_drop_from_inventory() -> void:
 		source_id = String(_drag_from_inventory.get("source_id", ""))
 		item = _drag_from_inventory.get("item", {})
 
-	# Nur Items aus dem Inventar dürfen auf den Boden fallen gelassen werden
-	if source_kind != "inventory" or item.is_empty():
+	# Inventar-Drags: auf den Boden droppen (5a)
+	if source_kind == "inventory":
+		if item.is_empty():
+			_drag_from_inventory = {}
+			if DragState.active:
+				DragState.clear()
+			return
+
+		print("📦 world_drop_from_inventory: drop item aus Inventar-Slot ", source_id, " auf den Boden")
+
+		# Slot im Inventar leeren
+		_clear_slot(source_kind, source_id)
+		_save_data()
+		_update_all_slots()
+
+		# Spieler in der aktuellen Szene suchen (9a: immer aktuelle Position)
+		var scene := get_tree().current_scene
+		if scene == null:
+			_drag_from_inventory = {}
+			if DragState.active:
+				DragState.clear()
+			return
+
+		var player: Node2D = scene.get_node_or_null("Player")
+		if player == null:
+			player = scene.find_child("Player", true, false)
+		if player == null:
+			print("📦 world_drop_from_inventory: kein Player gefunden, Item nicht gedroppt")
+			_drag_from_inventory = {}
+			if DragState.active:
+				DragState.clear()
+			return
+
+		# DroppedLoot in der Welt erzeugen – immer bei aktueller Player-Position
+		var drop := DroppedLoot.new()
+		var drop_pos := player.global_position + Vector2(0, 24)
+		drop.setup_drop(drop_pos, 0, item)
+		scene.add_child(drop)
+
 		_drag_from_inventory = {}
 		if DragState.active:
 			DragState.clear()
 		return
 
-	print("📦 world_drop_from_inventory: drop item aus Inventar-Slot ", source_id, " auf den Boden")
+	# Nur Items aus der Ausrüstung dürfen auf den Boden fallen gelassen werden
+	if source_kind != "equipment" or item.is_empty():
+		_drag_from_inventory = {}
+		if DragState.active:
+			DragState.clear()
+		return
 
-	# Slot im Inventar leeren
+	print("📦 world_drop_from_inventory: drop item aus Equipment-Slot ", source_id, " auf den Boden")
+
+	# Slot in der Ausrüstung leeren
 	_clear_slot(source_kind, source_id)
 	_save_data()
 	_update_all_slots()
@@ -897,6 +1061,9 @@ func _drop_to_equipment(target_slot: String, source_kind: String, source_id: Str
 		if source_index < 0 or source_index >= inventory_items.size():
 			return
 
+		if not _item_fits_slot(item, target_slot):
+			return
+
 		# Меняем местами с текущим предметом в слоте (если есть)
 		var prev_raw = equipped_items.get(target_slot, null)
 		var prev_item: Dictionary = {}
@@ -922,6 +1089,15 @@ func _drop_to_equipment(target_slot: String, source_kind: String, source_id: Str
 			source_item = source_raw
 		if target_raw is Dictionary:
 			target_item = target_raw
+
+		# 7a: Typen-Abgleich beidseitig (z.B. Ring1 <-> Ring2, Waffen mit off_hand_allowed <-> Offhand)
+		# Source-Item muss in Target-Slot passen
+		if not _item_fits_slot(source_item, target_slot):
+			return
+		# Wenn Target-Slot belegt ist, muss Target-Item auch in Source-Slot passen
+		if not target_item.is_empty() and not _item_fits_slot(target_item, source_id):
+			return
+
 		equipped_items[target_slot] = source_item
 		equipped_items[source_id] = target_item
 
@@ -940,7 +1116,13 @@ func _drop_to_inventory(target_index: int, source_kind: String, source_id: Strin
 		if target_index < inventory_items.size() and inventory_items[target_index] is Dictionary:
 			prev_item = inventory_items[target_index]
 		inventory_items[target_index] = item
-		equipped_items[source_id] = prev_item
+		# Nur dann zurücklegen, wenn das Ziel im Equipment den Typ erlaubt
+		if _item_fits_slot(item, source_id):
+			equipped_items[source_id] = prev_item
+		else:
+			# Wenn der Equipment-Slot den Typ nicht verträgt, leere ihn und
+			# behalte prev_item im Inventar-Slot (kein Zurücktauschen).
+			equipped_items[source_id] = {}
 
 	# Внутри инвентаря
 	elif source_kind == "inventory":
