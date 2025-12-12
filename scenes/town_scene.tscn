@@ -1,0 +1,31 @@
+[gd_scene load_steps=7 format=3 uid="uid://cnb52vwthl1q3"]
+
+[ext_resource type="Script" uid="uid://obol61cdokc2" path="res://scripts/town_scene.gd" id="1_town_scene"]
+[ext_resource type="TileSet" uid="uid://ck4pg483b1kns" path="res://art/tilesets/Tilesett.tres" id="2_tileset"]
+[ext_resource type="PackedScene" uid="uid://nvylco5rdj73" path="res://scenes/player.tscn" id="3_player_scene"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4k3pf"]
+size = Vector2(160, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(30, 46)
+
+[node name="TownScene" type="Node2D"]
+script = ExtResource("1_town_scene")
+
+[node name="TownTileMap" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="TileMapGround" type="TileMap" parent="TownTileMap"]
+y_sort_enabled = true
+tile_set = ExtResource("2_tileset")
+format = 2
+layer_0/tile_data = PackedInt32Array(-131072, 196608, 3, -65537, 65536, 3, -131071, 65536, 3, -65538, 65536, 3, -65535, 196608, 1, -1, 196608, 1, -2, 65536, 1, -65536, 65536, 5, 65536, 327681, 3, 131070, 327681, 3, 131071, 327681, 3, 65537, 327681, 3, 1, 327681, 1, 0, 327681, 1, 65535, 327681, 1, 65534, 327681, 1, 65533, 65537, 1, 131069, 65537, 3, 2, 327681, 1, 65538, 327681, 3, -65534, 65536, 5)
+
+[node name="DoorArea" type="Area2D" parent="TownTileMap"]
+position = Vector2(32, -5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TownTileMap/DoorArea"]
+position = Vector2(0, -20)
+shape = SubResource("RectangleShape2D_door")
+
+[node name="Player" parent="." instance=ExtResource("3_player_scene")]

@@ -1,0 +1,13 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://bd8jgn62ikmod"]
+
+[ext_resource type="FontFile" uid="uid://crim4ump40gsk" path="res://art/fonts/ThaleahFat.ttf" id="1_font"]
+
+[resource]
+font = ExtResource("1_font")
+font_size = 70
+font_color = Color(1, 1, 1, 0.29803923)
+outline_size = 24
+outline_color = Color(0, 0, 0, 0.3647059)
+shadow_size = 21
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(8, 0)

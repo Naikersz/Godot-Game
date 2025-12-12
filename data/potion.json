@@ -1,0 +1,29 @@
+{
+    "potions": [
+      {
+        "id": "health_flask_small",
+        "name": "Kleiner Lebensflakon",
+        "rarity": "normal",
+        "requiredLevel": 1,
+        "effects": {
+          "instantHeal": 30,
+          "healOverTime": 60,
+          "duration": 4
+        },
+        "description": "Stellt einen kleinen Teil des Lebens sofort und über Zeit wieder her."
+      },
+      {
+        "id": "mana_flask_small",
+        "name": "Kleiner Manatrank",
+        "rarity": "normal",
+        "requiredLevel": 1,
+        "effects": {
+          "instantMana": 20,
+          "manaOverTime": 40,
+          "duration": 4
+        },
+        "description": "Regeneriert Mana sofort und über Zeit."
+      }
+    ]
+  }
+  

@@ -1,0 +1,213 @@
+{
+  "Forest_1": {
+    "Monsters": {
+      "normal": 5,
+      "magic": 3,
+      "epic": 2,
+      "legendary": 1,
+      "unique": 0,
+      "min_level": 1,
+      "max_level": 3
+    },
+    "Chests": {
+      "count": 2,
+      "rare": 1,
+      "epic": 0
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 4,
+      "possible_enchantments": []
+    }
+  },
+
+  "Forest_2": {
+    "Monsters": {
+      "normal": 7,
+      "magic": 4,
+      "epic": 2,
+      "legendary": 1,
+      "unique": 0,
+      "min_level": 2,
+      "max_level": 4
+    },
+    "Chests": {
+      "count": 3,
+      "rare": 1,
+      "epic": 1
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 4,
+      "possible_enchantments": []
+    }
+  },
+
+  "Forest_3": {
+    "Monsters": {
+      "normal": 9,
+      "magic": 5,
+      "epic": 3,
+      "legendary": 1,
+      "unique": 0,
+      "min_level": 3,
+      "max_level": 5
+    },
+    "Chests": {
+      "count": 3,
+      "rare": 2,
+      "epic": 1
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 5,
+      "possible_enchantments": []
+    }
+  },
+
+  "Forest_4": {
+    "Monsters": {
+      "normal": 11,
+      "magic": 6,
+      "epic": 3,
+      "legendary": 1,
+      "unique": 0,
+      "min_level": 4,
+      "max_level": 6
+    },
+    "Chests": {
+      "count": 4,
+      "rare": 2,
+      "epic": 1
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 5,
+      "possible_enchantments": []
+    }
+  },
+
+  "Forest_5": {
+    "Monsters": {
+      "normal": 13,
+      "magic": 7,
+      "epic": 4,
+      "legendary": 1,
+      "unique": 0,
+      "min_level": 5,
+      "max_level": 7
+    },
+    "Chests": {
+      "count": 4,
+      "rare": 2,
+      "epic": 2
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 6,
+      "possible_enchantments": []
+    }
+  },
+
+  "Cave_1": {
+    "Monsters": {
+      "normal": 15,
+      "magic": 8,
+      "epic": 5,
+      "legendary": 1,
+      "unique": 0,
+      "min_level": 40,
+      "max_level": 60
+    },
+    "Chests": {
+      "count": 5,
+      "rare": 3,
+      "epic": 2
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 6,
+      "possible_enchantments": []
+    }
+  },
+
+  "Cave_2": {
+    "Monsters": {
+      "normal": 17,
+      "magic": 9,
+      "epic": 5,
+      "legendary": 2,
+      "unique": 0,
+      "min_level": 7,
+      "max_level": 9
+    },
+    "Chests": {
+      "count": 5,
+      "rare": 3,
+      "epic": 2
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 6,
+      "possible_enchantments": []
+    }
+  },
+
+  "Cave_3": {
+    "Monsters": {
+      "normal": 19,
+      "magic": 10,
+      "epic": 6,
+      "legendary": 2,
+      "unique": 0,
+      "min_level": 8,
+      "max_level": 10
+    },
+    "Chests": {
+      "count": 6,
+      "rare": 3,
+      "epic": 3
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 6,
+      "possible_enchantments": []
+    }
+  },
+
+  "Cave_4": {
+    "Monsters": {
+      "normal": 21,
+      "magic": 11,
+      "epic": 6,
+      "legendary": 3,
+      "unique": 0,
+      "min_level": 9,
+      "max_level": 11
+    },
+    "Chests": {
+      "count": 6,
+      "rare": 4,
+      "epic": 3
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 6,
+      "possible_enchantments": []
+    }
+  },
+
+  "Cave_5": {
+    "Monsters": {
+      "normal": 23,
+      "magic": 12,
+      "epic": 7,
+      "legendary": 3,
+      "unique": 0,
+      "min_level": 10,
+      "max_level": 12
+    },
+    "Chests": {
+      "count": 7,
+      "rare": 4,
+      "epic": 3
+    },
+    "EnchantmentSlots": {
+      "enchant_slots": 6,
+      "possible_enchantments": []
+    }
+  }
+}
+
+

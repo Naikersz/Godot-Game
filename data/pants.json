@@ -1,0 +1,187 @@
+[
+  {
+    "id": "cloth_pants",
+    "name": "Cloth Pants",
+    "item_type": "pants",
+    "item_level": 1,
+    "min_player_level": 1,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 0,
+      "dexterity_min": 0,
+      "dexterity_max": 4,
+      "intelligence_min": 5,
+      "intelligence_max": 8
+    },
+    "base_stats": {
+      "armour_min": 0,
+      "armour_max": 0,
+      "evasion_min": 4,
+      "evasion_max": 8,
+      "energy_shield_min": 4,
+      "energy_shield_max": 8,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "cloth",
+      "disassembly_yield": 2
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "leather_pants",
+    "name": "Leather Pants",
+    "item_type": "pants",
+    "item_level": 8,
+    "min_player_level": 5,
+    "requirements": {
+      "strength_min": 0,
+      "strength_max": 6,
+      "dexterity_min": 12,
+      "dexterity_max": 18,
+      "intelligence_min": 0,
+      "intelligence_max": 4
+    },
+    "base_stats": {
+      "armour_min": 22,
+      "armour_max": 36,
+      "evasion_min": 18,
+      "evasion_max": 28,
+      "energy_shield_min": 0,
+      "energy_shield_max": 4,
+      "block_chance_min": 0,
+      "block_chance_max": 0,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "leather",
+      "disassembly_yield": 4
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "chain_pants",
+    "name": "Chain Pants",
+    "item_type": "pants",
+    "item_level": 16,
+    "min_player_level": 10,
+    "requirements": {
+      "strength_min": 18,
+      "strength_max": 28,
+      "dexterity_min": 8,
+      "dexterity_max": 14,
+      "intelligence_min": 0,
+      "intelligence_max": 2
+    },
+    "base_stats": {
+      "armour_min": 60,
+      "armour_max": 90,
+      "evasion_min": 8,
+      "evasion_max": 14,
+      "energy_shield_min": 0,
+      "energy_shield_max": 4,
+      "block_chance_min": 0,
+      "block_chance_max": 3,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "chain",
+      "disassembly_yield": 5
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "scale_pants",
+    "name": "Scale Pants",
+    "item_type": "pants",
+    "item_level": 28,
+    "min_player_level": 18,
+    "requirements": {
+      "strength_min": 36,
+      "strength_max": 54,
+      "dexterity_min": 0,
+      "dexterity_max": 10,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 140,
+      "armour_max": 190,
+      "evasion_min": 0,
+      "evasion_max": 8,
+      "energy_shield_min": 0,
+      "energy_shield_max": 6,
+      "block_chance_min": 1,
+      "block_chance_max": 4,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "iron",
+      "disassembly_yield": 7
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  },
+  {
+    "id": "plate_pants",
+    "name": "Plate Pants",
+    "item_type": "pants",
+    "item_level": 40,
+    "min_player_level": 28,
+    "requirements": {
+      "strength_min": 70,
+      "strength_max": 95,
+      "dexterity_min": 0,
+      "dexterity_max": 8,
+      "intelligence_min": 0,
+      "intelligence_max": 0
+    },
+    "base_stats": {
+      "armour_min": 360,
+      "armour_max": 480,
+      "evasion_min": 0,
+      "evasion_max": 0,
+      "energy_shield_min": 0,
+      "energy_shield_max": 12,
+      "block_chance_min": 3,
+      "block_chance_max": 7,
+      "attack_speed_min": 0,
+      "attack_speed_max": 0,
+      "movement_speed_min": 0,
+      "movement_speed_max": 0,
+      "damage_min": 0,
+      "damage_max": 0
+    },
+    "material": {
+      "type": "steel",
+      "disassembly_yield": 12
+    },
+    "enchant_slots": 6,
+    "possible_enchantments": []
+  }
+]

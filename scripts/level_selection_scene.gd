@@ -1,0 +1,65 @@
+extends Control
+
+## Level Selection Scene
+## Entspricht game.aw/scenes/level_selection_scene.py
+
+@onready var title_label: Label = $VBoxContainer/TitleLabel
+@onready var categories_container: HBoxContainer = $VBoxContainer/CategoriesContainer
+@onready var forest_label: Label = $VBoxContainer/CategoriesContainer/ForestLabel
+@onready var cave_label: Label = $VBoxContainer/CategoriesContainer/CaveLabel
+@onready var buttons_container: HBoxContainer = $VBoxContainer/ButtonsContainer
+@onready var forest_buttons_container: VBoxContainer = $VBoxContainer/ButtonsContainer/ForestButtonsContainer
+@onready var cave_buttons_container: VBoxContainer = $VBoxContainer/ButtonsContainer/CaveButtonsContainer
+@onready var back_button: Button = $VBoxContainer/BackButton
+
+var slot_index: int = 0
+
+func _ready():
+	slot_index = Constants.current_slot_index
+	create_buttons()
+	if back_button:
+		back_button.pressed.connect(_on_back_pressed)
+	else:
+		print("⚠️ BackButton nicht gefunden in Level Selection!")
+
+func create_buttons():
+	# Forest buttons (left side)
+	for i in range(1, 6):
+		var btn = Button.new()
+		btn.text = "Forest %d" % i
+		btn.custom_minimum_size = Vector2(200, 50)
+		btn.pressed.connect(_on_forest_button_pressed.bind(i))
+		forest_buttons_container.add_child(btn)
+	
+	# Cave buttons (right side)
+	for i in range(1, 6):
+		var btn = Button.new()
+		btn.text = "Cave %d" % i
+		btn.custom_minimum_size = Vector2(200, 50)
+		btn.pressed.connect(_on_cave_button_pressed.bind(i))
+		cave_buttons_container.add_child(btn)
+
+func _on_forest_button_pressed(level_number: int):
+	start_battle("Forest", level_number)
+
+func _on_cave_button_pressed(level_number: int):
+	start_battle("Cave", level_number)
+
+func start_battle(level_type: String, level_number: int):
+	print("⚔️ %s %d gestartet!" % [level_type, level_number])
+	# Level-Informationen in Constants speichern
+	Constants.current_level_type = level_type
+	Constants.current_level_number = level_number
+	
+	# Lade die Dungeon-Szene, die Dungeon + Player enthält.
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/dungeon_scene.tscn")
+
+func _on_back_pressed():
+	print("Zurück-Button gedrückt (Level Selection)")
+	# Если эта сцена является корневой (загружена напрямую) — возвращаемся в TownScene.
+	# Если она инстанцирована как модальное окно внутри другой сцены (HUD),
+	# то просто скрываем её.
+	if self == get_tree().current_scene:
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/town_scene.tscn")
+	else:
+		visible = false

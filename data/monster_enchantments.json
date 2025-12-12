@@ -1,0 +1,110 @@
+[
+  {
+    "id": "monster_damage_boost",
+    "name": "Stärkere Angriffe",
+    "description": "Erhöht den verursachten Schaden des Gegners.",
+    "type": "damage",
+    "value_min": 5,
+    "value_max": 15,
+    "min_level": 1
+  },
+  {
+    "id": "monster_fast_attack",
+    "name": "Schnellere Angriffe",
+    "description": "Erhöht die Angriffsgeschwindigkeit.",
+    "type": "attack_speed",
+    "value_min": 5,
+    "value_max": 20,
+    "min_level": 1
+  },
+  {
+    "id": "monster_extra_hp",
+    "name": "Robust",
+    "description": "Erhöht die maximalen Lebenspunkte um einen Prozentsatz.",
+    "type": "hp_percent",
+    "value_min": 10,
+    "value_max": 30,
+    "min_level": 1
+  },
+  {
+    "id": "monster_phys_resist",
+    "name": "Physische Resistenz",
+    "description": "Reduziert erlittenen physischen Schaden.",
+    "type": "res_physical",
+    "value_min": 5,
+    "value_max": 15,
+    "min_level": 5
+  },
+  {
+    "id": "monster_fire_damage",
+    "name": "Feuerangriffe",
+    "description": "Fügt Angriffen zusätzlichen Feuerschaden hinzu.",
+    "type": "element_fire_damage",
+    "value_min": 3,
+    "value_max": 12,
+    "min_level": 8
+  },
+  {
+    "id": "monster_ice_damage",
+    "name": "Frostangriffe",
+    "description": "Fügt Angriffen zusätzlichen Frostschaden hinzu.",
+    "type": "element_ice_damage",
+    "value_min": 3,
+    "value_max": 12,
+    "min_level": 8
+  },
+  {
+    "id": "monster_poison_on_hit",
+    "name": "Giftiger Schlag",
+    "description": "Vergiftet den Spieler bei einem Treffer.",
+    "type": "status_poison",
+    "value_min": 3,
+    "value_max": 7,
+    "min_level": 10
+  },
+  {
+    "id": "monster_bleed_on_hit",
+    "name": "Blutung",
+    "description": "Lässt den Spieler bei einem Treffer verbluten.",
+    "type": "status_bleed",
+    "value_min": 4,
+    "value_max": 9,
+    "min_level": 10
+  },
+  {
+    "id": "monster_fire_resist",
+    "name": "Feuerresistenz",
+    "description": "Reduziert erlittenen Feuerschaden.",
+    "type": "res_fire",
+    "value_min": 10,
+    "value_max": 25,
+    "min_level": 10
+  },
+  {
+    "id": "monster_lightning_strike",
+    "name": "Kettenblitz",
+    "description": "Angriffe können einen Blitzschlag auslösen.",
+    "type": "element_lightning",
+    "value_min": 8,
+    "value_max": 16,
+    "min_level": 15
+  },
+  {
+    "id": "monster_enrage_phase",
+    "name": "Enrage",
+    "description": "Bei <50% HP werden Angriffsgeschwindigkeit und Schaden stark erhöht.",
+    "type": "phase_buff",
+    "value_min": 20,
+    "value_max": 40,
+    "min_level": 20
+  },
+  {
+    "id": "monster_res_all",
+    "name": "Elementarresistenz",
+    "description": "Erhöht alle Elementarresistenzen.",
+    "type": "res_all",
+    "value_min": 5,
+    "value_max": 15,
+    "min_level": 20
+  }
+]
