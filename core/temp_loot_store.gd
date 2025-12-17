@@ -3,8 +3,6 @@ extends RefCounted
 
 const PATH_RES := "user://temp_loot.tres"
 const DRAG_PATH_RES := "user://drag.tres"
-const INVENTORY_PATH_RES := "user://inventory_temp.tres"
-const InventoryResourceRes = preload("res://resources/inventory_resource.gd")
 const SimpleArrayResourceRes = preload("res://resources/array_resource.gd")
 const SimpleDictResourceRes = preload("res://resources/dictionary_resource.gd")
 const ORDER_KEYS := [
@@ -28,7 +26,6 @@ const ORDER_KEYS := [
 static func clear() -> void:
 	_save_array([])
 	_clear_drag()
-	_save_inventory([])
 
 static func get_next_loot_id() -> int:
 	var data := load_all()
@@ -85,48 +82,7 @@ static func remove_loot(loot_id: int) -> void:
 		remaining.append(entry)
 	_save_array(remaining)
 
-static func move_loot_to_inventory(loot_id: int) -> Dictionary:
-	var data := load_all()
-	var moved: Dictionary = {}
-	var remaining: Array = []
-	for entry in data:
-		if not (entry is Dictionary):
-			remaining.append(entry)
-			continue
-		var pos: Variant = entry.get("position", {})
-		if pos is Dictionary and int(pos.get("loot", -1)) == loot_id and moved.is_empty():
-			moved = _sanitize_item(entry)
-			if moved.is_empty():
-				continue
-			# CRITICAL: Order item immediately to ensure enchant fields are at the end
-			moved = _order_item(moved)
-		else:
-			remaining.append(entry)
-	_save_array(remaining)
-	if moved.is_empty():
-		return {}
-	return add_inventory_item(moved)
-
-static func add_inventory_item(item: Dictionary) -> Dictionary:
-	if item.is_empty():
-		return {}
-	var inv := load_inventory()
-	var slot_id := _next_free_inventory_slot(inv)
-	var item_copy := _sanitize_item(item)
-	if item_copy.is_empty():
-		return {}
-	item_copy["position"] = {"inventar_slot": slot_id}
-	# CRITICAL: Always order item to ensure enchant fields are at the end
-	item_copy = _order_item(item_copy)
-	inv.append(item_copy)
-	_save_inventory(inv)
-	return item_copy
-
-static func load_inventory() -> Array:
-	return _load_array_res(INVENTORY_PATH_RES)
-
-static func _save_inventory(arr: Array) -> void:
-	_save_array_res(INVENTORY_PATH_RES, arr)
+## Note: inventory_temp.tres was removed; TempLootStore now only manages loot and drag temp data.
 
 static func _next_free_loot_id(data: Array) -> int:
 	# Find the smallest positive integer not yet used as loot id.
@@ -138,20 +94,6 @@ static func _next_free_loot_id(data: Array) -> int:
 				var lid := int(pos.get("loot", -1))
 				if lid > 0:
 					used[lid] = true
-	var candidate := 1
-	while used.has(candidate):
-		candidate += 1
-	return candidate
-
-static func _next_free_inventory_slot(data: Array) -> int:
-	var used := {}
-	for entry in data:
-		if entry is Dictionary:
-			var pos: Variant = entry.get("position", {})
-			if pos is Dictionary and pos.has("inventar_slot"):
-				var sid := int(pos.get("inventar_slot", -1))
-				if sid >= 1:
-					used[sid] = true
 	var candidate := 1
 	while used.has(candidate):
 		candidate += 1
@@ -171,7 +113,7 @@ static func save_drag(item: Dictionary) -> void:
 	_save_drag(item)
 
 static func save_drag_stack(stack) -> void:
-	# Erwartet ItemStack; konvertiert für Debug/Resource
+	# Expects ItemStack; converts for debug/resource
 	if stack == null:
 		_clear_drag()
 		return
@@ -206,7 +148,7 @@ static func _save_array_res(path_res: String, arr: Array) -> void:
 	res.data = arr
 	var err = ResourceSaver.save(res, path_res)
 	if err != OK:
-		print("⚠️ TempLootStore: Konnte Resource nicht speichern: ", path_res, " err=", err)
+		print("⚠️ TempLootStore: Could not save resource: ", path_res, " err=", err)
 
 static func _order_item(item: Dictionary) -> Dictionary:
 	var copy = item.duplicate(true)
@@ -265,23 +207,23 @@ static func _save_drag(item: Dictionary) -> void:
 	res.data = item
 	var err = ResourceSaver.save(res, DRAG_PATH_RES)
 	if err != OK:
-		print("⚠️ TempLootStore: Konnte Drag-Resource nicht speichern: ", DRAG_PATH_RES, " err=", err)
+		print("⚠️ TempLootStore: Could not save drag resource: ", DRAG_PATH_RES, " err=", err)
 
 static func _clear_drag() -> void:
 	var res := SimpleDictResourceRes.new()
 	res.data = {}
 	var err = ResourceSaver.save(res, DRAG_PATH_RES)
 	if err != OK:
-		print("⚠️ TempLootStore: Konnte Drag-Resource nicht speichern: ", DRAG_PATH_RES, " err=", err)
+		print("⚠️ TempLootStore: Could not save drag resource: ", DRAG_PATH_RES, " err=", err)
 
-# Hilfsfunktionen für ItemStack-Konvertierung (write-only)
+# Helper functions for ItemStack conversion (write-only)
 static func _stack_to_dict(stack) -> Dictionary:
 	if stack == null:
 		return {}
-	# Falls bereits Dictionary
+	# If already Dictionary
 	if stack is Dictionary:
 		return _order_item(stack)
-	# ItemStack erwartet Felder item, amount
+	# ItemStack expects fields item, amount
 	if not (stack is ItemStack):
 		return {}
 	var itm = stack.item
@@ -311,11 +253,11 @@ static func _stack_to_dict(stack) -> Dictionary:
 		"position": pos_meta,
 	}
 	
-	# Alle anderen Metadaten hinzufügen
+	# Add all other metadata
 	var all_meta_keys: Array = stack.get_meta_list()
 	for key in all_meta_keys:
 		if key in ["item_level", "position", "enchantments", "material", "min_player_level"]:
-			continue  # Diese wurden bereits behandelt
+			continue  # These were already handled
 		dict[key] = stack.get_meta(key)
 	
 	return _order_item(dict)

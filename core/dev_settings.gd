@@ -59,7 +59,7 @@ func _get_level_key(level_type: String, level_number: int) -> String:
 func get_level_settings(level_type: String, level_number: int) -> Dictionary:
 	var key := _get_level_key(level_type, level_number)
 	if not level_settings.has(key):
-		# Derive default values from the global dev settings
+		# Derive default values from global dev settings
 		level_settings[key] = {
 			"normal": enemy_count,
 			"magic": enemy_magic_count,

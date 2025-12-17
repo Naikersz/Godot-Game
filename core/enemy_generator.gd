@@ -209,7 +209,7 @@ func _build_enemy(
 	var gold_min: int = int(monster_def.get("gold_min", 0))
 	var gold_max: int = int(monster_def.get("gold_max", gold_min))
 
-	# Roll all Kampf-Stats als ints (Gold wird erst beim Tod mit Drop-Chance gewürfelt)
+	# Roll all combat stats as ints (Gold is rolled only on death with drop chance)
 	var hp: int = _rng.randi_range(hp_min, hp_max)
 	var damage: int = _rng.randi_range(dmg_min, dmg_max)
 	var defense: int = _rng.randi_range(def_min, def_max)
@@ -265,9 +265,9 @@ func _roll_enchantments(
 			rarity_min = 0
 			rarity_max = 0
 
-	# Unique Monster haben keine Beschränkung durch dungeon_content.enchant_slots
+	# Unique monsters have no restriction from dungeon_content.enchant_slots
 	var effective_max: int = rarity_max
-	# Dungeon-Limit nur für nicht-legendary / nicht-unique anwenden
+	# Apply dungeon limit only for non-legendary / non-unique
 	if rarity != "unique" and rarity != "legendary":
 		effective_max = min(rarity_max, max_enchant_slots)
 
@@ -278,7 +278,7 @@ func _roll_enchantments(
 	var slots: int = _rng.randi_range(effective_min, effective_max)
 
 	for i in range(slots):
-		# Unique Monster haben keine Whitelist-Einschränkung
+		# Unique monsters have no whitelist restriction
 		var def: Dictionary = _pick_enchant_def_for_level(
 			level,
 			[] if rarity == "unique" else allowed_ids

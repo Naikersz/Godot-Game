@@ -24,7 +24,3 @@ func get_save_root() -> String:
 func get_save_path(slot: String) -> String:
 	return get_save_root().path_join(slot)
 
-## Returns the path to the player.json of a slot
-func get_player_path(slot: String) -> String:
-	return get_save_path(slot).path_join("player.json")
-

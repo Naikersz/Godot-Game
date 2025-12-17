@@ -1,15 +1,13 @@
 class_name DroppedLoot
 extends Area2D
 
-## Repräsentiert einen Loot-Drop (Item + Gold) auf dem Boden.
-## Beim Berühren durch den Player wird der Loot ins globale Inventar übernommen.
+## Represents a loot drop (item + gold) on the ground.
+## When picked up by the player, the loot is transferred into the global inventory.
 
-# DragState ist eine globale Klasse (class_name)
-# LootPersistence wird als Workaround preloaded, falls Godot die Klasse noch nicht erkannt hat
-const LootPersistenceScript = preload("res://scripts/loot_persistence.gd")
+# DragState and LootPersistence are global classes (class_name)
 const DROP_FONT := preload("res://art/fonts/ThaleahFat.ttf")
 const LABEL_FONT_SIZE: int = 14
-const PICKUP_RADIUS: float = 55.0  # "Armslänge" - Radius in Pixeln, in dem Loot aufhebbar ist
+const PICKUP_RADIUS: float = 55.0  # "arm's length" - radius in pixels in which loot can be picked up
 const LOOT_ICON := preload("res://art/images/Loot.png")
 const GOLD_ICON := preload("res://art/images/Gold.png")
 const ItemResource = preload("res://resources/item.gd")
@@ -52,7 +50,7 @@ func _stack_from_dict(dict: Dictionary) -> ItemStack:
 	if _registry == null:
 		if Engine.has_singleton("ItemRegistry"):
 			_registry = Engine.get_singleton("ItemRegistry")
-	# Fallback auf minimalen Item-Bau, falls Registry fehlt oder Item nicht bekannt
+	# Fallback to minimal item build if registry is missing or item is unknown
 	var id := String(dict.get("id", dict.get("name", "")))
 	if id == "":
 		return null
@@ -73,13 +71,13 @@ func _stack_from_dict(dict: Dictionary) -> ItemStack:
 	if dict.has("material"):
 		itm.material = dict.get("material", {})
 	if dict.has("position"):
-		# Position nicht ins Item, sondern als Meta auf den Stack
+		# Position not in item, but as meta on stack
 		pass
 	var st := ItemStack.new()
 	st.item = itm
 	st.amount = max(1, int(dict.get("amount", 1)))
 	
-	# Bekannte Metadaten kopieren
+	# Copy known metadata
 	if dict.has("item_level"):
 		st.set_meta("item_level", int(dict.get("item_level", 1)))
 	if dict.has("enchantments"):
@@ -93,13 +91,13 @@ func _stack_from_dict(dict: Dictionary) -> ItemStack:
 	if dict.has("min_player_level"):
 		st.set_meta("min_player_level", int(dict.get("min_player_level", 1)))
 	
-	# Alle anderen Dictionary-Keys als Metadaten kopieren (falls vorhanden)
+	# Copy all other Dictionary keys as metadata (if present)
 	for key in dict.keys():
 		if key in ["id", "name", "rarity", "item_type", "item_level", "description", 
 				   "amount", "stackable", "max_stack", "stats", "requirements", 
 				   "enchant_slots", "enchantments", "material", "min_player_level", "position"]:
-			continue  # Diese werden bereits behandelt oder sind Item-Eigenschaften
-		# Alle anderen Keys als Metadaten kopieren
+			continue  # These are already handled or are item properties
+		# Copy all other keys as metadata
 		if not st.has_meta(key):
 			st.set_meta(key, dict[key])
 	
@@ -131,7 +129,7 @@ var _rarity: String = "normal"
 var _label_offset_x: float = 0.0
 var _label_offset_y: float = 0.0
 
-# Getter für externe Zugriffe
+# Getters for external access
 func get_item_text() -> String:
 	return _item_text
 
@@ -145,8 +143,6 @@ func get_label_offset_y() -> float:
 	return _label_offset_y
 
 var _picked_up: bool = false
-var _last_click_time: float = 0.0
-const DOUBLE_CLICK_MAX_DELAY: float = 0.3
 const HOLD_TO_DRAG_DELAY: float = 0.2
 var _hold_timer: SceneTreeTimer = null
 var _is_hovered: bool = false
@@ -158,7 +154,7 @@ var _gold_sprite: Sprite2D = null
 
 
 func _get_player() -> Node2D:
-	"""Hilfsfunktion um den Player-Node zu finden"""
+	"""Helper to find the player node."""
 	var scene := get_tree().current_scene
 	if scene == null:
 		return null
@@ -169,7 +165,7 @@ func _get_player() -> Node2D:
 
 
 func is_in_pickup_range() -> bool:
-	"""Prüft ob dieses Loot in Pickup-Reichweite des Spielers ist"""
+	"""Checks if this loot is within pickup range of the player."""
 	var player := _get_player()
 	if player == null:
 		return false
@@ -181,14 +177,14 @@ func _ready() -> void:
 	if LOOT_SYSTEM_DISABLED:
 		visible = false
 		return
-	# Damit der Drop über dem Boden gezeichnet wird
+	# Ensure the drop is rendered above the ground
 	z_index = 100
 
-	# Mausklicks auf dieses Area2D erlauben
+	# Allow mouse clicks on this Area2D
 	input_pickable = true
 
-	# Kollisionsform für Klick-/Hover-Bereich
-	# Wird dynamisch in _update_collision_shape() angepasst, um nur Text-Bereich abzudecken
+	# CollisionShape for click/hover area
+	# Dynamically adjusted in _update_collision_shape() to only cover the text area
 	var shape := CollisionShape2D.new()
 	var rect_shape := RectangleShape2D.new()
 	shape.shape = rect_shape
@@ -196,53 +192,53 @@ func _ready() -> void:
 	add_child(shape)
 	_update_collision_shape()
 
-	# Label für Item-/Gold-Anzeige (als Kind dieses 2D-Nodes, nicht als UI-Layout)
+	# Label for item/gold display (as child of this 2D node, not UI layout)
 	_ensure_label()
 
-	# Signale in Godot 4 richtig verbinden
+	# Connect signals correctly in Godot 4
 	body_entered.connect(_on_body_entered)
 	input_event.connect(_on_input_event)
 
-	# Loot-Icon Sprite erstellen (nur für Items)
+	# Create loot icon sprite (items only)
 	_loot_sprite = Sprite2D.new()
 	_loot_sprite.texture = LOOT_ICON
 	_loot_sprite.scale = Vector2(0.4, 0.4)
-	_loot_sprite.z_index = 99  # Unter dem Text, aber über dem Boden
-	_loot_sprite.visible = false  # Wird in _update_loot_icon() gesetzt
+	_loot_sprite.z_index = 99  # below text, above ground
+	_loot_sprite.visible = false  # controlled by _update_loot_icon()
 	add_child(_loot_sprite)
 
-	# Gold-Icon Sprite erstellen (nur für Gold)
+	# Create gold icon sprite (gold only)
 	_gold_sprite = Sprite2D.new()
 	_gold_sprite.texture = GOLD_ICON
-	_gold_sprite.scale = Vector2(0.36, 0.36)  # 10% kleiner als Loot-Icon (0.4 * 0.9)
-	_gold_sprite.z_index = 99  # Unter dem Text, aber über dem Boden
-	_gold_sprite.visible = false  # Wird in _update_loot_icon() gesetzt
+	_gold_sprite.scale = Vector2(0.36, 0.36)  # 10% smaller than loot icon (0.4 * 0.9)
+	_gold_sprite.z_index = 99  # below text, above ground
+	_gold_sprite.visible = false  # controlled by _update_loot_icon()
 	add_child(_gold_sprite)
 
-	# Registry (Autoload) für Stack-Umwandlung
+	# Registry (autoload) for stack conversion
 	if Engine.has_singleton("ItemRegistry"):
 		_registry = Engine.get_singleton("ItemRegistry")
 	else:
 		_registry = null
 
-	# Fallback: Wenn nur legacy item vorliegt, Stack daraus bauen
+	# Fallback: if only legacy item is present, build a stack from it
 	if item_stack == null and item is Dictionary and not item.is_empty():
 		item_stack = _stack_from_dict(item)
 
 	ALL_DROPS.append(self)
 	_reflow_all_labels()
-	# Loot-Icon aktualisieren, falls setup_drop() bereits aufgerufen wurde
+	# Update loot icon if setup_drop() was already called
 	_update_loot_icon()
 
 
 func setup_drop(world_pos: Vector2, gold_amount: int, item_dict: Dictionary) -> void:
-	# Position wird von enemy_marker (Spawner) bereits passend gestapelt
+	# Position is already stacked nicely by enemy_marker (spawner)
 	global_position = world_pos
 	gold = gold_amount
 	item = item_dict
 	item_stack = _stack_from_dict(item_dict)
 	
-	# Position-Feld nur setzen, wenn nicht bereits ein Loot-/Drag-Tag vorhanden
+	# Only set position field if there is no existing loot/drag tag
 	if item is Dictionary and not item.is_empty():
 		var pos_info: Variant = item.get("position", null)
 		var has_loot_or_drag: bool = pos_info is Dictionary and (pos_info.has("loot") or pos_info.has("drag"))
@@ -254,8 +250,8 @@ func setup_drop(world_pos: Vector2, gold_amount: int, item_dict: Dictionary) -> 
 	_ensure_label()
 	_update_label()
 	_reflow_all_labels()
-	# Loot-Icon nach Setup aktualisieren (wenn Sprite bereits existiert)
-	# Falls _ready() noch nicht aufgerufen wurde, wird es dort aktualisiert
+	# Update loot icon after setup (if sprite already exists)
+	# If _ready() hasn't been called yet, it will be updated there
 	if _loot_sprite != null:
 		_update_loot_icon()
 
@@ -272,7 +268,7 @@ func _ensure_label() -> void:
 		label.autowrap_mode = TextServer.AUTOWRAP_OFF
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.position = Vector2(0, -20)  # leicht über dem Boden
+		label.position = Vector2(0, -20)  # slightly above ground
 		label.size = Vector2(200, 24)
 		add_child(label)
 
@@ -306,7 +302,7 @@ func _update_label() -> void:
 	if gold > 0:
 		_gold_text = "%d Gold" % gold
 
-	# Label nicht mehr verwenden, Render erfolgt in _draw
+	# Do not use label for rendering any more; drawing happens in _draw
 	if label:
 		label.visible = false
 
@@ -317,12 +313,12 @@ func _update_label() -> void:
 
 
 func _draw() -> void:
-	# Icons werden als Sprite2D angezeigt, nicht hier gezeichnet
-	# Kein gelber Punkt mehr nötig
+	# Icons are displayed as Sprite2D, not drawn here
+	# No yellow dot needed anymore
 
-	# Sichtbarkeitslogik:
-	# - show_loot (z.B. G) / G gehalten -> temporär anzeigen
-	# - toggle_loot (z.B. Alt+G, InputMap) toggelt LOOT_ALWAYS_VISIBLE
+	# Visibility logic:
+	# - show_loot (e.g. G) / G held -> show temporarily
+	# - toggle_loot (e.g. Alt+G, InputMap) toggles LOOT_ALWAYS_VISIBLE
 	var show_temp := Input.is_action_pressed("show_loot") or Input.is_key_pressed(KEY_G)
 	var show_visible := LOOT_ALWAYS_VISIBLE or show_temp
 	if not show_visible:
@@ -352,23 +348,23 @@ func _draw() -> void:
 
 	var padding: Vector2 = Vector2(6.0, 4.0)
 	var base_box_size: Vector2 = Vector2(max_width, line_height * lines.size()) + padding * 2.0
-	# Hover-Zoom anwenden (7.5% größer)
+	# Apply hover zoom (7.5% larger)
 	var box_size: Vector2 = base_box_size * _hover_scale
 	var box_pos := Vector2(-box_size.x * 1 + _label_offset_x, -box_size.y - 8.0 + _label_offset_y)
 
-	# Hintergrund in Rarity-Farbe, aber dunkler und leicht transparent
-	var bg_color := Color(0, 0, 0, 0.8)  # Fallback: schwarz
-	var border_color := Color(1, 1, 1)  # Fallback: weiß
+	# Background in rarity color, but darker and slightly transparent
+	var bg_color := Color(0, 0, 0, 0.8)  # Fallback: black
+	var border_color := Color(1, 1, 1)  # Fallback: white
 	if _item_text != "":
 		var rarity_color := _get_color_for_rarity(_rarity)
 		border_color = rarity_color
-		# Hintergrund in Rarity-Farbe, aber dunkler (0.15) und leicht transparent (Alpha 0.4)
+		# Background in rarity color, but darker (0.15) and slightly transparent (Alpha 0.4)
 		bg_color = Color(rarity_color.r * 0.15, rarity_color.g * 0.15, rarity_color.b * 0.15, 0.4)
 	elif _gold_text != "":
-		border_color = Color(1.0, 0.84, 0.0)  # Gold-Farbe für Gold-Drops
-		bg_color = Color(1.0 * 0.15, 0.84 * 0.15, 0.0 * 0.15, 0.4)  # Dunkles Gold
+		border_color = Color(1.0, 0.84, 0.0)  # Gold color for gold drops
+		bg_color = Color(1.0 * 0.15, 0.84 * 0.15, 0.0 * 0.15, 0.4)  # Dark gold
 	
-	# Hover-Effekt: etwas heller
+	# Hover effect: slightly brighter
 	var bg_alpha := bg_color.a
 	var border_alpha := 0.8
 	if _is_hovered:
@@ -376,12 +372,12 @@ func _draw() -> void:
 		border_alpha = 1.0
 	
 	var hover_font_size: int = int(round(font_size * _hover_scale))
-	# Hintergrundbox mit Rarity-Farbe
+	# Background box with rarity color
 	draw_rect(Rect2(box_pos, box_size), Color(bg_color.r, bg_color.g, bg_color.b, bg_alpha), true)
-	# Rand mit Rarity-Farbe
+	# Border with rarity color
 	draw_rect(Rect2(box_pos, box_size), Color(border_color.r, border_color.g, border_color.b, border_alpha), false, 1.0)
 
-	# Textzeilen (links mit gleichem Innenabstand, dadurch links/rechts symmetrisch)
+	# Text lines (left with same padding, making left/right symmetric)
 	var y := box_pos.y + padding.y * _hover_scale + line_height * _hover_scale
 
 	if _item_text != "":
@@ -399,13 +395,13 @@ func _draw() -> void:
 
 
 func _process(_delta: float) -> void:
-	# Jede Frame neu zeichnen, damit Tastenzustand (z.B. G gehalten) wirksam wird
+	# Redraw every frame so input state (e.g. G held) is reflected
 	queue_redraw()
 
 	var mouse_pos := get_global_mouse_position()
 	var mouse_local := to_local(mouse_pos)
 	
-	# Prüfen ob Maus über Text-Bereich ist
+	# Check whether the mouse is over the text area
 	var show_temp := Input.is_action_pressed("show_loot") or Input.is_key_pressed(KEY_G)
 	var show_visible := LOOT_ALWAYS_VISIBLE or show_temp
 	var is_hovering_text := false
@@ -434,13 +430,13 @@ func _process(_delta: float) -> void:
 			
 			is_hovering_text = text_rect.has_point(mouse_local)
 	
-	# Hover-Status aktualisieren
+	# Update hover status
 	if is_hovering_text and not _is_hovered:
 		_start_hover_animation()
 	elif not is_hovering_text and _is_hovered:
 		_stop_hover_animation()
 	
-	# Tooltip anzeigen
+	# Show tooltip near the drop if close to the player
 	if mouse_pos.distance_to(global_position) <= 32.0:
 		var tooltip_text := _format_item_tooltip_inventory_style(item)
 		if tooltip_text != "":
@@ -455,14 +451,14 @@ func _format_item_tooltip_inventory_style(item_data: Dictionary) -> String:
 	if item_data.is_empty():
 		return ""
 
-	var base_text := "[b]%s[/b]\n" % item_data.get("name", item_data.get("id", "Unbekannt"))
-	base_text += "Level: %s\n" % str(item_data.get("item_level", "?"))
-	base_text += "Typ: %s\n" % item_data.get("item_type", "?")
+	var base_text := "[b]%s[/b]\n" % item_data.get("name", item_data.get("id", "Unknown"))
+	base_text += "%s: %s\n" % [tr("Level"), str(item_data.get("item_level", "?"))]
+	base_text += "%s: %s\n" % [tr("Type"), item_data.get("item_type", "?")]
 
-	# Stats des Items
+	# Item stats
 	var stats: Dictionary = item_data.get("stats", {})
 	if not stats.is_empty():
-		base_text += "\n[b]Stats:[/b]\n"
+		base_text += "\n[b]%s[/b]\n" % tr("Stats:")
 		for stat_name in stats.keys():
 			var value = stats[stat_name]
 			if value != 0:
@@ -471,7 +467,7 @@ func _format_item_tooltip_inventory_style(item_data: Dictionary) -> String:
 	# Requirements
 	var requirements = item_data.get("requirements", {})
 	if not requirements.is_empty():
-		base_text += "\n[b]Anforderungen:[/b]\n"
+		base_text += "\n[b]%s[/b]\n" % tr("Requirements:")
 		for req_name in requirements.keys():
 			var req_val = requirements[req_name]
 			if req_val != 0:
@@ -480,7 +476,7 @@ func _format_item_tooltip_inventory_style(item_data: Dictionary) -> String:
 	# Enchantments
 	var enchantments = item_data.get("enchantments", [])
 	if not enchantments.is_empty():
-		base_text += "\n[b]Verzauberungen:[/b]\n"
+		base_text += "\n[b]%s[/b]\n" % tr("Enchantments:")
 		for enchant in enchantments:
 			if enchant is Dictionary:
 				var enchant_name = enchant.get("name", "?")
@@ -495,7 +491,7 @@ static func _reflow_all_labels() -> void:
 	if font == null:
 		return
 
-	# Liste aller aktiven Drops sortieren (stabile Reihenfolge)
+	# Sort list of all active drops (stable order)
 	var drops: Array = ALL_DROPS.duplicate()
 	drops.sort_custom(func(a, b):
 		var da := a as DroppedLoot
@@ -513,7 +509,7 @@ static func _reflow_all_labels() -> void:
 
 		var drop := d as DroppedLoot
 
-		# Textzeilen für diese Instanz ermitteln
+		# Determine text lines for this instance
 		var text_item: String = drop._item_text
 		var text_gold: String = drop._gold_text
 
@@ -540,7 +536,7 @@ static func _reflow_all_labels() -> void:
 		var base_box_pos := Vector2(-box_size.x * 0.5, -box_size.y - 8.0)
 		var rect := Rect2(drop.global_position + base_box_pos, box_size)
 
-		# Solange an bestehende Boxen anstößt, weiter nach oben schieben
+		# While overlapping existing boxes, push label further up
 		var found_overlap := true
 		while found_overlap:
 			found_overlap = false
@@ -550,36 +546,36 @@ static func _reflow_all_labels() -> void:
 					rect.position.y = r.position.y - box_size.y - 4.0
 					break
 
-		# Offset relativ zur Basisposition speichern
+		# Store offset relative to base position
 		drop._label_offset_y = rect.position.y - (drop.global_position.y + base_box_pos.y)
 		processed.append(rect)
-		# CollisionShape aktualisieren, wenn sich Offset geändert hat
+		# Update CollisionShape when offset has changed
 		drop._update_collision_shape()
 
 
 func _on_body_entered(body: Node) -> void:
 	if not body:
 		return
-	# Sehr einfache Erkennung: wir nehmen an, dass der Spieler-Node "Player" heißt.
+	# Simple detection: assume the player node is named "Player".
 	if body.name != "Player":
 		return
 
-	# Kein Auto-Loot mehr beim Überlaufen: nur Klick/Doppelklick sammelt ein.
+	# No auto-loot on contact: only click/double-click picks up.
 	pass
 
 
 func _get_color_for_rarity(rarity: String) -> Color:
 	match rarity:
 		"normal":
-			return Color(1, 1, 1)       # Weiß
+			return Color(1, 1, 1)       # white
 		"magic":
-			return Color(0.2, 0.4, 1)   # Blau
+			return Color(0.2, 0.4, 1)   # blue
 		"epic":
-			return Color(0.7, 0.2, 1)   # Lila
+			return Color(0.7, 0.2, 1)   # purple
 		"legendary":
-			return Color(1, 0.9, 0.2)   # Gelb
+			return Color(1, 0.9, 0.2)   # yellow
 		"unique":
-			return Color(1, 0.84, 0.0)  # Gold
+			return Color(1, 0.84, 0.0)  # gold
 		_:
 			return Color(1, 1, 1)
 
@@ -590,7 +586,7 @@ func _get_color_hex_for_rarity(rarity: String) -> String:
 
 
 func _update_collision_shape() -> void:
-	# CollisionShape nur für Text-Bereich, nicht für gelben Punkt
+	# CollisionShape only for the text area, not for any dot/icon
 	var shape_node := get_node_or_null("ClickCollision")
 	if not shape_node or not (shape_node is CollisionShape2D):
 		return
@@ -601,7 +597,7 @@ func _update_collision_shape() -> void:
 	
 	var rect_shape := shape.shape as RectangleShape2D
 	
-	# Text-/Icon-Bereich berechnen (ähnlich wie in _draw/_on_input_event)
+	# Calculate text/icon area (similar to _draw/_on_input_event)
 	var font := DROP_FONT
 	var font_size: int = LABEL_FONT_SIZE
 	var line_height: float = 14.0
@@ -639,11 +635,11 @@ func _start_hover_animation() -> void:
 		_hover_tween.kill()
 	_hover_tween = create_tween()
 	_hover_tween.parallel().tween_property(self, "_hover_scale", 1.05, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	# Loot-Icon: größer und dunkler beim Hover
+	# Loot icon: larger and darker on hover
 	if _loot_sprite and _loot_sprite.visible:
 		_hover_tween.parallel().tween_property(_loot_sprite, "scale", Vector2(0.5, 0.5), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		_hover_tween.parallel().tween_property(_loot_sprite, "modulate", Color(0.8, 0.8, 0.8, 1), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	# Gold-Icon: größer und dunkler beim Hover
+	# Gold icon: larger and darker on hover
 	if _gold_sprite and _gold_sprite.visible:
 		_hover_tween.parallel().tween_property(_gold_sprite, "scale", Vector2(0.45, 0.45), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		_hover_tween.parallel().tween_property(_gold_sprite, "modulate", Color(0.8, 0.8, 0.8, 1), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
@@ -655,11 +651,11 @@ func _stop_hover_animation() -> void:
 		_hover_tween.kill()
 	_hover_tween = create_tween()
 	_hover_tween.parallel().tween_property(self, "_hover_scale", 1.0, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	# Loot-Icon: zurück zur normalen Größe und Helligkeit
+	# Loot icon: back to normal size and brightness
 	if _loot_sprite and _loot_sprite.visible:
 		_hover_tween.parallel().tween_property(_loot_sprite, "scale", Vector2(0.35, 0.35), 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		_hover_tween.parallel().tween_property(_loot_sprite, "modulate", Color(1, 1, 1, 1), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-	# Gold-Icon: zurück zur normalen Größe und Helligkeit
+	# Gold icon: back to normal size and brightness
 	if _gold_sprite and _gold_sprite.visible:
 		_hover_tween.parallel().tween_property(_gold_sprite, "scale", Vector2(0.36, 0.36), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		_hover_tween.parallel().tween_property(_gold_sprite, "modulate", Color(1, 1, 1, 1), 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
@@ -671,7 +667,7 @@ func _set_circle_color(color: Color) -> void:
 
 
 func _update_loot_icon() -> void:
-	# Loot-Icon für Items, Gold-Icon für Gold
+	# Loot icon for items, gold icon for gold
 	if _loot_sprite == null or _gold_sprite == null:
 		return
 	
@@ -680,24 +676,24 @@ func _update_loot_icon() -> void:
 		has_item = true
 	var has_gold := gold > 0
 	
-	# Loot-Icon für Items
+	# Loot icon for items
 	if has_item:
 		_loot_sprite.visible = true
 		_gold_sprite.visible = false
-		# Animation wird von _start_hover_animation/_stop_hover_animation gesteuert
+		# Animation is controlled by _start_hover_animation/_stop_hover_animation
 		if not _is_hovered:
 			_loot_sprite.scale = Vector2(0.4, 0.4)
 			_loot_sprite.modulate = Color(1, 1, 1, 1)
 	elif has_gold:
-		# Nur Gold, kein Item -> Gold-Icon anzeigen
+		# Only gold, no item -> show gold icon
 		_loot_sprite.visible = false
 		_gold_sprite.visible = true
-		# Animation wird von _start_hover_animation/_stop_hover_animation gesteuert
+		# Animation is controlled by _start_hover_animation/_stop_hover_animation
 		if not _is_hovered:
-			_gold_sprite.scale = Vector2(0.36, 0.36)  # 10% kleiner als Loot-Icon
+			_gold_sprite.scale = Vector2(0.36, 0.36)  # 10% smaller than loot icon
 			_gold_sprite.modulate = Color(1, 1, 1, 1)
 	else:
-		# Nichts vorhanden -> beide Icons ausblenden
+		# Nothing present -> hide both icons
 		_loot_sprite.visible = false
 		_gold_sprite.visible = false
 
@@ -706,18 +702,18 @@ func _pickup() -> void:
 	if _picked_up:
 		return
 	
-	# Prüfen ob Loot noch in Pickup-Reichweite ist (kann sich während Drag geändert haben)
+	# Check if loot is still in pickup range (may have changed during drag)
 	if not is_in_pickup_range():
-		print("📦 DroppedLoot: Loot zu weit weg beim Pickup")
+		print("📦 DroppedLoot: Loot too far away during pickup")
 		_picked_up = false
 		return
 	
 	if item_stack == null and item is Dictionary and not item.is_empty():
 		item_stack = _stack_from_dict(item)
-	# Gold-only darf ohne ItemStack aufgenommen werden
+	# Gold-only can be picked up without ItemStack
 	var allow_gold_only := (item_stack == null or item_stack.item == null) and gold > 0
 	if item_stack == null and not allow_gold_only:
-		print("📦 DroppedLoot: Kein ItemStack vorhanden, Pickup abgebrochen")
+		print("📦 DroppedLoot: No ItemStack present, pickup aborted")
 		return
 
 	var temp_store := preload("res://core/temp_loot_store.gd")
@@ -727,7 +723,7 @@ func _pickup() -> void:
 		loot_id = int(pos_info["loot"])
 	var loot_dict: Dictionary = {}
 	if loot_id > 0:
-		# Nutze denselben Pfad wie Drag: erst ins Drag verschieben, dann übernehmen
+		# Use same path as drag: first move to drag, then take over
 		var moved = temp_store.move_loot_to_drag(loot_id)
 		if moved is Dictionary and not moved.is_empty():
 			loot_dict = moved
@@ -737,33 +733,85 @@ func _pickup() -> void:
 	else:
 		loot_dict = _dict_from_stack(item_stack) if item_stack != null else {}
 	# Persist to inventory via LootPersistence (orders fields and sets inventar_slot)
-	var added := LootPersistenceScript.add_loot_to_player_and_inventory(gold, loot_dict)
+	var added := LootPersistence.add_loot_to_player_and_inventory(gold, loot_dict)
+	var updated_inv_res: InventoryResource = LootPersistence.get_last_updated_inventory()
+	print("📦 DroppedLoot: updated_inv_res is null: ", updated_inv_res == null)
+	if updated_inv_res:
+		print("📦 DroppedLoot: updated_inv_res has ", updated_inv_res.items.size(), " items")
 
-	# Wenn kein Platz im Rucksack ist, Item auf dem Boden lassen.
-	if not added and item_stack != null:
-		print("📦 DroppedLoot: Inventar voll, Item bleibt am Boden liegen")
+	# How many items remain?
+	var leftover_amt: int = int(loot_dict.get("amount", 0))
+	var has_item_on_ground: bool = item_stack != null and item_stack.item != null
+
+	# Case 1: Nothing could be added to inventory at all
+	if not added or (has_item_on_ground and leftover_amt >= item_stack.amount):
+		print("📦 DroppedLoot: Inventory full, item remains on ground")
 		_picked_up = false
-		# Re-add to temp loot so it is not lost
+		# Re-add to temp loot so it doesn't get lost (if it was originally there)
 		if loot_id > 0:
 			temp_store.add_item(_dict_from_stack(item_stack))
-		# Sicherstellen, dass kein Drag-State aktiv bleibt
+		# Ensure no drag state remains active
 		if DragState.active:
 			var temp_store_drag := preload("res://core/temp_loot_store.gd")
 			temp_store_drag.clear_drag()
 			DragState.clear()
 		return
+
+	# Case 2: Partially picked up, remainder left -> update world loot
+	if leftover_amt > 0 and has_item_on_ground:
+		print("📦 DroppedLoot: Partially picked up, remainder on ground: ", leftover_amt)
+		item_stack.amount = leftover_amt
+		item = loot_dict
+		gold = 0  # Gold was completely added
+		_update_label()
+		_picked_up = false
+		temp_store.clear_drag()
+		DragState.clear()
+		# Update UI (HUD inventory) - use direct update if available
+		var scene := get_tree().current_scene
+		if scene:
+			var hud := scene.get_node_or_null("HUD")
+			print("📦 DroppedLoot: hud is null: ", hud == null)
+			if hud and hud.has_node("Control/Modals/EquipmentSlots"):
+				var eq := hud.get_node("Control/Modals/EquipmentSlots")
+				print("📦 DroppedLoot: eq is null: ", eq == null)
+				print("📦 DroppedLoot: eq.has_method('refresh_from_inventory_resource'): ", eq.has_method("refresh_from_inventory_resource") if eq else false)
+				if eq and updated_inv_res and eq.has_method("refresh_from_inventory_resource"):
+					# Direct update from the InventoryResource we just saved - no file loading needed!
+					print("📦 DroppedLoot: Updating UI directly from InventoryResource")
+					eq.refresh_from_inventory_resource(updated_inv_res)
+				elif eq and eq.has_method("refresh_from_save"):
+					# Fallback to file-based refresh
+					print("📦 DroppedLoot: Updating UI from file (fallback)")
+					eq.call_deferred("refresh_from_save")
+				else:
+					print("⚠️ DroppedLoot: No update method available!")
+		return
+
+	# Case 3: Everything was picked up -> remove drop
 	_picked_up = true
 	temp_store.clear_drag()
 	DragState.clear()
 
-	# UI sofort aktualisieren
-	var scene := get_tree().current_scene
-	if scene:
-		var hud := scene.get_node_or_null("HUD")
+	# Update UI immediately (HUD inventory) - use direct update if available
+	var scene2 := get_tree().current_scene
+	if scene2:
+		var hud := scene2.get_node_or_null("HUD")
+		print("📦 DroppedLoot: hud is null (complete pickup): ", hud == null)
 		if hud and hud.has_node("Control/Modals/EquipmentSlots"):
 			var eq := hud.get_node("Control/Modals/EquipmentSlots")
-			if eq and eq.has_method("refresh_from_save"):
-				eq.refresh_from_save()
+			print("📦 DroppedLoot: eq is null (complete pickup): ", eq == null)
+			print("📦 DroppedLoot: eq.has_method('refresh_from_inventory_resource') (complete pickup): ", eq.has_method("refresh_from_inventory_resource") if eq else false)
+			if eq and updated_inv_res and eq.has_method("refresh_from_inventory_resource"):
+				# Direct update from the InventoryResource we just saved - no file loading needed!
+				print("📦 DroppedLoot: Updating UI directly from InventoryResource (complete pickup)")
+				eq.refresh_from_inventory_resource(updated_inv_res)
+			elif eq and eq.has_method("refresh_from_save"):
+				# Fallback to file-based refresh
+				print("📦 DroppedLoot: Updating UI from file (fallback, complete pickup)")
+				eq.call_deferred("refresh_from_save")
+			else:
+				print("⚠️ DroppedLoot: No update method available (complete pickup)!")
 
 	queue_free()
 
@@ -774,17 +822,17 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 	var mb := event as InputEventMouseButton
 	if mb.button_index != MOUSE_BUTTON_LEFT or not mb.pressed:
 		return
-	if mb.double_click:
-		_last_click_time = 0.0
-		handle_world_click()
+	# Shift + Left Click → immediate pickup (replaces former double-click behavior)
+	if mb.shift_pressed:
+		handle_world_click(true)
 		return
 
-	# Drag nur über Item-Namen aktivieren, nicht über den gelben Punkt
-	# Prüfen ob Klick auf Text-Bereich war
+	# Only activate drag via item name, not via yellow dot
+	# Check if click was on text area
 	var mouse_world_pos := get_global_mouse_position()
 	var click_local_pos := to_local(mouse_world_pos)
 	
-	# Text-Bereich berechnen (ähnlich wie in _draw)
+	# Calculate text area (similar to _draw)
 	var font := DROP_FONT
 	if font == null:
 		return
@@ -814,7 +862,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 	var box_pos := Vector2(-box_size.x * 0.5 + _label_offset_x, -box_size.y - 8.0 + _label_offset_y)
 	var text_rect := Rect2(box_pos, box_size)
 	
-	# Prüfen ob Klick innerhalb des Text-Bereichs oder auf die Icons
+	# Check if click is within text area or on icons
 	var hit_text := text_rect.has_point(click_local_pos)
 	var hit_icon := false
 	if _loot_sprite and _loot_sprite.visible and _loot_sprite.texture:
@@ -826,40 +874,38 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 		var gold_rect := Rect2(-tex_size * 0.5, tex_size)
 		hit_icon = gold_rect.has_point(click_local_pos)
 	if not hit_text and not hit_icon:
-		return  # Klick außerhalb -> kein Drag/Pickup
+		return  # Click outside -> no drag/pickup
 	
 	print("📦 DroppedLoot: Mouse click on item name at ", global_position)
 	handle_world_click()
 
 
-## Wird vom HUD oder vom eigenen input_event aufgerufen, wenn auf diesen Drop geklickt wurde.
-func handle_world_click() -> void:
-	# Prüfen ob Loot in Pickup-Reichweite ist
+## Called by HUD or its own input_event when this drop is clicked.
+## immediate_pickup=true → pick up immediately (used for Shift+LeftClick)
+func handle_world_click(immediate_pickup: bool = false) -> void:
+	# Check if loot is in pickup range
 	if not is_in_pickup_range():
-		print("📦 DroppedLoot: Loot zu weit weg (Distanz: ", global_position.distance_to(_get_player().global_position), " > ", PICKUP_RADIUS, ")")
+		print("📦 DroppedLoot: Loot too far away (Distance: ", global_position.distance_to(_get_player().global_position), " > ", PICKUP_RADIUS, ")")
 		return
 
 	if item_stack == null and item is Dictionary and not item.is_empty():
 		item_stack = _stack_from_dict(item)
 	
-	var now: float = float(Time.get_ticks_msec()) / 1000.0
-	# Doppelklick: sofort aufheben
-	if now - _last_click_time <= DOUBLE_CLICK_MAX_DELAY:
-		print("📦 DroppedLoot: handle_world_click double click -> pickup")
+	if immediate_pickup:
+		print("📦 DroppedLoot: Shift+LeftClick -> immediate pickup")
 		_cancel_hold_timer()
-		_pickup()  # pickup writes to inventory; DO NOT start drag
-		_last_click_time = 0.0
+		# pickup writes to inventory; DO NOT start drag
+		_pickup()
 		return
 
-	# Einfachklick: zunächst nur "Merkung" und Timer für Long-Press-Drag starten.
-	_last_click_time = now
+	# Normal click: start timer for long-press drag
 	_start_hold_drag_timer()
 
 
 func _start_hold_drag_timer() -> void:
 	_cancel_hold_timer()
 
-	# Kein ItemStack -> kein Drag
+	# No ItemStack -> no drag
 	if item_stack == null and item is Dictionary and not item.is_empty():
 		item_stack = _stack_from_dict(item)
 	if item_stack == null or item_stack.item == null or item_stack.amount <= 0:
@@ -874,21 +920,21 @@ func _cancel_hold_timer() -> void:
 	if _hold_timer:
 		if _hold_timer.timeout.is_connected(_on_hold_drag_timeout):
 			_hold_timer.timeout.disconnect(_on_hold_drag_timeout)
-		_hold_timer = null  # Timer wird vom Tree automatisch freigegeben
+		_hold_timer = null  # Timer is automatically freed by Tree
 
 
 func _on_hold_drag_timeout() -> void:
 	_hold_timer = null
 
-	# Wenn inzwischen schon aufgehoben oder Maustaste nicht mehr gedrückt, abbrechen
+	# If already picked up or mouse button no longer pressed, cancel
 	if _picked_up:
 		return
 	if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		return
 	
-	# Prüfen ob Loot noch in Pickup-Reichweite ist
+	# Check if loot is still in pickup range
 	if not is_in_pickup_range():
-		print("📦 DroppedLoot: Loot zu weit weg für Drag")
+		print("📦 DroppedLoot: Loot too far away for drag")
 		return
 
 	print("📦 DroppedLoot: long press -> prepare drag")
@@ -911,20 +957,36 @@ func _on_hold_drag_timeout() -> void:
 			# Fallback: set drag position and persist
 			temp_loot_store.save_drag_stack(item_stack)
 	else:
-		# fallback: nur Drag speichern
+		# Fallback: only save drag
 		temp_loot_store.save_drag_stack(item_stack)
 
-	# Welt-Loot für Drag & Drop "aufheben": in globalen DRAG_* merken
-	# und die sichtbare Instanz am Boden ausblenden.
-	DragState.start("world", "", item_stack, self)
-	visible = false
-
-	# EquipmentSlots-UI über den neuen Welt-Drag informieren, damit die
-	# passenden Equipment-Slots visuell hervorgehoben werden.
+	# "Pick up" world loot for drag & drop:
+	# - zentraler Drag über EquipmentSlots.begin_drag_from_stack (Godot-Style)
+	# - sichtbare Instanz am Boden ausblenden
+	var drag_data: Dictionary = {}
 	var scene := get_tree().current_scene
+	var eq: Node = null
 	if scene:
 		var hud := scene.get_node_or_null("HUD")
 		if hud and hud.has_node("Control/Modals/EquipmentSlots"):
-			var eq := hud.get_node("Control/Modals/EquipmentSlots")
-			if eq and eq.has_method("highlight_for_world_item"):
-				eq.highlight_for_world_item(DragState.get_item())
+			eq = hud.get_node("Control/Modals/EquipmentSlots")
+
+	if eq != null and eq.has_method("begin_drag_from_stack"):
+		drag_data = eq.begin_drag_from_stack("world", "", item_stack, self)
+	else:
+		# Fallback: direkt DragState + Payload setzen, falls HUD/EquipmentSlots nicht vorhanden
+		temp_loot_store.save_drag_stack(item_stack)
+		DragState.start("world", "", item_stack, self)
+		drag_data = {
+			"item": _dict_from_stack(item_stack),
+			"source_kind": "world",
+			"source_id": "",
+		}
+
+	visible = false
+
+	# Inform EquipmentSlots UI about the new world drag so that
+	# matching equipment slots are visually highlighted.
+	if eq != null:
+		if eq.has_method("highlight_for_world_item"):
+			eq.highlight_for_world_item(drag_data.get("item", {}))

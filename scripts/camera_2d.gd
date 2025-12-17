@@ -9,5 +9,5 @@ func _ready():
 
 func _process(delta):
 	if target:
-		# Плавное перемещение
+		# Smooth movement
 		global_position = global_position.lerp(target.global_position, smooth_speed * delta)

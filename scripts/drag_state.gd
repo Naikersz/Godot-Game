@@ -1,8 +1,8 @@
 class_name DragState
 extends RefCounted
 
-## Zentrale Drag-Struktur für Welt-/Inventar-/Equipment-Interaktionen.
-## Jetzt ItemStack-basiert; Debug-JSON bleibt write-only.
+## Central drag structure for world/inventory/equipment interactions.
+## Now ItemStack-based; debug JSON remains write-only.
 
 const ItemRegistryRes = preload("res://scripts/item_registry.gd")
 const ItemStackRes = preload("res://resources/item_stack.gd")
@@ -10,14 +10,14 @@ const ItemRes = preload("res://resources/item.gd")
 const ItemTypeRes = preload("res://resources/item_type.gd")
 
 static var active: bool = false
-static var item_stack: ItemStack = null   # aktuell "an der Maus" (Resource)
+static var item_stack: ItemStack = null   # currently "at the mouse" (Resource)
 static var source_kind: String = ""       # "world", "inventory", "equipment"
-static var source_id: String = ""         # bei inventory: Index, bei equipment: Slotname, bei world: optional
-static var source_node: Node = null       # z.B. DroppedLoot-Node oder Panel
+static var source_id: String = ""         # for inventory: index, for equipment: slot name, for world: optional
+static var source_node: Node = null       # e.g. DroppedLoot node or Panel
 
 
 static func start(kind: String, id: String, drag_item: Variant, node: Node) -> void:
-	# drag_item kann Dictionary (Altbestand) oder ItemStack sein
+	# drag_item can be Dictionary (legacy) or ItemStack
 	var stack := _to_item_stack(drag_item)
 	if stack == null:
 		clear()
@@ -28,7 +28,7 @@ static func start(kind: String, id: String, drag_item: Variant, node: Node) -> v
 	source_kind = kind
 	source_id = id
 	source_node = node
-	# Persistieren (Resource + Debug JSON) über TempLootStore
+	# Persist (Resource + Debug JSON) via TempLootStore
 	var tls := preload("res://core/temp_loot_store.gd")
 	tls.save_drag_stack(stack)
 
@@ -39,24 +39,24 @@ static func clear() -> void:
 	source_kind = ""
 	source_id = ""
 	source_node = null
-	# Persistierten Drag-Zustand leeren
+	# Clear persisted drag state
 	var tls := preload("res://core/temp_loot_store.gd")
 	tls.clear_drag()
 
-# Kompatibilität: liefert eine Dictionary-Ansicht für UI/Tooltip
+# Compatibility: returns a Dictionary view for UI/Tooltip
 static func get_item_dict() -> Dictionary:
 	if item_stack == null:
 		return {}
 	return _stack_to_dict(item_stack)
 
-# Kompatibilität für bisherigen Code (Dictionary-View)
+# Compatibility for existing code (Dictionary view)
 static func get_item() -> Dictionary:
 	return get_item_dict()
 
 static func has_item() -> bool:
 	return active and item_stack != null and item_stack.item != null and item_stack.amount > 0
 
-# Hilfsfunktionen
+# Helper functions
 static func _to_item_stack(v: Variant) -> ItemStack:
 	if v is ItemStack:
 		return v

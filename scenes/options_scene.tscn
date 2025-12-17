@@ -140,6 +140,16 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 4
 
+[node name="LanguageLabel" type="Label" parent="VBoxContainer/TabContainer/VideoTab/ScrollContainer/VideoVBox"]
+layout_mode = 2
+text = "Language"
+label_settings = ExtResource("3_rwfm2")
+horizontal_alignment = 1
+
+[node name="LanguageOption" type="OptionButton" parent="VBoxContainer/TabContainer/VideoTab/ScrollContainer/VideoVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
 [node name="DevTab" type="Control" parent="VBoxContainer/TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 2

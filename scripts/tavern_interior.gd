@@ -1,7 +1,7 @@
 extends Node2D
 
 ## Tavern Interior Scene
-## Внутренность таверны: TileMap + тот же HUD‑инвентарь.
+## Tavern interior: TileMap + same HUD inventory.
 
 @onready var tilemap: TileMap = $InteriorTileMap/TileMapGround
 @onready var player: Node2D = $Player
@@ -11,7 +11,7 @@ var _player_near_exit: bool = false
 
 
 func _ready() -> void:
-	# Загружаем HUD с инвентарём (как в TownScene / DungeonScene)
+	# Load HUD with inventory (as in TownScene / DungeonScene)
 	var hud_scene := preload("res://scenes/hud_scene.tscn")
 	var hud = hud_scene.instantiate()
 	add_child(hud)
@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	# Проверяем, стоит ли игрок достаточно близко к выходу
+	# Check if player is close enough to exit
 	_player_near_exit = false
 	if player and exit_area:
 		var dist := player.global_position.distance_to(exit_area.global_position)
@@ -36,14 +36,14 @@ func get_tilemap() -> TileMap:
 
 
 func exit_to_town() -> void:
-	# Переход назад в город
+	# Transition back to town
 	get_tree().change_scene_to_file("res://scenes/town_scene.tscn")
 
 
 
 
 func _on_area_2d_body_entered(_body: Node2D) -> void:
-	# Старый коллбек от Area2D — теперь не обязателен, оставлен на всякий случай
+	# Old callback from Area2D — no longer required, left for compatibility
 	pass
 
 

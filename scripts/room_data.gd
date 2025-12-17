@@ -1,16 +1,16 @@
 extends Node
 
-## Метаданные комнаты для генерации подземелий
-## Присвойте этот скрипт узлу RoomData в каждой комнате-префабе
+## Room metadata for dungeon generation
+## Assign this script to a RoomData node in each room prefab
 
 @export var room_type: String = "normal"  # "start", "normal", "boss", "treasure", "corridor"
-@export var room_size: Vector2i = Vector2i(15, 15)  # Размер комнаты в тайлах (64x64 каждый)
-@export var connections: Array[String] = []  # ["north", "south", "east", "west"] - направления выходов
-@export var spawn_count: int = 3  # Количество точек спавна врагов
-@export var difficulty: int = 1  # Сложность комнаты (1-10)
-@export var room_id: String = ""  # Уникальный ID комнаты (опционально)
+@export var room_size: Vector2i = Vector2i(15, 15)  # Room size in tiles (64x64 each)
+@export var connections: Array[String] = []  # ["north", "south", "east", "west"] - exit directions
+@export var spawn_count: int = 3  # Number of enemy spawn points
+@export var difficulty: int = 1  # Room difficulty (1-10)
+@export var room_id: String = ""  # Unique room ID (optional)
 
-# Ссылки на узлы комнаты (будут инициализированы автоматически)
+# References to room nodes (will be initialized automatically)
 @onready var floor_tilemap: TileMap = get_node_or_null("../Floor")
 @onready var walls_tilemap: TileMap = get_node_or_null("../Walls")
 @onready var spawn_points: Node2D = get_node_or_null("../SpawnPoints")
@@ -18,12 +18,12 @@ extends Node
 @onready var room_area: Area2D = get_node_or_null("../RoomArea")
 
 func _ready():
-	# Автоматически определяем connections из наличия дверей
+	# Automatically determine connections from door presence
 	if connections.is_empty() and doors:
 		_update_connections_from_doors()
 
 func _update_connections_from_doors():
-	"""Автоматически определяет connections на основе наличия дверей"""
+	"""Automatically determines connections based on door presence"""
 	connections.clear()
 	var door_names = ["North", "South", "East", "West"]
 	for door_name in door_names:
@@ -32,19 +32,19 @@ func _update_connections_from_doors():
 			connections.append(door_name.to_lower())
 
 func get_spawn_positions() -> Array[Vector2]:
-	"""Возвращает массив позиций для спавна врагов"""
+	"""Returns an array of positions for enemy spawning"""
 	var positions: Array[Vector2] = []
 	if not spawn_points:
 		return positions
 	
 	for child in spawn_points.get_children():
 		if child is Marker2D:
-			# Используем global_position относительно корня комнаты
+			# Use global_position relative to room root
 			positions.append(child.position)
 	return positions
 
 func get_door_position(direction: String) -> Vector2:
-	"""Возвращает позицию двери по направлению (относительно корня комнаты)"""
+	"""Returns door position by direction (relative to room root)"""
 	if not doors:
 		return Vector2.ZERO
 	
@@ -55,17 +55,17 @@ func get_door_position(direction: String) -> Vector2:
 	return Vector2.ZERO
 
 func has_connection(direction: String) -> bool:
-	"""Проверяет, есть ли выход в указанном направлении"""
+	"""Checks if there is an exit in the specified direction"""
 	return direction.to_lower() in connections
 
 func get_room_bounds() -> Rect2:
-	"""Возвращает границы комнаты в пикселях"""
-	var tile_size = 64  # Размер тайла из Tilesett.tres
+	"""Returns room bounds in pixels"""
+	var tile_size = 64  # Tile size from Tileset.tres
 	var pixel_size = Vector2(room_size.x * tile_size, room_size.y * tile_size)
 	return Rect2(Vector2.ZERO, pixel_size)
 
 func get_center_position() -> Vector2:
-	"""Возвращает центральную позицию комнаты"""
+	"""Returns the central position of the room"""
 	var bounds = get_room_bounds()
 	return bounds.get_center()
 

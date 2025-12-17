@@ -1,6 +1,6 @@
 extends RefCounted
 
-## Gemeinsame Tooltip-Helfer für Items (Inventar, Dropped Loot, etc.).
+## Shared tooltip helpers for items (inventory, dropped loot, etc.).
 
 static func build_item_tooltip(
 	item: Dictionary,
@@ -11,20 +11,20 @@ static func build_item_tooltip(
 	if item.is_empty():
 		return ""
 
-	var base_text := "[b]%s[/b]\n" % item.get("name", item.get("id", "Unbekannt"))
-	base_text += "Level: %s\n" % str(item.get("item_level", "?"))
-	base_text += "Typ: %s\n" % item.get("item_type", "?")
+	var base_text := "[b]%s[/b]\n" % item.get("name", item.get("id", tr("Unknown")))
+	base_text += "%s: %s\n" % [tr("Level"), str(item.get("item_level", "?"))]
+	base_text += "%s: %s\n" % [tr("Type"), item.get("item_type", "?")]
 
-	# Stats des Hover-Items
+	# Stats of the hovered item
 	var stats: Dictionary = item.get("stats", {})
 	if not stats.is_empty():
-		base_text += "\n[b]Stats:[/b]\n"
+		base_text += "\n[b]%s[/b]\n" % tr("Stats:")
 		for stat_name in stats.keys():
 			var value = stats[stat_name]
 			if value != 0:
 				base_text += "%s: %s\n" % [stat_name.capitalize(), str(value)]
 
-	# Vergleich mit ausgerüstetem Item (falls vorhanden und Slot eindeutig bestimmbar)
+	# Comparison with equipped item (if present and slot is resolvable)
 	var slot_name := ""
 	if item.has("item_type"):
 		var item_type: String = String(item.get("item_type", ""))
@@ -36,14 +36,14 @@ static func build_item_tooltip(
 			var eq_stats: Dictionary = (equipped_item as Dictionary).get("stats", {})
 			if not eq_stats.is_empty():
 				var slot_display: String = slot_names.get(slot_name, slot_name.capitalize())
-				base_text += "\n[b]Vergleich mit ausgerüstetem %s:[/b]\n" % slot_display
+				base_text += "\n[b]%s[/b]\n" % tr("Comparison with equipped %s:") % slot_display
 				for stat_name in stats.keys():
 					var new_val = int(stats.get(stat_name, 0))
 					var old_val = int(eq_stats.get(stat_name, 0))
 					if new_val == 0 and old_val == 0:
 						continue
 					var diff = new_val - old_val
-					var line = "%s: %d (aktuell: %d" % [stat_name.capitalize(), new_val, old_val]
+					var line = "%s: %d (%s: %d" % [stat_name.capitalize(), new_val, tr("current"), old_val]
 					if diff > 0:
 						line += ", [color=green]+%d[/color]" % diff
 					elif diff < 0:
@@ -54,7 +54,7 @@ static func build_item_tooltip(
 	# Requirements
 	var requirements = item.get("requirements", {})
 	if not requirements.is_empty():
-		base_text += "\n[b]Anforderungen:[/b]\n"
+		base_text += "\n[b]%s[/b]\n" % tr("Requirements:")
 		for req_name in requirements.keys():
 			var value = requirements[req_name]
 			if value != 0:
@@ -63,7 +63,7 @@ static func build_item_tooltip(
 	# Enchantments
 	var enchantments = item.get("enchantments", [])
 	if not enchantments.is_empty():
-		base_text += "\n[b]Verzauberungen:[/b]\n"
+		base_text += "\n[b]%s[/b]\n" % tr("Enchantments:")
 		for enchant in enchantments:
 			if enchant is Dictionary:
 				var enchant_name = enchant.get("name", "?")

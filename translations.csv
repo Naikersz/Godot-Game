@@ -1,0 +1,82 @@
+keys,en,de,ru
+Character / Inventory,Character / Inventory,Charakter / Inventar,Персонаж / Инвентарь
+Level,Level,Stufe,Уровень
+Type,Type,Typ,Тип
+Stats:,Stats:,Werte:,Характеристики:
+Requirements:,Requirements:,Anforderungen:,Требования:
+Enchantments:,Enchantments:,Verzauberungen:,Зачарования:
+Monster,Monster,Monster,Монстр
+Lvl,Lvl,St.,Ур.
+Rarity,Rarity,Seltenheit,Редкость
+HP,HP,LP,ЗД
+DMG,DMG,Schaden,Урон
+DEF,DEF,Verteidigung,Защита
+T,T,T,Т
+Dev-Mode: ON,Dev-Mode: ON,Entwicklermodus: AN,Режим разработчика: ВКЛ
+Dev-Mode: OFF,Dev-Mode: OFF,Entwicklermodus: AUS,Режим разработчика: ВЫКЛ
+Forest %d,Forest %d,Wald %d,Лес %d
+Cave %d,Cave %d,Höhle %d,Пещера %d
+Scene: %s  |  %s %d,Scene: %s  |  %s %d,Szene: %s  |  %s %d,Сцена: %s  |  %s %d
+Scene: %s,Scene: %s,Szene: %s,Сцена: %s
+Delete this save?,Delete this save?,Diesen Spielstand löschen?,Удалить это сохранение?
+Delete,Delete,Löschen,Удалить
+Cancel,Cancel,Abbrechen,Отмена
+Load %s (Lv %d),Load %s (Lv %d),Laden %s (St. %d),Загрузить %s (Ур. %d)
+Start new game,Start new game,Neues Spiel starten,Начать новую игру
+Unknown,Unknown,Unbekannt,Неизвестно
+New Hero,New Hero,Neuer Held,Новый герой
+Hero,Hero,Held,Герой
+Comparison with equipped %s:,Comparison with equipped %s:,Vergleich mit angelegtem %s:,Сравнение с экипированным %s:
+current,current,aktuell,текущий
+Player resource is missing.,Player resource is missing.,Spielerressource fehlt.,Ресурс игрока отсутствует.
+Inventory,Inventory,Inventar,Инвентарь
+Total stats:,Total stats:,Gesamtwerte:,Общие характеристики:
+Health,Health,Lebenspunkte,Здоровье
+Damage,Damage,Schaden,Урон
+Defense,Defense,Verteidigung,Защита
+Magic defense,Magic defense,Magische Verteidigung,Магическая защита
+Armour,Armour,Rüstung,Броня
+Evasion,Evasion,Ausweichen,Уклонение
+Energy shield,Energy shield,Energieschild,Энергетический щит
+Block chance,Block chance,Blockchance,Шанс блока
+Attack speed,Attack speed,Angriffsgeschwindigkeit,Скорость атаки
+Movement speed,Movement speed,Bewegungsgeschwindigkeit,Скорость движения
+Attributes,Attributes,Attribute,Атрибуты
+Strength,Strength,Stärke,Сила
+Intelligence,Intelligence,Intelligenz,Интеллект
+Dexterity,Dexterity,Geschicklichkeit,Ловкость
+Speed,Speed,Geschwindigkeit,Скорость
+Slot '%s' selected.,Slot '%s' selected.,Slot '%s' ausgewählt.,Слот '%s' выбран.
+Inventory item '%s' selected.,Inventory item '%s' selected.,Inventargegenstand '%s' ausgewählt.,Предмет инвентаря '%s' выбран.
+No inventory item selected.,No inventory item selected.,Kein Inventargegenstand ausgewählt.,Предмет инвентаря не выбран.
+There is no equipment slot for this item type.,There is no equipment slot for this item type.,Es gibt keinen Ausrüstungsslot für diesen Gegenstandstyp.,Нет слота экипировки для этого типа предмета.
+%s has been equipped.,%s has been equipped.,%s wurde angelegt.,%s экипирован.
+No equipment slot selected.,No equipment slot selected.,Kein Ausrüstungsslot ausgewählt.,Слот экипировки не выбран.
+This slot is empty.,This slot is empty.,Dieser Slot ist leer.,Этот слот пуст.
+%s has been unequipped.,%s has been unequipped.,%s wurde abgelegt.,%s снят.
+Item Level,Item Level,Gegenstandsstufe,Уровень предмета
+Requires Level,Requires Level,Benötigt Stufe,Требуется уровень
+New,New,Neu,Новый
+Current,Current,Aktuell,Текущий
+Equipped %s:,Equipped %s:,Angelegt %s:,Экипирован %s:
+Change if equipped:,Change if equipped:,Änderung bei Anlegen:,Изменение при экипировке:
+Delete save '%s'?,Delete save '%s'?,Spielstand '%s' löschen?,Удалить сохранение '%s'?
+Start,Start,Starten,Начать
+Load Game,Load Game,Spiel laden,Загрузить игру
+Options,Options,Optionen,Настройки
+Exit,Exit,Beenden,Выход
+Load save file,Load save file,Spielstand laden,Загрузить сохранение
+Back,Back,Zurück,Назад
+Master Volume,Master Volume,Hauptlautstärke,Громкость
+Music Volume,Music Volume,Musiklautstärke,Громкость музыки
+Fullscreen,Fullscreen,Vollbild,Полный экран
+Resolution,Resolution,Auflösung,Разрешение
+Language,Language,Sprache,Язык
+Dev-Mode: shows extra Balancing-Panel in Level Selection,Dev-Mode: shows extra Balancing-Panel in Level Selection,Dev-Modus: zeigt extra Balancing-Panel in der Level Auswahl,Режим разработчика: показывает дополнительную панель балансировки в выборе уровня
+Continue,Continue,Weiter,Продолжить
+Settings,Settings,Einstellungen,Настройки
+Main Menu,Main Menu,Hauptmenü,Главное меню
+Quit,Quit,Beenden,Выход
+Level Selection,Level Selection,Level Auswahl,Выбор уровня
+Forest,Forest,Wald,Лес
+Cave,Cave,Höhle,Пещера

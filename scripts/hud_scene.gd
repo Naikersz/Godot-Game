@@ -1,10 +1,10 @@
 extends CanvasLayer
-# DragState und LootPersistence sind globale Klassen (class_name)
-# Falls Godot die Klasse noch nicht erkannt hat, verwenden wir einen Workaround
+# DragState and LootPersistence are global classes (class_name)
+# If Godot has not registered the class yet, use a preload workaround
 const LootPersistenceScript = preload("res://scripts/loot_persistence.gd")
 
-## HUD Scene - Универсальный UI для игровых сцен
-## Содержит сумку, EquipmentSlots и EnemyInfoPanel
+## HUD Scene - universal UI for gameplay scenes
+## Contains backpack button, EquipmentSlots and EnemyInfoPanel
 
 @onready var inventory_button: Button = $Control/GameHUD/LeftContainer/HBoxContainer/InventoryButton
 @onready var menu_button: Button = $Control/GameHUD/TopLeftContainer/MenuButton
@@ -22,33 +22,32 @@ var drag_info_panel: Panel = null
 var drag_info_label: RichTextLabel = null
 
 func _ready() -> void:
-	# WICHTIG: HUD soll die Mausklicks auf die Spielwelt nicht blockieren.
-	# Das Root-Control im HUD wird daher auf MOUSE_FILTER_IGNORE gesetzt.
-	# Einzelne Buttons/Panels können weiterhin ihre eigene Mauslogik haben.
+	# IMPORTANT: HUD should not block mouse clicks on the game world.
+	# The root Control in the HUD is set to MOUSE_FILTER_IGNORE.
+	# Individual buttons/panels can still handle mouse input.
 	if has_node("Control"):
 		var root_control := $Control
 		if root_control is Control:
 			root_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# Подключаем сигнал нажатия на кнопку сумки
+	# Connect inventory button
 	if inventory_button:
 		inventory_button.pressed.connect(_on_inventory_button_pressed)
 	
-	# Подключаем сигнал нажатия на кнопку меню
+	# Connect menu button
 	if menu_button:
 		menu_button.pressed.connect(_on_menu_button_pressed)
 
-	# Кнопка выбора подземелья
+	# Dungeon selection button
 	if dungeon_button:
 		dungeon_button.pressed.connect(_on_dungeon_button_pressed)
 	
-	# Подключаем горячую клавишу для открытия инвентаря
+	# Enable input processing for hotkeys
 	set_process_input(true)
 	set_process(true)
 
-	# Drag-Icon, das beim Welt-Loot-"Drag" der Maus folgt.
-	# Optik an das Inventar-Drag-Preview (slot_get_drag_data) angelehnt:
-	# halbtransparenter, weißer 48x48-Block.
+	# Drag icon that follows the mouse while dragging world loot.
+	# Visual: semi-transparent white 48x48 block, similar to inventory drag preview.
 	drag_icon = ColorRect.new()
 	drag_icon.color = Color(1, 1, 1, 0.4)
 	drag_icon.size = Vector2(48, 48)
@@ -60,25 +59,25 @@ func _ready() -> void:
 	else:
 		add_child(drag_icon)
 	
-	# EnemyInfoPanel initial ausblenden
+	# Hide EnemyInfoPanel initially
 	if enemy_info_panel:
 		enemy_info_panel.visible = false
 	if enemy_info_label:
 		enemy_info_label.text = ""
 
-	# Persistierten Status für Loot-Anzeige laden
+	# Load persisted state for loot visibility toggle
 	var saved_visible: bool = LootPersistenceScript.get_loot_always_visible()
 	DroppedLoot.LOOT_ALWAYS_VISIBLE = saved_visible
 	for drop in DroppedLoot.ALL_DROPS:
 		if drop:
 			drop.queue_redraw()
 
-	# Drag-State zum Start immer leeren (keine Persistenz über Saves)
+	# Always clear drag state at start (no persistence across saves)
 	var temp_store := preload("res://core/temp_loot_store.gd")
 	temp_store.clear_drag()
 	DragState.clear()
 
-	# Drag-Info-Panel unten links erstellen (temporär für Debug)
+	# Create drag info panel in the bottom-left corner (temporary debug helper)
 	drag_info_panel = Panel.new()
 	drag_info_panel.name = "DragInfoPanel"
 	drag_info_panel.anchor_left = 0.0
@@ -91,7 +90,7 @@ func _ready() -> void:
 	drag_info_panel.offset_bottom = -16.0
 	drag_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	drag_info_panel.visible = false
-	# Dunkler Hintergrund für bessere Lesbarkeit
+	# Dark background for better readability
 	var style_box := StyleBoxFlat.new()
 	style_box.bg_color = Color(0, 0, 0, 0.85)
 	style_box.border_color = Color(1, 1, 1, 0.5)
@@ -120,7 +119,7 @@ func _ready() -> void:
 	drag_info_panel.add_child(drag_info_label)
 
 func _input(event: InputEvent) -> void:
-	# ESC для открытия/закрытия меню паузы (только если меню закрыто)
+	# ESC to open/close pause menu (only if menu is currently closed)
 	if event.is_action_pressed("ui_cancel"):
 		# If a drag is active, cancel it and restore item to origin
 		if DragState.active and equipment_slots and equipment_slots.has_method("restore_drag_to_origin"):
@@ -130,7 +129,7 @@ func _input(event: InputEvent) -> void:
 				viewport.set_input_as_handled()
 			return
 
-		# Wenn das Inventar offen ist, zuerst Inventar schließen (ohne Pause-Menü zu öffnen)
+		# If inventory is open, close it first (without opening pause menu)
 		if equipment_slots and equipment_slots.visible:
 			_close_inventory()
 			var viewport := get_viewport()
@@ -145,51 +144,54 @@ func _input(event: InputEvent) -> void:
 				viewport.set_input_as_handled()
 		return
 	
-	# Горячая клавиша I для открытия/закрытия инвентаря
+	# Hotkey I to toggle inventory
 	if event.is_action_pressed("ui_inventory"):
 		_open_inventory()
 		var viewport := get_viewport()
 		if viewport:
 			viewport.set_input_as_handled()
 
-	# Alt+G (toggle_loot) — включить/выключить постоянный показ лута
+	# Alt+G (toggle_loot) — toggle permanent loot visibility
 	if event.is_action_pressed("toggle_loot"):
 		DroppedLoot.LOOT_ALWAYS_VISIBLE = not DroppedLoot.LOOT_ALWAYS_VISIBLE
 		LootPersistenceScript.set_loot_always_visible(DroppedLoot.LOOT_ALWAYS_VISIBLE)
-		# Перерисовать все активные дропы
+		# Redraw all active drops
 		for drop in DroppedLoot.ALL_DROPS:
 			if drop:
 				drop.queue_redraw()
 
-	# Linksklicks global auswerten:
-	# - wenn aktuell KEIN Welt-Loot "in der Hand" ist: Klick auf Loot zum Aufheben prüfen
-	# - wenn bereits ein Welt-Loot "in der Hand" ist: Klick benutzt, um Item zu platzieren/abzulegen
+	# Evaluate left mouse clicks globally:
+	# - if NO world loot is currently "in hand": check for click on loot to pick up
+	# - if a world loot is currently "in hand": use click to place/drop the item
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
-				if DragState.active and not DragState.get_item().is_empty():
+				# If Shift is held, perform immediate pickup (no drag / long-press)
+				if mb.shift_pressed:
+					_handle_loot_click(true)
+				elif DragState.active and not DragState.get_item().is_empty():
 					_handle_world_item_click()
 				else:
-					_handle_loot_click()
+					_handle_loot_click(false)
 
 
-func _handle_loot_click() -> void:
-	# Bildschirm-Position der Maus holen
+func _handle_loot_click(immediate_pickup: bool = false) -> void:
+	# Get mouse position on screen
 	var viewport := get_viewport()
 	if viewport == null:
 		return
 
 	var mouse_screen_pos: Vector2 = viewport.get_mouse_position()
 
-	# In Welt-Koordinaten umrechnen (über aktive Kamera2D)
+	# Convert to world coordinates (via active Camera2D)
 	var cam := viewport.get_camera_2d()
-	# In 2D können wir die Weltposition der Maus direkt von der Kamera holen.
+	# In 2D we can obtain the world position of the mouse directly from the camera.
 	var world_pos: Vector2 = mouse_screen_pos
 	if cam:
 		world_pos = cam.get_global_mouse_position()
 
-	# Alle Drops finden, die auf den Text-Bereich klicken (nicht nur nach Distanz)
+	# Find all drops whose text area was clicked (not just by distance)
 	var candidate_drops: Array = []
 	
 	for d in DroppedLoot.ALL_DROPS:
@@ -199,7 +201,7 @@ func _handle_loot_click() -> void:
 		if drop.visible == false:
 			continue
 		
-		# Prüfen ob Klick auf Text-Bereich dieses Drops
+		# Check if click is on text area of this drop
 		var mouse_local := drop.to_local(world_pos)
 		var show_temp := Input.is_action_pressed("show_loot") or Input.is_key_pressed(KEY_G)
 		var show_visible := DroppedLoot.LOOT_ALWAYS_VISIBLE or show_temp
@@ -207,7 +209,7 @@ func _handle_loot_click() -> void:
 		if not show_visible:
 			continue
 		
-		# Text-Bereich dieses Drops berechnen
+		# Compute text area for this drop
 		var item_text := drop.get_item_text()
 		var gold_text := drop.get_gold_text()
 		
@@ -239,14 +241,14 @@ func _handle_loot_click() -> void:
 		var box_pos := Vector2(-box_size.x * 0.5 + label_offset_x, -box_size.y - 8.0 + label_offset_y)
 		var text_rect := Rect2(box_pos, box_size)
 		
-		# Prüfen ob Loot in Pickup-Reichweite ist
+		# Check if loot is in pickup range
 		if not drop.is_in_pickup_range():
 			continue
 		
 		if text_rect.has_point(mouse_local):
 			candidate_drops.append(drop)
 	
-	# Wenn mehrere Drops gefunden wurden, das oberste (höchstes z_index) nehmen
+	# If multiple drops were found, pick the top-most (highest z_index)
 	if candidate_drops.is_empty():
 		return
 	
@@ -255,20 +257,20 @@ func _handle_loot_click() -> void:
 	
 	for drop in candidate_drops:
 		var z: float = float(drop.z_index)
-		# Wenn z_index gleich ist, nimm das zuletzt hinzugefügte (höherer Index in ALL_DROPS)
+		# If z_index is equal, use the last-added (higher index in ALL_DROPS)
 		if z > highest_z or (z == highest_z and DroppedLoot.ALL_DROPS.find(drop) > DroppedLoot.ALL_DROPS.find(top_drop)):
 			highest_z = z
 			top_drop = drop
 	
 	if top_drop != null:
 		print("📦 HUD: click on loot at ", top_drop.global_position, " (z_index=", top_drop.z_index, ")")
-		top_drop.handle_world_click()
-		# Verhindern, dass andere Knoten denselben Klick nochmals verarbeiten
+		top_drop.handle_world_click(immediate_pickup)
+		# Prevent other nodes from processing the same click again
 		viewport.set_input_as_handled()
 
 
 func _handle_world_item_click() -> void:
-	# Nur relevant, wenn wir ein Item aus der Welt "in der Hand" haben
+	# Only relevant if we currently hold a world item in DragState
 	if not DragState.active or DragState.get_item().is_empty():
 		return
 
@@ -276,22 +278,22 @@ func _handle_world_item_click() -> void:
 	if viewport == null:
 		return
 
-	# Mausposition im Bildschirm / HUD
+	# Mouse position in screen / HUD space
 	var mouse_pos: Vector2 = viewport.get_mouse_position()
 
-	# Versuchen, einen Inventar- oder Equipment-Slot im EquipmentSlots-Manager zu finden
+	# Try to find an inventory or equipment slot in the EquipmentSlots manager
 	if equipment_slots == null:
-		print("📦 HUD: world item click – kein equipment_slots im HUD")
+		print("📦 HUD: world item click – no equipment_slots in HUD")
 		return
 
 	var slots: Array = []
 
-	# Inventar-Slots (Array von Panels)
+	# Inventory slots (array of Panels)
 	if "inventory_slots" in equipment_slots:
 		for slot_panel in equipment_slots.inventory_slots:
 			slots.append(slot_panel)
 
-	# Equipment-Slots (Dictionary name -> Panel)
+	# Equipment slots (dictionary name -> Panel)
 	if "equipment_slots" in equipment_slots:
 		for slot_name in equipment_slots.equipment_slots.keys():
 			var panel = equipment_slots.equipment_slots[slot_name]
@@ -303,11 +305,11 @@ func _handle_world_item_click() -> void:
 		var rect: Rect2 = slot_panel.get_global_rect()
 		if rect.has_point(mouse_pos):
 			if slot_panel.manager and slot_panel.manager.has_method("slot_click_from_world"):
-				print("📦 HUD: world item click auf Inventory/Equipment-Slot, rufe manager.slot_click_from_world, id=", slot_panel.slot_id)
+				print("📦 HUD: world item click on Inventory/Equipment-Slot, calling manager.slot_click_from_world, id=", slot_panel.slot_id)
 				slot_panel.manager.slot_click_from_world(slot_panel)
-				# Prüfen, ob der Drop erfolgreich war (EquipmentSlots leert DRAG_ITEM/DRAG_SOURCE im Erfolgsfall)
+				# Check if the drop was accepted (EquipmentSlots clears DRAG_ITEM/DRAG_SOURCE on success)
 				if DragState.active and not DragState.get_item().is_empty() and DragState.source_kind == "world" and DragState.source_node:
-					print("📦 HUD: world item click – Slot hat nicht akzeptiert, Loot wieder anzeigen")
+					print("📦 HUD: world item click – Slot did not accept, showing loot again")
 					var dl: DroppedLoot = DragState.source_node
 					if dl:
 						dl.item = DragState.get_item().duplicate(true)
@@ -316,12 +318,12 @@ func _handle_world_item_click() -> void:
 						dl.visible = true
 					DragState.clear()
 			else:
-				print("📦 HUD: Inventory-Slot ohne gültigen manager/slot_click_from_world")
+				print("📦 HUD: Inventory-Slot without valid manager/slot_click_from_world")
 			return
 
-	# Wenn der Klick innerhalb des Inventar/EQ-Fensters liegt (aber nicht auf einem Slot),
-	# kein Drop auf die Map ausführen.
-	# Prüfe das WindowPanel, nicht den gesamten EquipmentSlots Control (der den ganzen Bildschirm abdeckt)
+	# If the click lies within the inventory/equipment window (but not on a slot),
+	# do not drop the item onto the map.
+	# Check the WindowPanel only, not the whole EquipmentSlots control (which covers the whole screen).
 	if equipment_slots is Control:
 		var window_panel := equipment_slots.get_node_or_null("WindowPanel")
 		if window_panel is Panel:
@@ -329,28 +331,28 @@ func _handle_world_item_click() -> void:
 			if inv_rect.has_point(mouse_pos):
 				return
 
-	# Kein Inventar-Slot unter der Maus und außerhalb des Inventar-Fensters:
-	# Klick außerhalb der Slots – Loot wieder am Boden anzeigen
-	print("📦 HUD: world item click – kein Inventar-Slot unter Maus, Loot zurück auf den Boden")
+	# No inventory slot under the mouse and outside of the inventory window:
+	# click outside the slots -> show loot back on the ground
+	print("📦 HUD: world item click – no inventory slot under mouse, returning loot to ground")
 
 	var scene := get_tree().current_scene
 	if scene:
-		# Immer aktuelle Player-Position für Drop verwenden (auch während Bewegung)
+		# Always use current player position for drop (even while moving)
 		var player: Node2D = scene.get_node_or_null("Player")
 		if player == null:
 			player = scene.find_child("Player", true, false)
 		
 		if player:
-			# Wenn es noch eine Welt-Quelle gibt, diese an aktueller Player-Position aktualisieren
+			# If there's still a world source, update it to current player position
 			if DragState.source_kind == "world" and DragState.source_node:
 				var dl: DroppedLoot = DragState.source_node
 				if dl:
-					# Position zur aktuellen Player-Position aktualisieren
+					# Update position to current player position
 					var drop_pos := player.global_position + Vector2(0, 24)
 					dl.global_position = drop_pos
 					dl.item = DragState.get_item().duplicate(true)
 					dl.item = DragState.get_item().duplicate(true)
-					# Position wieder auf Koordinaten setzen (nicht mehr "drag")
+					# Set position back to coordinates (no longer "drag")
 					var temp_store := preload("res://core/temp_loot_store.gd")
 					if dl.item is Dictionary and not dl.item.is_empty():
 						var item_copy := dl.item.duplicate(true)
@@ -364,12 +366,12 @@ func _handle_world_item_click() -> void:
 					dl._update_label()
 					dl.visible = true
 					temp_store.clear_drag()
-			# Andernfalls einen neuen DroppedLoot an der aktuellen Spielerposition erzeugen
+			# Otherwise create a new DroppedLoot at the current player position
 			elif DragState.has_item():
 				var drop := DroppedLoot.new()
-				# Immer aktuelle Player-Position verwenden (auch während Bewegung)
+				# Always use current player position (even while moving)
 				var drop_pos := player.global_position + Vector2(0, 24)
-				# Item kopieren und Position von "drag" auf Koordinaten setzen
+				# Copy item and convert "drag" position back to coordinates
 				var temp_store := preload("res://core/temp_loot_store.gd")
 				var item_copy = DragState.get_item().duplicate(true)
 				if item_copy is Dictionary and not item_copy.is_empty():
@@ -382,7 +384,7 @@ func _handle_world_item_click() -> void:
 				scene.add_child(drop)
 				temp_store.clear_drag()
 
-	# Drag-Zustand immer zurücksetzen und Highlights entfernen
+	# Always clear drag state and remove any highlights
 	if equipment_slots and equipment_slots.has_method("clear_world_highlight"):
 		equipment_slots.clear_world_highlight()
 
@@ -395,7 +397,7 @@ func _on_menu_button_pressed() -> void:
 	_open_pause_menu()
 
 func _open_inventory() -> void:
-	"""Открывает/закрывает окно EquipmentSlots в HUD"""
+	"""Opens or closes the EquipmentSlots window in the HUD."""
 	if equipment_slots:
 		if equipment_slots.has_method("toggle_visible"):
 			equipment_slots.toggle_visible()
@@ -411,7 +413,7 @@ func _close_inventory() -> void:
 			equipment_slots.visible = false
 
 func _open_pause_menu() -> void:
-	"""Открывает/закрывает меню паузы"""
+	"""Opens or closes the pause menu."""
 	if pause_menu:
 		if pause_menu.has_method("toggle_visible"):
 			pause_menu.toggle_visible()
@@ -419,7 +421,7 @@ func _open_pause_menu() -> void:
 			pause_menu.visible = not pause_menu.visible
 
 func _open_options() -> void:
-	"""Открывает/закрывает модальное окно настроек"""
+	"""Opens or closes the options modal."""
 	if options_modal:
 		if options_modal.has_method("toggle_modal"):
 			options_modal.toggle_modal()
@@ -437,12 +439,12 @@ func _on_dungeon_button_pressed() -> void:
 		level_selection_modal.visible = true
 
 func set_inventory_button_visible(visible_flag: bool) -> void:
-	"""Показывает/скрывает кнопку сумки"""
+	"""Shows or hides the inventory button."""
 	if inventory_button:
 		inventory_button.visible = visible_flag
 
 func set_enemy_info(text: String) -> void:
-	"""Устанавливает текст информации о враге"""
+	"""Sets the enemy info text."""
 	if not enemy_info_label or not enemy_info_panel:
 		return
 	if text != "":
@@ -452,8 +454,8 @@ func set_enemy_info(text: String) -> void:
 		_last_enemy_info_time = Time.get_ticks_msec() / 1000.0
 
 func _process(_delta: float) -> void:
-	"""Автоматически скрывает EnemyInfoPanel через 0.5 секунды
-	   и обновляет Position des Welt-Loot-Drag-Icons."""
+	"""Automatically hides EnemyInfoPanel after 0.5s
+	   and updates the position of the world loot drag icon."""
 	if enemy_info_panel:
 		if enemy_info_panel.visible and _last_enemy_info_time >= 0.0:
 			var now := Time.get_ticks_msec() / 1000.0
@@ -462,7 +464,7 @@ func _process(_delta: float) -> void:
 				if enemy_info_label:
 					enemy_info_label.text = ""
 
-	# Drag-Icon folgt der Maus, solange Welt-Loot "in der Hand" ist
+	# Drag icon follows the mouse while world loot is "in hand"
 	if drag_icon:
 		if DragState.active and not DragState.get_item().is_empty():
 			drag_icon.visible = true
@@ -472,13 +474,13 @@ func _process(_delta: float) -> void:
 		else:
 			drag_icon.visible = false
 
-	# Drag-Info-Panel unten links aktualisieren
+	# Update drag info panel in the bottom-left
 	if drag_info_panel and drag_info_label:
 		if DragState.active and not DragState.get_item().is_empty():
 			var item_text := _format_drag_item_info(DragState.get_item())
 			drag_info_label.text = item_text
 			drag_info_panel.visible = true
-			# Größe an Inhalt anpassen
+			# Adjust size to content
 			drag_info_label.force_update_transform()
 			var content_h := drag_info_label.get_content_height()
 			var padding := 16.0
@@ -491,11 +493,11 @@ func _process(_delta: float) -> void:
 			drag_info_panel.visible = false
 
 func _resize_enemy_info_panel() -> void:
-	"""Изменяет размер EnemyInfoPanel в зависимости от содержимого"""
+	"""Adjusts EnemyInfoPanel size based on its content."""
 	if not enemy_info_panel or not enemy_info_label:
 		return
 	
-	# Высота подстраивается под текст, ширина остается из сцены (Panel-Offsets)
+	# Height adapts to text; width is kept from scene (panel offsets)
 	enemy_info_label.force_update_transform()
 	var content_h: float = enemy_info_label.get_content_height()
 	var padding: float = 16.0
@@ -509,7 +511,7 @@ func _resize_enemy_info_panel() -> void:
 
 
 func _format_drag_item_info(item: Dictionary) -> String:
-	"""Formatiert Item-Info für das Drag-Info-Panel (temporär für Debug)"""
+	"""Formats item info for the drag info panel (temporary debug)."""
 	if item.is_empty():
 		return ""
 
@@ -519,7 +521,7 @@ func _format_drag_item_info(item: Dictionary) -> String:
 	var item_type: String = String(item.get("item_type", ""))
 	var rarity: String = String(item.get("rarity", "normal"))
 
-	# Rarity-Farbe
+	# Rarity color
 	var rarity_color: Color = Color.WHITE
 	match rarity:
 		"normal":
@@ -534,15 +536,15 @@ func _format_drag_item_info(item: Dictionary) -> String:
 			rarity_color = Color(1, 0.84, 0.0)
 
 	var sb := "[b][color=%s]%s[/color][/b]\n" % [rarity_color.to_html(false), item_name]
-	sb += "Type: %s\n" % item_type
-	sb += "Item Level: %d\n" % item_level
+	sb += "%s: %s\n" % [tr("Type"), item_type]
+	sb += "%s: %d\n" % [tr("Item Level"), item_level]
 	if min_level > 0:
-		sb += "Requires Level: %d\n" % min_level
+		sb += "%s: %d\n" % [tr("Requires Level"), min_level]
 
 	# Stats
 	var stats: Dictionary = item.get("stats", {})
 	if not stats.is_empty():
-		sb += "\n[b]Stats:[/b]\n"
+		sb += "\n[b]%s[/b]\n" % tr("Stats:")
 		for stat_name in stats.keys():
 			var value = stats[stat_name]
 			if value != 0:
@@ -551,7 +553,7 @@ func _format_drag_item_info(item: Dictionary) -> String:
 	# Enchantments
 	var enchantments: Array = item.get("enchantments", [])
 	if not enchantments.is_empty():
-		sb += "\n[b]Enchantments:[/b]\n"
+		sb += "\n[b]%s[/b]\n" % tr("Enchantments:")
 		for enchant in enchantments:
 			if enchant is Dictionary:
 				var en_name: String = String(enchant.get("name", "?"))

@@ -1,7 +1,7 @@
 extends Node2D
 
-## Script für die Dungeon-Szene.
-## Lädt das HUD und spawnt temporäre Gegner-Markierungen.
+## Script for the Dungeon Scene.
+## Loads the HUD and spawns temporary enemy markers.
 
 const EnemyMarker: Script = preload("res://scripts/enemy_marker.gd")
 const EnemyGeneratorScript: Script = preload("res://core/enemy_generator.gd")
@@ -33,24 +33,24 @@ func _init_map_bounds() -> void:
 func is_walkable_tile(cell: Vector2i) -> bool:
 	if not tilemap:
 		return false
-	# Begehbar, wenn auf Layer 0 ein Tile existiert
+	# Walkable if a tile exists on layer 0
 	var real_cell: Vector2i = map_origin + cell
 	return tilemap.get_cell_source_id(0, real_cell) != -1
 
 func map_to_local(cell: Vector2i) -> Vector2:
 	if not tilemap:
 		return Vector2.ZERO
-	# TileMap.map_to_local gibt Position relativ zur TileMap zurück,
-	# wir brauchen sie im Koordinatensystem der DungeonScene.
+	# TileMap.map_to_local returns position relative to TileMap,
+	# we need it in the DungeonScene coordinate system.
 	var real_cell: Vector2i = map_origin + cell
 	return tilemap.to_global(tilemap.map_to_local(real_cell))
 
 func _spawn_enemies() -> void:
-	# Lokale Instanz des EnemyGenerators verwenden (kein Autoload nötig)
+	# Use local instance of EnemyGenerator (no Autoload needed)
 	var generator: Node = EnemyGeneratorScript.new()
-	add_child(generator)  # damit _ready() aufgerufen wird (zum Laden der JSONs)
+	add_child(generator)  # so _ready() is called (to load JSONs)
 
-	var player_stats: Dictionary = {}  # Platzhalter für späteres Balancing
+	var player_stats: Dictionary = {}  # Placeholder for future balancing
 	var enemies: Array = generator.generate_enemies_for_dungeon(self, player_stats)
 
 	print("EnemyGenerator: generated ", enemies.size(), " enemies for ",

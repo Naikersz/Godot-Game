@@ -3,7 +3,7 @@ extends CanvasLayer
 @onready var label: Label = Label.new()
 
 func _ready() -> void:
-	# Label konfigurieren (unten mittig)
+	# Configure label (bottom center)
 	label.name = "SceneOverlayLabel"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
@@ -21,24 +21,24 @@ func _ready() -> void:
 	label.text = ""
 	add_child(label)
 
-	set_layer(100) # weit vorne
+	set_layer(100) # far forward
 
 func _process(_delta: float) -> void:
 	var current = get_tree().current_scene
 	if current:
 		var scene_name: String = String(current.name)
 
-		# Nur in der Dungeon-Szene (DungeonScene) Level-Infos anzeigen
+		# Only show level info in dungeon scene (DungeonScene)
 		if scene_name == "DungeonScene":
 			var lt := String(Constants.current_level_type)
 			var ln := int(Constants.current_level_number)
-			# Nur wenn sinnvolle Werte gesetzt sind, das Level anhängen
+			# Only append level if meaningful values are set
 			if lt != "" and ln > 0:
-				label.text = "Scene: %s  |  %s %d" % [scene_name, lt, ln]
+				label.text = tr("Scene: %s  |  %s %d") % [scene_name, lt, ln]
 			else:
-				label.text = "Scene: %s" % scene_name
+				label.text = tr("Scene: %s") % scene_name
 		else:
-			# In allen anderen Szenen nur den Szenen-Namen anzeigen
-			label.text = "Scene: %s" % scene_name
+			# In all other scenes only show scene name
+			label.text = tr("Scene: %s") % scene_name
 	else:
 		label.text = ""

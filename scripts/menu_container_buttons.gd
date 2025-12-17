@@ -1,14 +1,14 @@
-extends VBoxContainer  # или тот тип, который у тебя у MenuContainer
+extends VBoxContainer  # or whatever type you have for MenuContainer
 
 func _ready():
 	for child in get_children():
 		if child is Button:
-			# Устанавливаем фиксированный размер
+			# Set fixed size
 			child.custom_minimum_size = Vector2(384, 96)
-			# Запрещаем изменение размера
+			# Prevent size changes
 			child.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 			child.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			# Обрезаем текст, если он не помещается
+			# Clip text if it doesn't fit
 			child.clip_text = true
 var ls := LabelSettings.new()
 func shadow():

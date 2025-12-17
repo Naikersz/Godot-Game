@@ -1,9 +1,9 @@
 extends Node2D
 
-## Einfache visuelle Darstellung eines Gegners:
-## - Farbiger Punkt je nach Rarity
-## - Grüne HP-Leiste darüber
-## - Tooltip mit allen Stats beim Hovern (per Distanz zur Maus)
+## Simple visual representation of an enemy:
+## - Colored dot based on rarity
+## - Green HP bar above it
+## - Tooltip with all stats on hover (by distance to mouse)
 
 const HOVER_RADIUS: float = 40.0
 const CLICK_RADIUS: float = 32.0
@@ -17,7 +17,7 @@ var tooltip_label: Label
 func _ready() -> void:
 	set_process(true)
 
-	# Tooltip-Label über dem Gegner
+	# Tooltip label above enemy
 	tooltip_label = Label.new()
 	tooltip_label.visible = false
 	tooltip_label.position = Vector2(0, -28)
@@ -53,10 +53,10 @@ func _draw() -> void:
 	var rarity: String = String(enemy_data.get("rarity", "normal"))
 	var color: Color = _get_color_for_rarity(rarity)
 
-	# Farbiger Punkt
+	# Colored dot
 	draw_circle(Vector2.ZERO, 6.0, color)
 
-	# HP-Bar (grün) darüber
+	# HP bar (green) above it
 	var hp: int = int(enemy_data.get("hp", 1))
 	var max_hp: int = int(enemy_data.get("max_hp", hp))
 	if max_hp <= 0:
@@ -66,11 +66,11 @@ func _draw() -> void:
 	var height: float = 4.0
 	var ratio: float = clamp(float(hp) / float(max_hp), 0.0, 1.0)
 
-	# Hintergrund (dunkel)
+	# Background (dark)
 	var bg_rect: Rect2 = Rect2(Vector2(-width * 0.5, -14.0), Vector2(width, height))
 	draw_rect(bg_rect, Color(0, 0, 0, 0.7), true)
 
-	# Vordergrund (grün)
+	# Foreground (green)
 	var fg_rect: Rect2 = Rect2(
 		Vector2(-width * 0.5, -14.0),
 		Vector2(width * ratio, height)
@@ -80,7 +80,7 @@ func _draw() -> void:
 
 func _build_stats_text() -> String:
 	var sb: String = ""
-	var enemy_name: String = String(enemy_data.get("name", "Monster"))
+	var enemy_name: String = String(enemy_data.get("name", tr("Monster")))
 	var lvl: int = int(enemy_data.get("level", 1))
 	var rarity: String = String(enemy_data.get("rarity", "normal"))
 	var hp: int = int(enemy_data.get("hp", 1))
@@ -89,21 +89,21 @@ func _build_stats_text() -> String:
 	var defense: int = int(enemy_data.get("defense", 0))
 
 	var color_hex: String = _get_color_hex_for_rarity(rarity)
-	sb += "[color=%s]%s[/color] (Lvl %d)\n" % [color_hex, enemy_name, lvl]
-	sb += "Rarity: %s\n" % rarity.capitalize()
-	sb += "HP: %d / %d\n" % [hp, max_hp]
-	sb += "DMG: %d   DEF: %d\n" % [dmg, defense]
+	sb += "[color=%s]%s[/color] (%s %d)\n" % [color_hex, enemy_name, tr("Lvl"), lvl]
+	sb += "%s: %s\n" % [tr("Rarity"), rarity.capitalize()]
+	sb += "%s: %d / %d\n" % [tr("HP"), hp, max_hp]
+	sb += "%s: %d   %s: %d\n" % [tr("DMG"), dmg, tr("DEF"), defense]
 
 	var enchants: Array = enemy_data.get("enchantments", [])
 	if enchants.size() > 0:
-		sb += "\nEnchantments:\n"
+		sb += "\n%s:\n" % tr("Enchantments")
 		for e in enchants:
 			if not (e is Dictionary):
 				continue
 			var ename := String(e.get("name", e.get("id", "?")))
 			var tier := int(e.get("tier", 1))
 			var value := int(e.get("value", 0))
-			sb += "- %s (T%d, %d)\n" % [ename, tier, value]
+			sb += "- %s (%s%d, %d)\n" % [ename, tr("T"), tier, value]
 
 	return sb
 
@@ -117,8 +117,8 @@ func _update_hud_info(text: String) -> void:
 	if hud == null:
 		return
 
-	# Sicher über call_deferred aufrufen, damit wir keine Reihenfolgeprobleme bekommen
-	# Debug-Ausgabe, damit wir sehen, dass Hover erkannt wird
+	# Safely call via call_deferred to avoid ordering issues
+	# Debug output to see that hover is detected
 	# print("EnemyMarker update HUD for:", enemy_data.get("name", "Monster"))
 	hud.call_deferred("set_enemy_info", text)
 
@@ -126,13 +126,13 @@ func _update_hud_info(text: String) -> void:
 func _get_color_for_rarity(rarity: String) -> Color:
 	match rarity:
 		"normal":
-			return Color(1, 1, 1)       # Weiß
+			return Color(1, 1, 1)       # White
 		"magic":
-			return Color(0.2, 0.4, 1)   # Blau
+			return Color(0.2, 0.4, 1)   # Blue
 		"epic":
-			return Color(0.7, 0.2, 1)   # Lila
+			return Color(0.7, 0.2, 1)   # Purple
 		"legendary":
-			return Color(1, 0.9, 0.2)   # Gelb
+			return Color(1, 0.9, 0.2)   # Yellow
 		"unique":
 			return Color(1, 0.84, 0.0)  # Gold
 		_:
@@ -153,7 +153,7 @@ func _input(event: InputEvent) -> void:
 	if not mb.pressed or mb.button_index != MOUSE_BUTTON_LEFT:
 		return
 
-	# Prüfen, ob Klick nah genug am Marker war
+	# Check if click was close enough to marker
 	var mouse_pos: Vector2 = get_global_mouse_position()
 	var dist: float = global_position.distance_to(mouse_pos)
 	if dist > CLICK_RADIUS:
@@ -172,20 +172,20 @@ func _try_player_attack() -> void:
 	if not player:
 		return
 
-	# Abstand prüfen
+	# Check distance
 	var max_range: float = 96.0
 	var to_enemy: Vector2 = global_position - player.global_position
 	if to_enemy.length() > max_range:
 		return
 
-	# Blickrichtung des Spielers berücksichtigen
+	# Consider player facing direction
 	var facing_vec: Vector2 = _get_player_facing_vector(player)
 	if facing_vec == Vector2.ZERO:
 		return
 
 	var dir: Vector2 = to_enemy.normalized()
 	var dot: float = dir.dot(facing_vec)
-	# nur treffen, wenn grob in Blickrichtung (> ~60° Winkel)
+	# only hit if roughly in facing direction (> ~60° angle)
 	if dot < 0.5:
 		return
 	
@@ -215,7 +215,7 @@ func _get_player_facing_vector(player) -> Vector2:
 
 
 func _compute_player_damage_against_enemy(player) -> int:
-	# Basiswerte aus Player-Stats lesen, mit Fallbacks
+	# Read base values from player stats, with fallbacks
 	var base_attack: int = 5
 	var crit_chance: float = 0.1
 	var crit_multi: float = 1.5
@@ -236,11 +236,11 @@ func _compute_player_damage_against_enemy(player) -> int:
 	if raw < 1.0:
 		raw = 1.0
 
-	# kleiner Zufallsfaktor +/-20 %
+	# small random factor +/-20%
 	var variance: float = _rng_randf_range(0.8, 1.2)
 	var dmg: float = raw * variance
 
-	# Kritische Treffer
+	# Critical hits
 	if _rng_randf() < crit_chance:
 		dmg *= crit_multi
 
@@ -248,7 +248,7 @@ func _compute_player_damage_against_enemy(player) -> int:
 	if Engine.has_singleton("DevSettings") and Engine.get_singleton("DevSettings").one_hit_kill:
 		var hp_cur := int(enemy_data.get("hp", 0))
 		var hp_max := int(enemy_data.get("max_hp", hp_cur))
-		return hp_cur + hp_max + 100  # sicher über jedem möglichen HP
+		return hp_cur + hp_max + 100  # safely above any possible HP
 
 	return max(1, int(round(dmg)))
 
@@ -273,35 +273,35 @@ func _apply_damage(amount: int) -> void:
 	enemy_data["max_hp"] = max_hp
 	queue_redraw()
 
-	# Bei Tod Marker entfernen
+	# Remove marker on death
 	if hp <= 0:
 		_on_death()
 
 
 func _on_death() -> void:
-	_update_hud_info("")  # Info ausblenden
+	_update_hud_info("")  # Hide info
 
-	# Gold-Drop mit Zufallschance und Bereich aus gold_min/gold_max
+	# Gold drop with random chance and range from gold_min/gold_max
 	var gold_min: int = int(enemy_data.get("gold_min", 0))
 	var gold_max: int = int(enemy_data.get("gold_max", gold_min))
 	var gold: int = 0
-	if gold_max > 0 and gold_max >= gold_min and _rng_randf() < 0.5: # 50% Chance auf Gold-Drop
+	if gold_max > 0 and gold_max >= gold_min and _rng_randf() < 0.5: # 50% chance for gold drop
 		gold = int(round(_rng_randf_range(float(gold_min), float(gold_max))))
 
-		# Gold-%-Bonus vom Spieler anwenden (z.B. aus Verzauberungen)
+		# Apply gold % bonus from player (e.g. from enchantments)
 		var cur_scene := get_tree().current_scene
 		if cur_scene and cur_scene.has_node("Player"):
 			var player := cur_scene.get_node("Player")
 			if player and "total_stats" in player:
 				var ts = player.total_stats
 				if ts is Dictionary:
-					# Erwartet z.B. einen Eintrag "gold_find" als Prozentwert (5 = +5%)
+					# Expects e.g. an entry "gold_find" as percentage value (5 = +5%)
 					var gold_bonus_percent: float = float(ts.get("gold_find", 0.0))
 					if gold_bonus_percent != 0.0:
 						var factor: float = 1.0 + (gold_bonus_percent / 100.0)
 						gold = int(round(float(gold) * factor))
 
-	# Optional: Item-Loot über LootGenerator
+	# Optional: Item loot via LootGenerator
 	var loot := {}
 	var cur_scene2 := get_tree().current_scene
 	if cur_scene2 and cur_scene2.has_node("Player"):
@@ -315,16 +315,16 @@ func _on_death() -> void:
 			if loot_id > 0:
 				loot["position"] = {"loot": loot_id}
 
-	# Wenn es überhaupt Loot gibt, erzeugen wir Drops auf dem Boden
+	# If there's any loot, create drops on the ground
 	if gold > 0 or (loot is Dictionary and not loot.is_empty()):
-		print("💰 Loot von ", enemy_data.get("name", "Monster"),
-			": Gold=", gold, " | Item=", loot.get("name", "kein Item"))
+		print("💰 Loot from ", enemy_data.get("name", "Monster"),
+			": Gold=", gold, " | Item=", loot.get("name", "no item"))
 
-		# Gold- und Item-Drops separat anzeigen
+		# Show gold and item drops separately
 		if gold > 0:
-			_spawn_dropped_loot(gold, {})        # nur Gold
+			_spawn_dropped_loot(gold, {})        # gold only
 		if loot is Dictionary and not loot.is_empty():
-			_spawn_dropped_loot(0, loot)         # nur Item
+			_spawn_dropped_loot(0, loot)         # item only
 
 	queue_free()
 func _spawn_dropped_loot(gold: int, loot: Dictionary) -> void:
@@ -338,7 +338,7 @@ func _spawn_dropped_loot(gold: int, loot: Dictionary) -> void:
 		return
 
 	var drop = drop_script.new()
-	# Lootpunkt genau an der Todesposition des Monsters platzieren
+	# Place loot point exactly at monster's death position
 	var pos := global_position
 	drop.setup_drop(pos, gold, loot)
 	scene.add_child(drop)

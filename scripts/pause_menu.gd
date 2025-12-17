@@ -1,6 +1,6 @@
 extends Control
 
-## Меню паузы - модальное окно с кнопками управления игрой
+## Pause menu - modal window with game control buttons
 
 @onready var dim_background: ColorRect = $DimBackground
 @onready var window_panel: Panel = $WindowPanel
@@ -13,52 +13,66 @@ extends Control
 func _ready() -> void:
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	# Важно: меню должно обрабатывать события даже во время паузы
+	# Important: menu must process events even during pause
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
-	# Убеждаемся, что все кнопки тоже обрабатывают события во время паузы
+	_update_ui_texts()
+	
+	# Connect buttons
 	if resume_button:
 		resume_button.process_mode = Node.PROCESS_MODE_ALWAYS
 		resume_button.pressed.connect(_on_resume_pressed)
-		print("✅ ResumeButton подключен")
+		print("✅ ResumeButton connected")
 	if options_button:
 		options_button.process_mode = Node.PROCESS_MODE_ALWAYS
 		options_button.pressed.connect(_on_options_pressed)
-		print("✅ OptionsButton подключен")
+		print("✅ OptionsButton connected")
 	if main_menu_button:
 		main_menu_button.process_mode = Node.PROCESS_MODE_ALWAYS
 		main_menu_button.pressed.connect(_on_main_menu_pressed)
-		print("✅ MainMenuButton подключен")
+		print("✅ MainMenuButton connected")
 	if quit_button:
 		quit_button.process_mode = Node.PROCESS_MODE_ALWAYS
 		quit_button.pressed.connect(_on_quit_pressed)
-		print("✅ QuitButton подключен")
+		print("✅ QuitButton connected")
 	
-	print("✅ PauseMenu готов, process_mode = PROCESS_MODE_ALWAYS")
+	print("✅ PauseMenu ready, process_mode = PROCESS_MODE_ALWAYS")
+
+func _update_ui_texts() -> void:
+	"""Updates all UI texts that use tr() - called when language changes"""
+	# Set button texts with tr()
+	if resume_button:
+		resume_button.text = tr("Continue")
+	if options_button:
+		options_button.text = tr("Settings")
+	if main_menu_button:
+		main_menu_button.text = tr("Main Menu")
+	if quit_button:
+		quit_button.text = tr("Quit")
 
 func toggle_visible() -> void:
 	visible = not visible
 	print("🔄 PauseMenu visible = ", visible)
 	if visible:
-		# Паузим игру
+		# Pause the game
 		get_tree().paused = true
-		print("⏸️ Игра на паузе")
-		# Фокус на первую кнопку
+		print("⏸️ Game paused")
+		# Focus on first button
 		if resume_button:
 			resume_button.grab_focus()
 	else:
-		# Возобновляем игру
+		# Resume the game
 		get_tree().paused = false
-		print("▶️ Игра возобновлена")
+		print("▶️ Game resumed")
 
 func _on_resume_pressed() -> void:
-	print("🔵 ResumeButton нажата")
+	print("🔵 ResumeButton pressed")
 	toggle_visible()
 
 func _on_options_pressed() -> void:
-	# Закрываем меню паузы и открываем модальное окно настроек
+	# Close pause menu and open settings modal window
 	toggle_visible()
-	# Находим OptionsModal через путь (PauseMenu и OptionsModal находятся в одной папке Modals)
+	# Find OptionsModal via path (PauseMenu and OptionsModal are in the same Modals folder)
 	var options_modal = get_node_or_null("../OptionsModal")
 	if options_modal:
 		if options_modal.has_method("toggle_modal"):
@@ -68,7 +82,7 @@ func _on_options_pressed() -> void:
 		else:
 			options_modal.visible = true
 	else:
-		print("⚠️ Не удалось найти OptionsModal по пути ../OptionsModal")
+		print("⚠️ Could not find OptionsModal at path ../OptionsModal")
 
 func _on_main_menu_pressed() -> void:
 	# Ensure the game is unpaused before leaving
@@ -82,9 +96,9 @@ func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 func _unhandled_input(event: InputEvent) -> void:
-	# ESC закрывает меню паузы только если оно видимо
+	# ESC closes pause menu only if it's visible
 	if visible and event.is_action_pressed("ui_cancel"):
-		print("🔵 ESC нажата в PauseMenu")
+		print("🔵 ESC pressed in PauseMenu")
 		toggle_visible()
 		if get_viewport():
 			get_viewport().set_input_as_handled()

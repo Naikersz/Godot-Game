@@ -16,6 +16,8 @@ var slots_data: Array = []
 var _pending_delete_slot: int = -1
 
 func _ready():
+	_update_ui_texts()
+	
 	# Ensure save folder exists
 	var dir = DirAccess.open("user://")
 	if dir:
@@ -24,10 +26,7 @@ func _ready():
 	if not confirm_dialog:
 		confirm_dialog = ConfirmationDialog.new()
 		confirm_dialog.name = "DeleteConfirmDialog"
-		confirm_dialog.dialog_text = "Delete this save?"
 		add_child(confirm_dialog)
-	confirm_dialog.get_ok_button().text = "Delete"
-	confirm_dialog.get_cancel_button().text = "Cancel"
 	confirm_dialog.canceled.connect(_on_delete_canceled)
 	confirm_dialog.confirmed.connect(_on_delete_confirmed)
 	
@@ -35,7 +34,23 @@ func _ready():
 	if back_button:
 		back_button.pressed.connect(_on_back_pressed)
 	else:
-		print("⚠️ BackButton nicht gefunden in Load Menu!")
+		print("⚠️ BackButton not found in Load Menu!")
+
+func _update_ui_texts() -> void:
+	"""Updates all UI texts that use tr() - called when language changes"""
+	# Set UI texts with tr()
+	if title_label:
+		title_label.text = tr("Load save file")
+	if back_button:
+		back_button.text = tr("Back")
+	if confirm_dialog:
+		confirm_dialog.dialog_text = tr("Delete this save?")
+		confirm_dialog.get_ok_button().text = tr("Delete")
+		confirm_dialog.get_cancel_button().text = tr("Cancel")
+	
+	# Rebuild menu to update button texts (only if menu is already built)
+	if slots_container and slots_container.get_child_count() > 0:
+		build_menu()
 
 func build_menu():
 	# Remove old buttons
@@ -70,12 +85,12 @@ func build_menu():
 		slot_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		
 		if player_data:
-			var hero_name: String = String(player_data.get("name", "Hero"))
+			var hero_name: String = String(player_data.get("name", tr("Hero")))
 			var hero_level: int = int(player_data.get("level", 1))
-			slot_button.text = "Load %s (Lv %d)" % [hero_name, hero_level]
+			slot_button.text = tr("Load %s (Lv %d)") % [hero_name, hero_level]
 			slot_button.pressed.connect(_on_load_slot.bind(i))
 		else:
-			slot_button.text = "Start new game"
+			slot_button.text = tr("Start new game")
 			slot_button.pressed.connect(_on_new_game.bind(i))
 		
 		row.add_child(slot_button)
@@ -84,40 +99,24 @@ func build_menu():
 		# Show delete button only if a save exists
 		if player_data:
 			var delete_button := Button.new()
-			delete_button.text = "Delete"
+			delete_button.text = tr("Delete")
 			delete_button.custom_minimum_size = Vector2(200, 140)
 			delete_button.pressed.connect(_on_request_delete_slot.bind(i))
 			row.add_child(delete_button)
 
 func load_player_data(slot_name: String) -> Dictionary:
 	var player_res_path = Constants.get_save_path(slot_name).path_join("player.tres")
-	var legacy_player_path = Constants.get_player_path(slot_name)
 
-	# Neue Resource bevorzugen
+	# Use new Resource
 	if ResourceLoader.exists(player_res_path):
 		var res = ResourceLoader.load(player_res_path)
 		if res is PlayerResourceRes:
 			var pr: PlayerResource = res
 			return {
-				"name": pr.player_name if pr.player_name != "" else "Unbekannt",
+				"name": pr.player_name if pr.player_name != "" else tr("Unknown"),
 				"level": pr.player_level,
 				"class_name": "???"
 			}
-
-	# Legacy JSON (Migration nur Anzeige)
-	if FileAccess.file_exists(legacy_player_path):
-		var file = FileAccess.open(legacy_player_path, FileAccess.READ)
-		if file:
-			var json_string = file.get_as_text()
-			file.close()
-			var json_obj = JSON.new()
-			if json_obj.parse(json_string) == OK and json_obj.data is Dictionary:
-				var data: Dictionary = json_obj.data
-				return {
-					"name": data.get("name", "Unbekannt"),
-					"level": data.get("level", 1),
-					"class_name": data.get("class_name", "???")
-				}
 	return {}
 
 func _on_load_slot(slot_index: int):
@@ -134,13 +133,13 @@ func _on_load_slot(slot_index: int):
 		var inv_res := InventoryResourceRes.new()
 		var err = ResourceSaver.save(inv_res, inventory_res_path)
 		if err != OK:
-			print("⚠️ Konnte inventory.tres nicht erstellen: ", inventory_res_path, " err=", err)
+			print("⚠️ Could not create inventory.tres: ", inventory_res_path, " err=", err)
 	
 	var town_scene = preload("res://scenes/town_scene.tscn")
 	if town_scene:
 		get_tree().change_scene_to_packed(town_scene)
 	else:
-		print("⚠️ Town-Szene nicht gefunden!")
+		print("⚠️ Town scene not found!")
 
 func _on_new_game(slot_index: int):
 	var slot = Constants.SAVE_SLOTS[slot_index]
@@ -156,7 +155,7 @@ func _on_new_game(slot_index: int):
 	
 	# Create PlayerResource
 	var player_res := PlayerResourceRes.new()
-	player_res.player_name = "New Hero"
+	player_res.player_name = tr("New Hero")
 	player_res.player_level = 1
 	player_res.backpack_slots = 12
 	player_res.equipped = {}
@@ -173,7 +172,7 @@ func _on_new_game(slot_index: int):
 	var inv_res := InventoryResourceRes.new()
 	var inv_err = ResourceSaver.save(inv_res, inventory_res_path)
 	if inv_err != OK:
-		print("⚠️ Konnte inventory.tres nicht erstellen: ", inventory_res_path, " err=", inv_err)
+		print("⚠️ Could not create inventory.tres: ", inventory_res_path, " err=", inv_err)
 	
 	# Set slot index
 	Constants.current_slot_index = slot_index
@@ -198,7 +197,7 @@ func _on_request_delete_slot(slot_index: int) -> void:
 	if confirm_dialog:
 		var player_data: Dictionary = slots_data[slot_index] if slot_index < slots_data.size() else {}
 		var hero_name: String = String(player_data.get("name", Constants.SAVE_SLOTS[slot_index]))
-		confirm_dialog.dialog_text = "Delete save '%s'?" % hero_name
+		confirm_dialog.dialog_text = tr("Delete save '%s'?") % hero_name
 		confirm_dialog.popup_centered()
 	else:
 		_on_delete_confirmed() # fallback without dialog
@@ -232,9 +231,9 @@ func _delete_directory_recursive(path: String) -> void:
 			else:
 				var remove_file_result := DirAccess.remove_absolute(child_path)
 				if remove_file_result != OK:
-					print("⚠️ Konnte Datei nicht löschen: ", child_path, " (", remove_file_result, ")")
+					print("⚠️ Could not delete file: ", child_path, " (", remove_file_result, ")")
 		dir.list_dir_end()
 	
 	var remove_dir_result := DirAccess.remove_absolute(path)
 	if remove_dir_result != OK and remove_dir_result != ERR_DOES_NOT_EXIST:
-		print("⚠️ Konnte Ordner nicht löschen: ", path, " (", remove_dir_result, ")")
+		print("⚠️ Could not delete folder: ", path, " (", remove_dir_result, ")")

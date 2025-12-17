@@ -16,18 +16,18 @@ func update_texture(direction: int):
 	if not progress_shader:
 		return
 	
-	# Правильный расчет: value / max_value для визуального отображения
-	# При min_value=0 и max_value=100: 10/100=0.1, 50/100=0.5, 100/100=1.0
+	# Correct calculation: value / max_value for visual display
+	# With min_value=0 and max_value=100: 10/100=0.1, 50/100=0.5, 100/100=1.0
 	var fill_percent = (value - min_value) / (max_value - min_value)
 	
 	if (direction < 0):
-		# Уменьшение HP - сразу устанавливаем fill_percent БЕЗ анимации для визуального обновления
+		# Decreasing HP - immediately set fill_percent WITHOUT animation for instant update
 		progress_shader.set_shader_parameter("fill_percent", fill_percent)
 		
-		# Принудительно обновляем, чтобы изменения были видны
+		# Force update so changes become visible
 		texture_rect.queue_redraw()
 		
-		# Показываем вспышку на краю нового значения
+		# Show flash at the edge of the new value
 		progress_shader.set_shader_parameter("flash_progress", 0.0)
 		var tween = get_tween()
 		tween.tween_property(progress_shader, "shader_parameter/flash_progress", 1.0, ANIMATION_DURATION)
@@ -36,14 +36,14 @@ func update_texture(direction: int):
 		)
 		
 	elif (direction > 0):
-		# Увеличение HP - показываем вспышку, затем анимируем fill_percent
+		# Increasing HP - show flash, then animate fill_percent
 		progress_shader.set_shader_parameter("flash_progress", 0.0)
 		var tween = get_tween()
 		tween.parallel().tween_property(progress_shader, "shader_parameter/fill_percent", fill_percent, ANIMATION_DURATION)
 		tween.parallel().tween_property(progress_shader, "shader_parameter/flash_progress", 1.0, ANIMATION_DURATION * 0.5)
 		tween.tween_callback(func(): progress_shader.set_shader_parameter("flash_progress", -1.0))
 	else:
-		# Инициализация - устанавливаем fill_percent сразу, скрываем вспышку
+		# Initialization - set fill_percent immediately, hide flash
 		progress_shader.set_shader_parameter("fill_percent", fill_percent)
 		progress_shader.set_shader_parameter("flash_progress", -1.0)
 	
@@ -59,7 +59,7 @@ func update_label_text():
 		hp_label.text = "%d/%d" % [int(value), int(max_value)]
 
 func _ready() -> void:
-	# Ждем, пока все @onready переменные будут готовы
+	# Wait until all @onready variables are ready
 	await get_tree().process_frame
 	var left   = patch_margin_left
 	var right  = patch_margin_right
@@ -72,17 +72,17 @@ func _ready() -> void:
 	texture_rect.position = Vector2(left, top)
 	texture_rect.size = Vector2(inner_w, inner_h)
 	
-	# Получаем material из TextureRect
+	# Get material from TextureRect
 	if texture_rect and texture_rect.material:
 		progress_shader = texture_rect.material as ShaderMaterial
 		if progress_shader:
 			update_texture(0)
 		else:
-			print("⚠️ Material не является ShaderMaterial в hp_bar!")
+			print("⚠️ Material is not a ShaderMaterial in hp_bar!")
 	else:
-		print("⚠️ TextureRect или material не найден в hp_bar!")
+		print("⚠️ TextureRect or material not found in hp_bar!")
 	
-	# Обновляем текст Label
+	# Update label text
 	update_label_text()
 	
 func set_value(new_value: float):
@@ -91,13 +91,13 @@ func set_value(new_value: float):
 	if progress_shader:
 		update_texture(sign(diff))
 	else:
-		print("⚠️ progress_shader не найден при установке значения!")
+		print("⚠️ progress_shader not found when setting value!")
 	
-	# Обновляем текст Label при изменении значения
+	# Update label text when value changes
 	update_label_text()
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Тест: Q для уменьшения, E для увеличения HP
+	# Test: Q to decrease, E to increase HP
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_Q:
 			set_value(value - 10.0)

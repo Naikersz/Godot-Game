@@ -1,7 +1,7 @@
 extends Node2D
 
 ## Town Scene
-## Временный "город": TileMap + HUD‑инвентарь + модальное меню боя.
+## Temporary "town": TileMap + HUD inventory + modal battle menu.
 
 @onready var tilemap: TileMap = $TownTileMap/TileMapGround
 @onready var door_area: Area2D = $TownTileMap/DoorArea
@@ -12,23 +12,23 @@ var _player_near_door: bool = false
 
 
 func _ready() -> void:
-	# Загружаем HUD с инвентарём (как в DungeonScene)
+	# Load HUD with inventory (as in DungeonScene)
 	var hud_scene := preload("res://scenes/hud_scene.tscn")
 	var hud = hud_scene.instantiate()
 	add_child(hud)
 
-	# LevelSelectionModal ist optional – nur holen, wenn vorhanden.
+	# LevelSelectionModal is optional – only get if present
 	level_selection_modal = get_node_or_null("LevelSelectionModal")
 
 	set_process(true)
 
 
 func _process(_delta: float) -> void:
-	# Если открыт модальный выбор уровня – блокируем взаимодействия города
+	# If level selection modal is open – block town interactions
 	if level_selection_modal and level_selection_modal.visible:
 		return
 
-	# Проверяем, стоит ли игрок достаточно близко к двери в таверну
+	# Check if player is close enough to tavern door
 	_player_near_door = false
 	if player and door_area:
 		var dist := player.global_position.distance_to(door_area.global_position)
@@ -40,23 +40,23 @@ func _process(_delta: float) -> void:
 
 
 func get_tilemap() -> TileMap:
-	# Вспомогательный метод, если понадобится доступ к карте из других скриптов
+	# Helper method if map access is needed from other scripts
 	return tilemap
 
 
 func enter_house(_house_id: String) -> void:
-	# Переход во внутренность таверны (временная реализация)
+	# Transition to tavern interior (temporary implementation)
 	get_tree().change_scene_to_file("res://scenes/tavern_interior.tscn")
 
 
 func open_level_selection() -> void:
-	# Открыть модальное окно выбора уровня подземелья
+	# Open modal window for dungeon level selection
 	if level_selection_modal:
 		level_selection_modal.visible = true
 
 
 func _on_door_body_entered(_body: Node) -> void:
-	pass # Удалённый старый код двери, оставлен пустым на случай старых связей.
+	pass # Removed old door code, left empty in case of old connections.
 
 
 func _on_door_body_exited(_body: Node) -> void:

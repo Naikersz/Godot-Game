@@ -114,7 +114,7 @@ func generate_loot(monster_level: int) -> Dictionary:
 		candidate.get("possible_enchantments", [])
 	)
 
-	# Rarity anhand der Anzahl der gewürfelten Enchantments bestimmen
+	# Determine rarity based on number of rolled enchantments
 	var rarity: String = "normal"
 	var enchant_count: int = 0
 	if rolled_item.has("enchantments") and rolled_item["enchantments"] is Array:
@@ -217,7 +217,7 @@ func _roll_range_block(block: Dictionary) -> Dictionary:
 		var max_key = base_key + "_max"
 		var max_val = block.get(max_key, min_val)
 		
-		# Immer Integer würfeln – auch wenn die JSON floats enthält
+		# Always roll integers – even if JSON contains floats
 		var min_i := int(round(float(min_val)))
 		var max_i := int(round(float(max_val)))
 		if max_i < min_i:
@@ -285,5 +285,5 @@ func _roll_enchantments(item_level: int, max_slots: int, allowed_ids: Array) -> 
 static func _max_tier_for_level(level: int) -> int:
 	if level <= 0:
 		return 1
-	# Vermeide Integer-Divisions-Warnung, arbeite explizit mit float
+	# Avoid integer division warning, work explicitly with float
 	return 1 + int((float(level) - 1.0) / 20.0)
