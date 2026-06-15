@@ -1,1 +1,1 @@
-Description: Money-Manager-App zur Verwaltung von Einnahmen, Ausgaben und Abonnements – in Entwicklung
+2D-Roguelike-Spiel mit Godot – in Entwicklung
